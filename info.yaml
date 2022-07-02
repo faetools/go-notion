@@ -1,0 +1,7 @@
+name: go-notion
+version: 0.0.3
+repoType: GoLibrary
+library:
+  subType: ThirdPartyAPI
+team: firestarters
+devToolVersion: 0.0.17

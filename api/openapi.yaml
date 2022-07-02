@@ -1,0 +1,2168 @@
+openapi: 3.0.0
+servers:
+  - url: https://api.notion.com
+info:
+  version: "2022-02-22"
+  title: Notion API
+  description: |-
+    Hello and welcome!
+
+    [Create an integration](https://www.notion.so/my-integrations) to retrieve an API token, add your database and page ID's as variables in the collection, and start making your requests!
+
+    For our full documentation, including sample integrations and guides, visit [developers.notion.com](developers.notion.com)
+
+    Need more help? Join our [developer community on Slack](https://join.slack.com/t/notiondevs/shared_invite/zt-lkrnk74h-YmPRroySRFGiqgjI193AqA/)
+paths:
+  /v1/users/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      summary: Retrieve a user
+      description: Retrieve a user object using the ID specified in the request path.
+      operationId: GetUser
+      responses:
+        '200':
+          $ref: '#/components/responses/UserResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/ErrorResponse'
+      tags:
+        - Users
+  /v1/users:
+    get:
+      summary: List all users
+      description: Returns a paginated list of user objects for a workspace
+      operationId: ListUsers
+      parameters:
+        - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/start_cursor'
+      responses:
+        '200':
+          $ref: '#/components/responses/UsersResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/ErrorResponse'
+      tags:
+        - Users
+  /v1/users/me:
+    get:
+      summary: Retrieve bot's user info
+      operationId: GetMe
+      responses:
+        '200':
+          $ref: '#/components/responses/UserResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/databases/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      summary: Retrieve a database
+      description: Retrieves a database object using the ID specified in the request path.
+      operationId: GetDatabase
+      responses:
+        '200':
+          $ref: '#/components/responses/DatabaseResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/ErrorResponse'
+      tags:
+        - Databases
+    patch:
+      operationId: UpdateDatabase
+      responses:
+        '200':
+          $ref: '#/components/responses/DatabaseResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/ErrorResponse'
+      description: Updates an existing database as specified by the parameters.
+      requestBody:
+        $ref: '#/components/requestBodies/DatabaseRequestBody'
+  /v1/databases/{id}/query:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    post:
+      summary: Query a database
+      operationId: QueryDatabase
+      responses:
+        '200':
+          $ref: '#/components/responses/PagesResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseQuery'
+            examples:
+              example:
+                value:
+                  filter:
+                    property: Status
+                    select:
+                      equals: Reading
+      tags:
+        - Databases
+  /v1/databases/:
+    post:
+      summary: Create a database
+      operationId: CreateDatabase
+      responses:
+        '200':
+          $ref: '#/components/responses/DatabaseResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/ErrorResponse'
+      requestBody:
+        $ref: '#/components/requestBodies/DatabaseRequestBody'
+      tags:
+        - Databases
+  /v1/pages/:
+    post:
+      summary: Create a Page
+      operationId: CreatePage
+      responses:
+        '200':
+          $ref: '#/components/responses/PageResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Page'
+            example: |-
+              {
+                  "parent": {
+                      "database_id": "{{DATABASE_ID}}"
+                  },
+                  "properties": {
+                      "Type": {
+                          "select": {
+                              "id": "f96d0d0a-5564-4a20-ab15-5f040d49759e",
+                              "name": "Article",
+                              "color": "default"
+                          }
+                      },
+                      "Score /5": {
+                          "select": {
+                              "id": "5c944de7-3f4b-4567-b3a1-fa2c71c540b6",
+                              "name": "⭐️⭐️⭐️⭐️⭐️",
+                              "color": "default"
+                          }
+                      },
+                      "Name": {
+                          "title": [
+                              {
+                                  "text": {
+                                      "content": "New Media Article"
+                                  }
+                              }
+                          ]
+                      },
+                      "Status": {
+                          "select": {
+                              "id": "8c4a056e-6709-4dd1-ba58-d34d9480855a",
+                              "name": "Ready to Start",
+                              "color": "yellow"
+                          }
+                      },
+                      "Publisher": {
+                          "select": {
+                              "id": "01f82d08-aa1f-4884-a4e0-3bc32f909ec4",
+                              "name": "The Atlantic",
+                              "color": "red"
+                          }
+                      },
+                      "Publishing/Release Date": {
+                          "date": {
+                              "start": "2020-12-08T12:00:00Z",
+                              "end": null
+                          }
+                      },
+                      "Link": {
+                          "url": "https://www.nytimes.com/2018/10/21/opinion/who-will-teach-silicon-valley-to-be-ethical.html"
+                      },
+                      "Summary": {
+                          "rich_text": [
+                              {
+                                  "type": "text",
+                                  "text": {
+                                      "content": "Some think chief ethics officers could help technology companies navigate political and social questions.",
+                                      "link": null
+                                  },
+                                  "annotations": {
+                                      "bold": false,
+                                      "italic": false,
+                                      "strikethrough": false,
+                                      "underline": false,
+                                      "code": false,
+                                      "color": "default"
+                                  },
+                                  "plain_text": "Some think chief ethics officers could help technology companies navigate political and social questions.",
+                                  "href": null
+                              }
+                          ]
+                      },
+                      "Read": {
+                          "checkbox": false
+                      }
+                  }
+              }
+      tags:
+        - Pages
+  /v1/pages/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      summary: Retrieve a Page
+      description: 'Retrieves a Page object using the ID in the request path. This endpoint exposes page properties, not page content. '
+      operationId: GetPage
+      responses:
+        '200':
+          $ref: '#/components/responses/PageResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/ErrorResponse'
+      tags:
+        - Pages
+    patch:
+      summary: 'Update Page properties '
+      description: 'Updates a page by setting the values of any properties specified in the JSON body of the request. Properties not updated via parameters will remain unchanged. '
+      operationId: UpdatePage
+      responses:
+        '200':
+          $ref: '#/components/responses/PageResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/ErrorResponse'
+      requestBody:
+        description: 'Updates a page by setting the values of any properties specified in the JSON body of the request. Properties not updated via parameters will remain unchanged. '
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Page'
+            examples:
+              example:
+                value:
+                  properties:
+                    Status:
+                      select:
+                        name: Reading
+    delete:
+      summary: Delete a page
+      operationId: DeletePage
+      responses:
+        '200':
+          $ref: '#/components/responses/PageResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/blocks/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    delete:
+      summary: Delete a block
+      operationId: DeleteBlock
+      responses:
+        '200':
+          $ref: '#/components/responses/BlockResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/ErrorResponse'
+    patch:
+      summary: Update a block
+      description: This endpoint allows you to update block content. [See Full Documentation](https://developers.notion.com/reference/update-a-block)
+      operationId: Updateablock
+      responses:
+        '200':
+          $ref: '#/components/responses/BlockResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/ErrorResponse'
+      requestBody:
+        description: This endpoint allows you to update block content. [See Full Documentation](https://developers.notion.com/reference/update-a-block)
+        required: true
+        content:
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/Block'
+    get:
+      summary: Retrieve a block
+      operationId: GetBlock
+      responses:
+        '200':
+          $ref: '#/components/responses/BlockResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/ErrorResponse'
+      description: Retrieves a [Block object](https://developers.notion.com/reference/block) using the ID specified.
+  /v1/blocks/{id}/children:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      summary: Retrieve block children
+      operationId: GetBlocks
+      parameters:
+        - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/start_cursor'
+      responses:
+        '200':
+          $ref: '#/components/responses/BlocksResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/ErrorResponse'
+      tags:
+        - Blocks
+      description: Returns a paginated array of child [block objects](https://developers.notion.com/reference/block) contained in the block using the ID specified. In order to receive a complete representation of a block, you may need to recursively retrieve the block children of child blocks.
+    patch:
+      summary: Append block children
+      operationId: AppendBlocks
+      responses:
+        '200':
+          $ref: '#/components/responses/BlocksResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlocksChildren'
+            example: |-
+              {
+              	"children": [
+              		{
+              			"object": "block",
+              			"type": "heading_2",
+              			"heading_2": {
+              				"text": [{ "type": "text", "text": { "content": "Lacinato kale" } }]
+              			}
+              		},
+              		{
+              			"object": "block",
+              			"type": "paragraph",
+              			"paragraph": {
+              				"rich_text": [
+              					{
+              						"type": "text",
+              						"text": {
+              							"content": "Lacinato kale is a variety of kale with a long tradition in Italian cuisine, especially that of Tuscany. It is also known as Tuscan kale, Italian kale, dinosaur kale, kale, flat back kale, palm tree kale, or black Tuscan palm.",
+              							"link": { "url": "https://en.wikipedia.org/wiki/Lacinato_kale" }
+              						}
+              					}
+              				]
+              			}
+              		}
+              	]
+              }
+      tags:
+        - Blocks
+  /v1/search:
+    post:
+      summary: Search
+      operationId: Search
+      responses:
+        '200':
+          $ref: '#/components/responses/PagesResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                query: Media Article
+                sort:
+                  direction: ascending
+                  timestamp: last_edited_time
+components:
+  parameters:
+    page_size:
+      name: page_size
+      in: query
+      required: true
+      style: form
+      schema:
+        type: number
+        maximum: 100
+      description: The number of items from the full list desired in the response.
+    id:
+      name: id
+      in: path
+      required: true
+      style: simple
+      schema:
+        $ref: '#/components/schemas/UUID'
+      description: Identifier for a block, page, or user.
+    start_cursor:
+      name: start_cursor
+      in: query
+      schema:
+        type: string
+      description: If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results.
+  schemas:
+    Block:
+      description: |-
+        A block object represents content within Notion. Blocks can be text, lists, media, and more. A page is a type of block, too!
+
+        The optional fields are filled depending on the value of `type`.
+      type: object
+      x-examples:
+        example:
+          object: block
+          id: b8cc5dc7-9204-45f0-b996-e48514357b0f
+          created_time: "2022-03-17T22:56:00.000Z"
+          last_edited_time: "2022-03-18T22:08:00.000Z"
+          created_by:
+            object: user
+            id: af171d5d-c36f-45bc-a0a3-6086c0dafa45
+          last_edited_by:
+            object: user
+            id: af171d5d-c36f-45bc-a0a3-6086c0dafa45
+          has_children: true
+          archived: false
+          type: child_page
+          child_page:
+            title: Websites
+      properties:
+        object:
+          type: string
+          description: Always "block".
+        id:
+          $ref: '#/components/schemas/UUID'
+        type:
+          type: string
+          enum:
+            - paragraph
+            - heading_1
+            - heading_2
+            - heading_3
+            - bulleted_list_item
+            - numbered_list_item
+            - to_do
+            - toggle
+            - child_page
+            - child_database
+            - embed
+            - image
+            - video
+            - file
+            - pdf
+            - bookmark
+            - callout
+            - quote
+            - equation
+            - divider
+            - table_of_contents
+            - column
+            - column_list
+            - link_preview
+            - synced_block
+            - template
+            - link_to_page
+            - table
+            - table_row
+            - unsupported
+          description: Type of block.
+          example: paragraph
+        created_time:
+          type: string
+          format: date-time
+          description: Date and time when this block was created. Formatted as an ISO 8601 date time string.
+        last_edited_time:
+          type: string
+          description: Date and time when this block was last updated. Formatted as an ISO 8601 date time string.
+          format: date-time
+        created_by:
+          $ref: '#/components/schemas/User'
+        last_edited_by:
+          $ref: '#/components/schemas/User'
+        has_children:
+          type: boolean
+          description: Whether or not the block has children blocks nested within it.
+        archived:
+          type: boolean
+          description: The archived status of the block.
+        paragraph:
+          $ref: '#/components/schemas/Paragraph'
+        heading_1:
+          $ref: '#/components/schemas/Heading'
+        heading_2:
+          $ref: '#/components/schemas/Heading'
+        heading_3:
+          $ref: '#/components/schemas/Heading'
+        bulleted_list_item:
+          $ref: '#/components/schemas/BulletedListItem'
+        numbered_list_item:
+          $ref: '#/components/schemas/NumberedListItem'
+        to_do:
+          $ref: '#/components/schemas/ToDo'
+        toggle:
+          $ref: '#/components/schemas/Toggle'
+        child_page:
+          $ref: '#/components/schemas/Child'
+        child_database:
+          $ref: '#/components/schemas/Child'
+        embed:
+          $ref: '#/components/schemas/Embed'
+        image:
+          $ref: '#/components/schemas/File'
+        video:
+          $ref: '#/components/schemas/Video'
+        file:
+          $ref: '#/components/schemas/File'
+        pdf:
+          $ref: '#/components/schemas/File'
+        bookmark:
+          $ref: '#/components/schemas/Bookmark'
+        callout:
+          $ref: '#/components/schemas/Callout'
+        quote:
+          $ref: '#/components/schemas/Quote'
+        equation:
+          $ref: '#/components/schemas/Equation'
+        divider:
+          type: object
+          description: Divider block objects do not contain any information within the divider property
+        table_of_contents:
+          $ref: '#/components/schemas/TableOfContents'
+        column:
+          type: object
+          description: Columns are parent blocks for any supported block children, excluding columns. They do not contain any information within the column property. They can only be appended to column_lists.
+        column_list:
+          type: object
+          description: Column Lists are parent blocks for column children. They do not contain any information within the column_list property and can only contain children of type column.
+        link_preview:
+          $ref: '#/components/schemas/LinkPreview'
+        synced_block:
+          $ref: '#/components/schemas/SyncedBlock'
+        template:
+          $ref: '#/components/schemas/Template'
+        link_to_page:
+          $ref: '#/components/schemas/LinkToPage'
+        table:
+          $ref: '#/components/schemas/Table'
+        table_row:
+          $ref: '#/components/schemas/TableRow'
+      required:
+        - object
+        - id
+        - type
+        - created_time
+        - last_edited_time
+        - has_children
+        - archived
+    Page:
+      description: |-
+        The Page object contains the [property values](https://developers.notion.com/reference/property-value-object) of a single Notion page.
+
+        All pages have a parent. If the parent is a [database](https://developers.notion.com/reference/database), the property values conform to the schema laid out database's [properties](https://developers.notion.com/reference/property-object). Otherwise, the only property value is the `title`.
+
+        Page content is available as [blocks](https://developers.notion.com/reference/block). The content can be read using [retrieve block children](https://developers.notion.com/reference/get-block-children) and appended using [append block children](https://developers.notion.com/reference/patch-block-children).
+      type: object
+      x-examples:
+        example:
+          object: page
+          id: c4d39556-6364-46a1-8a61-ebbb668f7445
+          created_time: "2021-04-27T20:38:00.000Z"
+          last_edited_time: "2022-03-02T05:22:00.000Z"
+          created_by:
+            object: user
+            id: 6794760a-1f15-45cd-9c65-0dfe42f5135a
+          last_edited_by:
+            object: user
+            id: 92a680bb-6970-4726-952b-4f4c03bff617
+          cover: null
+          icon:
+            type: emoji
+            emoji: "\U0001F4D5"
+          parent:
+            type: page_id
+            page_id: c1218692-102d-4b47-ab38-c21900b3557b
+          archived: false
+          properties:
+            title:
+              id: title
+              type: title
+              title:
+                - type: text
+                  text:
+                    content: Reading List
+                    link: null
+                  annotations:
+                    bold: false
+                    italic: false
+                    strikethrough: false
+                    underline: false
+                    code: false
+                    color: default
+                  plain_text: Reading List
+                  href: null
+          url: https://www.notion.so/Reading-List-c4d39556636446a18a61ebbb668f7445
+      properties:
+        object:
+          type: string
+          description: Always "page".
+          pattern: ^page$
+          example: page
+        id:
+          $ref: '#/components/schemas/UUID'
+        created_time:
+          type: string
+          format: date-time
+          description: Date and time when this page was created. Formatted as an ISO 8601 date time string.
+        last_edited_time:
+          type: string
+          description: Date and time when this page was updated. Formatted as an ISO 8601 date time string.
+          example: "2020-03-17T19:10:04.968Z"
+          format: date-time
+        created_by:
+          $ref: '#/components/schemas/User'
+        last_edited_by:
+          $ref: '#/components/schemas/User'
+        cover:
+          $ref: '#/components/schemas/File'
+        icon:
+          $ref: '#/components/schemas/Icon'
+        parent:
+          $ref: '#/components/schemas/Parent'
+        archived:
+          type: boolean
+          description: The archived status of the page.
+          example: false
+        properties:
+          $ref: '#/components/schemas/PropertyValues'
+        url:
+          type: string
+          description: The URL of the Notion page.
+          example: https://www.notion.so/Avocado-d093f1d200464ce78b36e58a3f0d8043
+          format: uri
+      required:
+        - object
+        - id
+        - created_time
+        - last_edited_time
+        - created_by
+        - last_edited_by
+        - parent
+        - archived
+        - properties
+        - url
+    Pages:
+      type: array
+      items:
+        $ref: '#/components/schemas/Page'
+    PagesList:
+      type: object
+      properties:
+        object:
+          type: string
+        results:
+          $ref: '#/components/schemas/Pages'
+        next_cursor:
+          type: string
+        has_more:
+          type: boolean
+        type:
+          type: string
+        pages:
+          type: object
+      required:
+        - object
+        - results
+        - next_cursor
+        - has_more
+        - type
+        - pages
+    User:
+      description: The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.
+      type: object
+      x-examples:
+        partial user:
+          object: user
+          id: 45ee8d13-687b-47ce-a5ca-6e2e45548c4b
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        object:
+          type: string
+          example: user
+          description: Always "user"
+          pattern: ^user$
+        type:
+          type: string
+          description: Type of the user.
+          example: person
+          enum:
+            - person
+            - bot
+        name:
+          type: string
+          description: User's name, as displayed in Notion.
+          example: Avocado Lovelace
+        avatar_url:
+          type: string
+          description: Chosen avatar image.
+          format: uri
+          example: https://secure.notion-static.com/e6a352a8-8381-44d0-a1dc-9ed80e62b53d.jpg
+        person:
+          $ref: '#/components/schemas/Person'
+        bot:
+          $ref: '#/components/schemas/Bot'
+      required:
+        - id
+        - object
+        - type
+        - name
+        - avatar_url
+    Users:
+      title: Users
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+    UsersList:
+      type: object
+      properties:
+        object:
+          type: string
+          example: list
+          pattern: ^list$
+        results:
+          $ref: '#/components/schemas/Users'
+        next_cursor:
+          type: string
+        has_more:
+          type: boolean
+        type:
+          type: string
+        user:
+          type: object
+      required:
+        - object
+        - results
+        - next_cursor
+        - has_more
+        - type
+        - user
+    Person:
+      title: Person
+      type: object
+      properties:
+        email:
+          type: string
+          description: Email address of person. This is only present if an integration has user capabilities that allow access to email addresses.
+          format: email
+          example: avo@example.org
+      required:
+        - email
+      description: User objects that represent people have the `type` property set to `person`. These objects also have these properties.
+    Bot:
+      description: ''
+      type: object
+      properties:
+        owner:
+          type: object
+          properties:
+            type:
+              type: string
+              minLength: 1
+            workspace:
+              type: boolean
+          required:
+            - type
+            - workspace
+      required:
+        - owner
+      x-examples:
+        example:
+          owner:
+            type: workspace
+            workspace: true
+    BlocksList:
+      type: object
+      x-examples:
+        example:
+          object: list
+          results:
+            - object: block
+              id: f9bb6c26-8f12-487c-bd7a-1f4ea489e84d
+              created_time: "2022-03-18T21:19:00.000Z"
+              last_edited_time: "2022-03-18T21:19:00.000Z"
+              created_by:
+                object: user
+                id: af171d5d-c36f-45bc-a0a3-6086c0dafa45
+              last_edited_by:
+                object: user
+                id: af171d5d-c36f-45bc-a0a3-6086c0dafa45
+              has_children: false
+              archived: false
+              type: paragraph
+              paragraph:
+                rich_text:
+                  - type: text
+                    text:
+                      content: fooo
+                      link: null
+                    annotations:
+                      bold: false
+                      italic: false
+                      strikethrough: false
+                      underline: false
+                      code: false
+                      color: default
+                    plain_text: fooo
+                    href: null
+                color: default
+            - object: block
+              id: 9965ecfa-a3ab-4a7a-b93d-80a6dd6caae8
+              created_time: "2022-03-18T21:19:00.000Z"
+              last_edited_time: "2022-03-18T21:19:00.000Z"
+              created_by:
+                object: user
+                id: af171d5d-c36f-45bc-a0a3-6086c0dafa45
+              last_edited_by:
+                object: user
+                id: af171d5d-c36f-45bc-a0a3-6086c0dafa45
+              has_children: false
+              archived: false
+              type: child_page
+              child_page:
+                title: Subpage
+          next_cursor: null
+          has_more: false
+          type: block
+          block: {}
+      properties:
+        object:
+          type: string
+        results:
+          $ref: '#/components/schemas/Blocks'
+        next_cursor:
+          type: string
+        has_more:
+          type: boolean
+        type:
+          type: string
+        block:
+          type: object
+      required:
+        - object
+        - results
+        - next_cursor
+        - has_more
+        - type
+        - block
+    Child:
+      description: The title of the child page or database.
+      type: object
+      x-examples:
+        example:
+          title: Lacinato kale
+      properties:
+        title:
+          type: string
+          description: Plain text of page title.
+      required:
+        - title
+    Title:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        title:
+          $ref: '#/components/schemas/RichTexts'
+      required:
+        - id
+        - type
+        - title
+    RichText:
+      type: object
+      description: Rich text objects contain data for displaying formatted text, mentions, and equations. A rich text object also contains annotations for style information. Arrays of rich text objects are used [within property objects](https://developers.notion.com/reference/database-property) and [property value objects](https://developers.notion.com/reference/page-property-value) to create what a user sees as a single text value in Notion.
+      properties:
+        type:
+          type: string
+          description: Type of this rich text object.
+          example: text
+          enum:
+            - text
+            - mention
+            - equation
+        plain_text:
+          type: string
+          description: "The plain text without annotations.\t"
+          example: Avocado Lovelace
+        href:
+          type: string
+          description: The URL of any link or internal Notion mention in this text, if any.
+          example: https://www.notion.so/Avocado-d093f1d200464ce78b36e58a3f0d8043
+        annotations:
+          $ref: '#/components/schemas/Annotations'
+        text:
+          $ref: '#/components/schemas/Text'
+        mention:
+          $ref: '#/components/schemas/Mention'
+        equation:
+          $ref: '#/components/schemas/Equation'
+      required:
+        - type
+        - plain_text
+        - annotations
+    Text:
+      type: object
+      description: Text objects contain this information within the `text` property of a RichText object.
+      properties:
+        content:
+          type: string
+          description: Text content. This field contains the actual content of your text and is probably the field you'll use most often.
+          example: Avocado Lovelace
+        link:
+          $ref: '#/components/schemas/Link'
+      required:
+        - content
+    Annotations:
+      type: object
+      description: Style information which applies to the whole rich text object.
+      properties:
+        bold:
+          description: Whether the text is **bolded**.
+          type: boolean
+          example: true
+        italic:
+          description: Whether the text is *italicized*.
+          type: boolean
+          example: true
+        strikethrough:
+          description: Whether the text is struck through.
+          type: boolean
+          example: false
+        underline:
+          description: Whether the text is underlined.
+          type: boolean
+          example: false
+        code:
+          description: Whether the text is code `style`.
+          type: boolean
+          example: true
+        color:
+          $ref: '#/components/schemas/Color'
+      required:
+        - bold
+        - italic
+        - strikethrough
+        - underline
+        - code
+        - color
+    Paragraph:
+      type: object
+      description: Paragraph block objects contain this information within the `paragraph` property.
+      properties:
+        rich_text:
+          $ref: '#/components/schemas/RichTexts'
+        color:
+          $ref: '#/components/schemas/Color'
+        children:
+          $ref: '#/components/schemas/Blocks'
+      required:
+        - rich_text
+        - color
+        - children
+    Color:
+      type: string
+      enum:
+        - default
+        - gray
+        - brown
+        - orange
+        - yellow
+        - green
+        - blue
+        - purple
+        - pink
+        - red
+        - gray_background
+        - brown_background
+        - orange_background
+        - yellow_background
+        - green_background
+        - blue_background
+        - purple_background
+        - pink_background
+        - red_background
+      description: The color of the block.
+    PropertyValues:
+      description: Properties of a page or database.
+      oneOf:
+        - properties:
+            title:
+              $ref: '#/components/schemas/Title'
+          required:
+            - title
+        - properties:
+            title:
+              $ref: '#/components/schemas/Title'
+            customField:
+              $ref: '#/components/schemas/PropertyValue'
+        - {}
+      type: object
+    RichTexts:
+      type: array
+      items:
+        $ref: '#/components/schemas/RichText'
+    Blocks:
+      type: array
+      items:
+        $ref: '#/components/schemas/Block'
+    Database:
+      type: object
+      properties:
+        object:
+          type: string
+          example: database
+          pattern: ^database$
+          description: Always "database".
+        id:
+          $ref: '#/components/schemas/UUID'
+        created_time:
+          type: string
+          format: date-time
+          description: Date and time when this database was created. Formatted as an ISO 8601 date time string.
+        last_edited_time:
+          type: string
+          description: Date and time when this database was updated. Formatted as an ISO 8601 date time string.
+          example: "2020-03-17T19:10:04.968Z"
+          format: date-time
+        created_by:
+          $ref: '#/components/schemas/User'
+        last_edited_by:
+          $ref: '#/components/schemas/User'
+        title:
+          $ref: '#/components/schemas/RichTexts'
+        icon:
+          $ref: '#/components/schemas/Icon'
+        cover:
+          $ref: '#/components/schemas/File'
+        properties:
+          $ref: '#/components/schemas/PropertyMetas'
+        parent:
+          $ref: '#/components/schemas/Parent'
+        url:
+          type: string
+          description: The URL of the Notion page.
+          example: https://www.notion.so/Avocado-d093f1d200464ce78b36e58a3f0d8043
+          format: uri
+        archived:
+          type: boolean
+          description: The archived status of the page.
+          example: false
+      required:
+        - object
+        - id
+        - last_edited_time
+        - title
+        - properties
+        - url
+        - archived
+    UUID:
+      type: string
+      format: uuid
+      description: A unique identifier for a page, block, database, or user.
+    Parent:
+      type: object
+      description: The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
+      properties:
+        type:
+          type: string
+          example: page_id
+          pattern: ^page_id$
+          description: The type of the parent.
+          enum:
+            - page_id
+            - workspace
+        page_id:
+          $ref: '#/components/schemas/UUID'
+        workspace:
+          type: boolean
+          description: Always true if the `type` is `workspace`.
+      required:
+        - type
+        - page_id
+    Icon:
+      description: Page or database icon. It is either an external file or an emoji.
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of icon.
+          enum:
+            - emoji
+            - external
+          example: emoji
+        emoji:
+          type: string
+          example: "\U0001F436"
+          description: Emoji character.
+          pattern: '^[^\w\s]+$'
+        url:
+          type: string
+          description: Link to the externally hosted content.
+          example: https://website.domain/files/doc.txt
+          format: uri
+      required:
+        - type
+    PropertyMetas:
+      oneOf:
+        - $ref: '#/components/schemas/MinimalPropertyMetas'
+        - type: object
+    PropertyMeta:
+      description: Metadata that controls how a database property behaves.
+      type: object
+      x-examples:
+        rich_text:
+          id: A%5C%3Au
+          name: Slug
+          type: rich_text
+          rich_text: {}
+        multi_select:
+          id: IYs%7D
+          name: Outputs
+          type: multi_select
+          multi_select:
+            options:
+              - id: 0f1c15fd-ba51-45bf-95f9-9f4d598bb91e
+                name: HTML
+                color: pink
+              - id: a2a854ce-de01-4a9a-a437-ba371ca84e59
+                name: AMP
+                color: brown
+              - id: 0e7c6b78-9024-4b8a-8734-6a222539eca4
+                name: CSS
+                color: yellow
+              - id: 1b6d4b26-aa06-4a5a-90fa-c6cd36dca582
+                name: CSV
+                color: red
+              - id: 96630827-d55e-4e05-9c86-ef2872a24238
+                name: Calendar
+                color: blue
+              - id: 615d45a1-4594-458d-a646-1a707f585faa
+                name: JSON
+                color: orange
+              - id: 99039cc0-258f-4131-87f0-9f12a48e2359
+                name: ROBOTS
+                color: gray
+              - id: 8d39db15-b7cd-43f1-bf24-231cb4fbd7d2
+                name: RSS
+                color: default
+              - id: 03dd45f9-7a10-4004-beb9-a048ccb23f80
+                name: Sitemap
+                color: purple
+              - id: 49443240-155b-4047-b15a-ebccb52b4ebd
+                name: WebAppManifest
+                color: green
+        checkbox:
+          id: ~s%7Dd
+          name: Draft
+          type: checkbox
+          checkbox: {}
+        files:
+          id: hteR
+          name: Files
+          type: files
+          files: {}
+        date:
+          id: m%5Bc%7C
+          name: Expires
+          type: date
+          date: {}
+        title:
+          id: title
+          name: Name
+          type: title
+          title: {}
+      properties:
+        id:
+          type: string
+          description: A short identifier (not a UUID).
+        name:
+          type: string
+          description: The name of the property as it appears in Notion.
+        type:
+          $ref: '#/components/schemas/PropertyType'
+        title:
+          type: object
+          description: Title database property objects have no additional configuration within the `title` property.
+        rich_text:
+          type: object
+          description: Text database property schema objects have no additional configuration within the `rich_text` property.
+        multi_select:
+          $ref: '#/components/schemas/PropertyOptionsWrapper'
+        checkbox:
+          type: object
+          description: Checkbox database property schema objects have no additional configuration within the `checkbox` property.
+        files:
+          type: object
+          description: File database property schema objects have no additional configuration within the `file` property.
+        date:
+          type: object
+          description: Date database property schema objects have no additional configuration within the `date` property.
+        select:
+          $ref: '#/components/schemas/PropertyOptionsWrapper'
+        relation:
+          $ref: '#/components/schemas/RelationConfiguration'
+        number:
+          $ref: '#/components/schemas/NumberConfig'
+      required:
+        - id
+        - name
+        - type
+    PropertyOption:
+      description: Multi-select or select option values.
+      type: object
+      x-examples:
+        example:
+          id: 0f1c15fd-ba51-45bf-95f9-9f4d598bb91e
+          name: HTML
+          color: pink
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        color:
+          $ref: '#/components/schemas/Color'
+      required:
+        - id
+        - name
+        - color
+      title: ''
+    PropertyOptions:
+      title: PropertyOptions
+      type: array
+      items:
+        $ref: '#/components/schemas/PropertyOption'
+      description: An array of multi-select or select option values.
+    PropertyOptionsWrapper:
+      type: object
+      properties:
+        options:
+          $ref: '#/components/schemas/PropertyOptions'
+      required:
+        - options
+    MinimalPropertyMetas:
+      type: object
+      description: Every database should at least contain one property of type `title`.
+      properties:
+        title:
+          $ref: '#/components/schemas/PropertyMeta'
+    Error:
+      description: Something went wrong
+      type: object
+      x-examples:
+        not-found:
+          object: error
+          status: 404
+          code: object_not_found
+          message: 'Could not find page with ID: b8cc5dc7-9204-45f0-b996-e48514357b0f. Make sure the relevant pages and databases are shared with your integration.'
+      properties:
+        object:
+          type: string
+        status:
+          type: integer
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - object
+        - status
+        - code
+        - message
+    Filter:
+      type: object
+      x-examples:
+        example:
+          and:
+            - property: Done
+              checkbox:
+                equals: true
+            - or:
+                - property: Tags
+                  contains: A
+                - property: Tags
+                  contains: B
+      properties:
+        property:
+          type: string
+          description: Filter by this property.
+        contains:
+          type: string
+          description: A string the property must contain.
+        checkbox:
+          $ref: '#/components/schemas/CheckboxFilter'
+        and:
+          $ref: '#/components/schemas/Filters'
+        or:
+          $ref: '#/components/schemas/Filters'
+        rich_text:
+          $ref: '#/components/schemas/TextFilter'
+    BlocksChildren:
+      title: BlocksChildren
+      type: object
+      properties:
+        children:
+          $ref: '#/components/schemas/Blocks'
+      required:
+        - children
+    Filters:
+      title: Filters
+      type: array
+      items:
+        $ref: '#/components/schemas/Filter'
+    Sort:
+      title: Sort
+      type: object
+      properties:
+        property:
+          type: string
+          description: The property to sort by.
+        direction:
+          type: string
+          enum:
+            - ascending
+            - descending
+          example: descending
+          description: Which way to sort.
+      required:
+        - property
+        - direction
+    Sorts:
+      title: Sorts
+      type: array
+      items:
+        $ref: '#/components/schemas/Sort'
+    DatabaseQuery:
+      title: DatabaseQuery
+      type: object
+      properties:
+        filter:
+          $ref: '#/components/schemas/Filter'
+        sorts:
+          $ref: '#/components/schemas/Sorts'
+        start_cursor:
+          $ref: '#/components/schemas/UUID'
+        page_size:
+          type: integer
+          description: The number of items from the full list desired in the response.
+          maximum: 100
+      required:
+        - page_size
+    CheckboxFilter:
+      description: ''
+      type: object
+      x-examples:
+        example:
+          equals: true
+      properties:
+        equals:
+          type: boolean
+          description: What the checkbox must be set to.
+      required:
+        - equals
+    TextFilter:
+      description: ''
+      type: object
+      properties:
+        contains:
+          type: string
+          minLength: 1
+      required:
+        - contains
+      x-examples:
+        example:
+          contains: Bridge
+    PropertyValue:
+      description: 'A property value defines the identifier, type, and value of a page property in a page object. It''s used when retrieving and updating pages ex: Create and Update pages.'
+      type: object
+      properties:
+        id:
+          type: string
+          description: |-
+            Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.
+
+            The id may be used in place of name when creating or updating pages.
+          example: f%5C%5C%3Ap
+        type:
+          $ref: '#/components/schemas/PropertyType'
+        title:
+          $ref: '#/components/schemas/RichTexts'
+        rich_text:
+          $ref: '#/components/schemas/RichTexts'
+        select:
+          $ref: '#/components/schemas/SelectValue'
+        multi_select:
+          $ref: '#/components/schemas/PropertyOptions'
+        checkbox:
+          type: boolean
+        relation:
+          $ref: '#/components/schemas/References'
+        date:
+          $ref: '#/components/schemas/Date'
+        number:
+          type: number
+          description: Number property value objects contain a number within the `number` property.
+        files:
+          $ref: '#/components/schemas/Files'
+      required:
+        - id
+        - type
+    Reference:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+      required:
+        - id
+    References:
+      title: References
+      type: array
+      items:
+        $ref: '#/components/schemas/Reference'
+    Date:
+      title: Date
+      type: object
+      properties:
+        start:
+          type: string
+          description: An ISO 8601 format date, with optional time.
+          format: date-time
+          example: "2020-12-08T12:00:00Z"
+        end:
+          type: string
+          description: |-
+            An ISO 8601 formatted date, with optional time. Represents the end of a date range.
+
+            If `null`, this property's date value is not a range.
+          example: "2020-12-08T12:00:00Z"
+          format: date-time
+        time_zone:
+          type: string
+          description: |-
+            Time zone information for start and end. Possible values are extracted from the IANA database and they are based on the time zones from Moment.js.
+
+            When time zone is provided, start and end should not have any UTC offset. In addition, when time zone is provided, start and end cannot be dates without time information.
+
+            If null, time zone information will be contained in UTC offsets in start and end.
+          example: America/Los_Angeles
+      required:
+        - start
+    PropertyType:
+      type: string
+      description: Type of the property.
+      enum:
+        - rich_text
+        - number
+        - select
+        - multi_select
+        - date
+        - formula
+        - relation
+        - rollup
+        - title
+        - people
+        - files
+        - checkbox
+        - url
+        - email
+        - phone_number
+        - created_time
+        - created_by
+        - last_edited_time
+        - last_edited_by
+    RelationConfiguration:
+      type: object
+      properties:
+        database_id:
+          $ref: '#/components/schemas/UUID'
+        synced_property_name:
+          type: string
+          description: 'By default, relations are formed as two synced properties across databases: if you make a change to one property, it updates the synced property at the same time. `synced_property_name` refers to the `name` of the property in the related database.'
+          example: Ingredients
+        synced_property_id:
+          type: string
+          example: fy:{
+          description: 'By default, relations are formed as two synced properties across databases: if you make a change to one property, it updates the synced property at the same time. `synced_property_id` refers to the `id` of the property in the related database. This is usually a short string of random letters and symbols.'
+      required:
+        - database_id
+        - synced_property_name
+    SelectValue:
+      title: SelectValue
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+          description: |-
+            Name of the option as it appears in Notion.
+
+            If the select database property does not yet have an option by that name, it will be added to the database schema if the integration also has write access to the parent database.
+
+            Note: Commas (",") are not valid for select values.
+          example: Fruit
+        color:
+          $ref: '#/components/schemas/Color'
+      required:
+        - id
+        - name
+        - color
+    Equation:
+      type: object
+      properties:
+        expression:
+          type: string
+          description: A KaTeX compatible string
+          example: e=mc^2
+      required:
+        - expression
+      description: Equation block objects contain this information within the `equation` property
+    Mention:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - user
+            - page
+            - database
+            - date
+            - link_preview
+          example: user
+          description: Type of the inline mention.
+        user:
+          $ref: '#/components/schemas/User'
+        page:
+          $ref: '#/components/schemas/Reference'
+        database:
+          $ref: '#/components/schemas/Reference'
+        date:
+          $ref: '#/components/schemas/Date'
+        link_preview:
+          $ref: '#/components/schemas/LinkPreview'
+      required:
+        - type
+    LinkPreview:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The originally pasted url used to create the mention
+          example: https://github.com/example/example-repo/pull/1234
+          format: uri
+      required:
+        - url
+      description: |-
+        Link Preview block objects return the originally pasted url.
+
+        NOTE: The link_preview block will only be returned as part of a response. It cannot be created via the API.
+    Link:
+      type: object
+      description: An inline link in a text.
+      properties:
+        type:
+          type: string
+          example: url
+          pattern: ^url$
+        url:
+          type: string
+          format: uri
+          description: The web address
+      required:
+        - type
+        - url
+    Bookmark:
+      description: ''
+      type: object
+      x-examples:
+        example:
+          url: https://website.domain
+      properties:
+        url:
+          type: string
+          description: Bookmark link
+          format: uri
+        caption:
+          $ref: '#/components/schemas/RichTexts'
+      required:
+        - url
+        - caption
+    LinkToPage:
+      title: LinkToPage
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - page_id
+            - database_id
+          example: page_id
+          description: Type of this link to page object.
+        page_id:
+          $ref: '#/components/schemas/UUID'
+        database_id:
+          $ref: '#/components/schemas/UUID'
+      required:
+        - type
+    BulletedListItem:
+      description: ''
+      type: object
+      x-examples:
+        example-1:
+          rich_text:
+            - type: text
+              text:
+                content: Lacinato kale
+                link: null
+          color: default
+          children:
+            - type: paragraph
+      properties:
+        rich_text:
+          $ref: '#/components/schemas/RichTexts'
+        color:
+          $ref: '#/components/schemas/Color'
+        children:
+          $ref: '#/components/schemas/Blocks'
+      required:
+        - rich_text
+        - color
+        - children
+    File:
+      type: object
+      description: File objects contain data about files uploaded to Notion as well as external files linked in Notion.
+      properties:
+        type:
+          type: string
+          enum:
+            - file
+            - external
+          example: file
+          description: Type of this file object.
+        file:
+          $ref: '#/components/schemas/NotionFile'
+        external:
+          $ref: '#/components/schemas/ExternalFile'
+      required:
+        - type
+    Files:
+      type: array
+      items:
+        $ref: '#/components/schemas/File'
+    NotionFile:
+      type: object
+      description: File objects contain this information within the `file` property.
+      properties:
+        url:
+          type: string
+          description: Authenticated S3 URL to the file. The file URL will be valid for 1 hour but updated links can be requested if required.
+          example: https://s3.us-west-2.amazonaws.com/secure.notion-static.com/9bc6c6e0-32b8-4d55-8c12-3ae931f43a01/brocolli.jpeg?...
+          format: uri
+        expiry_time:
+          type: string
+          format: date-time
+          description: Date and time when the URL will expire.
+          example: "2020-03-17T19:10:04.968Z"
+      required:
+        - url
+        - expiry_time
+    ExternalFile:
+      type: object
+      description: An external file is any URL that isn't hosted by Notion.
+      properties:
+        url:
+          type: string
+          description: Link to the externally hosted content.
+          example: https://website.domain/files/doc.txt
+          format: uri
+      required:
+        - url
+    Video:
+      type: object
+      description: File objects contain data about files uploaded to Notion as well as external files linked in Notion.
+      properties:
+        type:
+          type: string
+          enum:
+            - file
+            - external
+          example: file
+          description: Type of this file object.
+        file:
+          $ref: '#/components/schemas/NotionFile'
+        external:
+          $ref: '#/components/schemas/ExternalFile'
+        caption:
+          $ref: '#/components/schemas/RichTexts'
+      required:
+        - type
+    Heading:
+      type: object
+      x-examples:
+        example:
+          rich_text:
+            - type: text
+              text:
+                content: Lacinato kale
+                link: null
+          color: default
+      properties:
+        rich_text:
+          $ref: '#/components/schemas/RichTexts'
+        color:
+          $ref: '#/components/schemas/Color'
+      required:
+        - rich_text
+        - color
+    SyncedBlock:
+      description: ''
+      type: object
+      x-examples:
+        example-1:
+          synced_from: null
+          children:
+            - callout:
+                rich_text:
+                  - type: text
+                    text:
+                      content: Callout in synced block
+      properties:
+        synced_from: {}
+        children:
+          $ref: '#/components/schemas/Blocks'
+      required:
+        - children
+    Template:
+      description: ''
+      type: object
+      x-examples:
+        example:
+          rich_text:
+            - type: text
+              text:
+                content: Create callout template
+          children:
+            - callout:
+                rich_text:
+                  - type: text
+                    text:
+                      content: Placeholder callout text
+      properties:
+        rich_text:
+          $ref: '#/components/schemas/RichTexts'
+        children:
+          $ref: '#/components/schemas/Blocks'
+      required:
+        - rich_text
+        - children
+    NumberConfig:
+      type: object
+      description: Number database property schema objects contain this configuration within the number property.
+      properties:
+        format:
+          type: string
+          description: How the number is displayed in Notion.
+          enum:
+            - number
+            - number_with_commas
+            - percent
+            - dollar
+            - canadian_dollar
+            - euro
+            - pound
+            - yen
+            - ruble
+            - rupee
+            - won
+            - yuan
+            - real
+            - lira
+            - rupiah
+            - franc
+            - hong_kong_dollar
+            - new_zealand_dollar
+            - krona
+            - norwegian_krone
+            - mexican_peso
+            - rand
+            - new_taiwan_dollar
+            - danish_krone
+            - zloty
+            - baht
+            - forint
+            - koruna
+            - shekel
+            - chilean_peso
+            - philippine_peso
+            - dirham
+            - colombian_peso
+            - riyal
+            - ringgit
+            - leu
+          example: percent
+      required:
+        - format
+    ToDo:
+      description: To do block objects contain this information within the `to_do` property.
+      type: object
+      properties:
+        rich_text:
+          $ref: '#/components/schemas/RichTexts'
+        checked:
+          type: boolean
+          description: Whether the to_do is checked or not.
+        color:
+          $ref: '#/components/schemas/Color'
+        children:
+          $ref: '#/components/schemas/Blocks'
+      required:
+        - rich_text
+        - checked
+        - color
+        - children
+    Embed:
+      description: Embed blocks include block types that allow displaying another website within Notion.
+      type: object
+      x-examples:
+        example:
+          url: https://website.domain
+      properties:
+        url:
+          type: string
+          minLength: 1
+        caption:
+          $ref: '#/components/schemas/RichTexts'
+      required:
+        - url
+        - caption
+    NumberedListItem:
+      title: NumberedListItem
+      x-stoplight:
+        id: 3kmhs7ac2rrvg
+      type: object
+      description: Numbered list item block objects contain this information within the `numbered_list_item` property.
+      properties:
+        rich_text:
+          $ref: '#/components/schemas/RichTexts'
+        color:
+          $ref: '#/components/schemas/Color'
+        children:
+          $ref: '#/components/schemas/Blocks'
+      required:
+        - rich_text
+        - color
+        - children
+    Quote:
+      type: object
+      description: Quote block objects contain the following information within the quote field.
+      properties:
+        rich_text:
+          $ref: '#/components/schemas/RichTexts'
+        color:
+          $ref: '#/components/schemas/Color'
+        children:
+          $ref: '#/components/schemas/Blocks'
+      required:
+        - rich_text
+        - color
+        - children
+    Toggle:
+      type: object
+      description: Toggle block objects contain the following information within the toggle field.
+      properties:
+        rich_text:
+          $ref: '#/components/schemas/RichTexts'
+        color:
+          $ref: '#/components/schemas/Color'
+        children:
+          $ref: '#/components/schemas/Blocks'
+      required:
+        - rich_text
+        - color
+        - children
+    Callout:
+      type: object
+      description: Callout block objects contain the following information within the callout field.
+      properties:
+        rich_text:
+          $ref: '#/components/schemas/RichTexts'
+        icon:
+          $ref: '#/components/schemas/Icon'
+        color:
+          $ref: '#/components/schemas/Color'
+        children:
+          $ref: '#/components/schemas/Blocks'
+      required:
+        - rich_text
+        - icon
+        - color
+        - children
+    TableOfContents:
+      title: TableOfContents
+      x-stoplight:
+        id: u8jly2nyb999t
+      type: object
+      properties:
+        color:
+          $ref: '#/components/schemas/Color'
+      description: Table of contents block objects contain the following information within the `table_of_contents` property.
+    Table:
+      type: object
+      x-examples:
+        example:
+          table_width: 1
+          has_column_header: false
+          has_row_header: false
+          children:
+            - type: table_row
+              table_row:
+                cells:
+                  - - type: text
+                      text:
+                        content: column 1 content
+                      plain_text: column 1 content
+      properties:
+        table_width:
+          type: integer
+          description: Number of columns in the table. Note that this cannot be changed via the public API once a table is created.
+        has_column_header:
+          type: boolean
+          description: Whether or not the table has a column header. If true, the first row in the table will appear visually distinct from the other rows.
+        has_row_header:
+          type: boolean
+          description: Whether or not the table has a header row. If true, the first column in the table will appear visually distinct from the other columns.
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/TableRow'
+      required:
+        - table_width
+        - has_column_header
+        - has_row_header
+        - children
+    TableRow:
+      type: object
+      x-examples:
+        example:
+          cells:
+            - - type: text
+                text:
+                  content: column 1 content
+                  link: null
+                annotations:
+                  bold: false
+                  italic: false
+                  strikethrough: false
+                  underline: false
+                  code: false
+                  color: default
+                plain_text: column 1 content
+                href: null
+            - - type: text
+                text:
+                  content: column 2 content
+                  link: null
+                annotations:
+                  bold: false
+                  italic: false
+                  strikethrough: false
+                  underline: false
+                  code: false
+                  color: default
+                plain_text: column 2 content
+                href: null
+            - - type: text
+                text:
+                  content: column 3 content
+                  link: null
+                annotations:
+                  bold: false
+                  italic: false
+                  strikethrough: false
+                  underline: false
+                  code: false
+                  color: default
+                plain_text: column 3 content
+                href: null
+      properties:
+        cells:
+          type: array
+          items:
+            $ref: '#/components/schemas/RichTexts'
+  responses:
+    ErrorResponse:
+      description: Something went wrong.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    PageResponse:
+      description: Returns the page that was requested or created.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Page'
+    BlocksResponse:
+      description: Returns a list of blocks for the specified page.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BlocksList'
+    BlockResponse:
+      description: Returns the requested block.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Block'
+    DatabaseResponse:
+      description: Returns the database that was requested or created.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Database'
+    UserResponse:
+      description: Returns the requested User.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+    UsersResponse:
+      description: Returns the requested users.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UsersList'
+    PagesResponse:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PagesList'
+  requestBodies:
+    DatabaseRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Database'
+          examples:
+            example:
+              value:
+                parent:
+                  type: page_id
+                  page_id: '{{PAGE_ID}}'
+                title:
+                  - type: text
+                    text:
+                      content: Grocery List
+                      link: null
+                properties:
+                  Name:
+                    title: {}
+                  Description:
+                    rich_text: {}
+                  In stock:
+                    checkbox: {}
+                  Food group:
+                    select:
+                      options:
+                        - name: "\U0001F966Vegetable"
+                          color: green
+                        - name: "\U0001F34EFruit"
+                          color: red
+                        - name: "\U0001F4AAProtein"
+                          color: yellow
+                  Price:
+                    number:
+                      format: dollar
+                  Last ordered:
+                    date: {}
+                  Store availability:
+                    type: multi_select
+                    multi_select:
+                      options:
+                        - name: Duc Loi Market
+                          color: blue
+                        - name: Rainbow Grocery
+                          color: gray
+                        - name: Nijiya Market
+                          color: purple
+                        - name: Gus's Community Market
+                          color: yellow
+                  '+1':
+                    people: {}
+                  Photo:
+                    files: {}
+      description: Contains information about the database that is to be created or patched.
