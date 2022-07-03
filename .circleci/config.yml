@@ -6,7 +6,7 @@ orbs:
 executors:
   golang-dev:
     docker:
-      - image: golang:1.18.0
+      - image: golang:1.18.3
 defaults: &resources
   team: firestarters
   gateway_rate_limit_second: 5
@@ -20,7 +20,7 @@ jobs:
       GOFLAGS: -mod=vendor
       GOLANGCI_LINT_VERSION: 1.44.2
       GOPRIVATE: github.com/faetools/*
-      GOTESTSUM_VERSION: 1.7.0
+      GOTESTSUM_VERSION: 1.8.1
       SONAR_SCANNER_VERSION: 4.7.0.2747
     steps:
       - checkout
@@ -64,7 +64,7 @@ jobs:
             - /tmp/cache
       - go/install:
           cache: true
-          version: 1.18.0
+          version: 1.18.3
       - restore_cache:
           keys:
             - v2-golang-cache-{{ arch }}-{{ checksum "go.sum" }}
