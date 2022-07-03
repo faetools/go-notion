@@ -151,3 +151,73 @@ func (c Client) UpdateNotionDatabase(ctx context.Context, db Database) (*Databas
 		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
 	}
 }
+
+// ListAllUsers returns all users in the workspace.
+func (c Client) ListAllUsers(ctx context.Context) (Users, error) {
+	users := Users{}
+
+	var cursor *StartCursor
+	for {
+		resp, err := c.ListUsers(ctx, &ListUsersParams{
+			PageSize:    maxPageSize,
+			StartCursor: cursor,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		switch resp.StatusCode() {
+		case http.StatusOK: // ok
+		case http.StatusBadRequest:
+			return nil, resp.JSON400
+		case http.StatusNotFound:
+			return nil, resp.JSON404
+		case http.StatusTooManyRequests:
+			return nil, resp.JSON429
+		default:
+			return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+		}
+
+		users = append(users, resp.JSON200.Results...)
+
+		if !resp.JSON200.HasMore {
+			return users, nil
+		}
+
+		cursor = (*StartCursor)(&resp.JSON200.NextCursor)
+	}
+}
+
+// GetAllBlocks returns all blocks of a given page or block.
+func (c Client) GetAllBlocks(ctx context.Context, id Id) (Blocks, error) {
+	blocks := Blocks{}
+
+	var cursor *StartCursor
+	for {
+		resp, err := c.GetBlocks(ctx, id, &GetBlocksParams{
+			PageSize:    maxPageSize,
+			StartCursor: cursor,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("getting blocks for %s: %w", id, err)
+		}
+
+		switch resp.StatusCode() {
+		case http.StatusOK: // ok
+		case http.StatusBadRequest:
+			return nil, resp.JSON400
+		case http.StatusNotFound:
+			return nil, resp.JSON404
+		default:
+			return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+		}
+
+		blocks = append(blocks, resp.JSON200.Results...)
+
+		if !resp.JSON200.HasMore {
+			return blocks, nil
+		}
+
+		cursor = (*StartCursor)(&resp.JSON200.NextCursor)
+	}
+}
