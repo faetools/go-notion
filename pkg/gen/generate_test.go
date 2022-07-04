@@ -68,7 +68,7 @@ func TestPropertyValues(t *testing.T) {
 			},
 		}))
 
-	b, err := afero.ReadFile(memFs, "mypackage.gen.go")
+	b, err := afero.ReadFile(memFs, "mypackage/mypackage.gen.go")
 	assert.NoError(t, err)
 
 	assert.Equal(t, `package mypackage
