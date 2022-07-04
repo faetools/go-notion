@@ -44,7 +44,7 @@ func main() {
 
 ## Generate Database Property Values
 
-You can use the `pkg/gen` package to generate helpers to get the values of a database entry.
+You can use the `pkg/gen` package to generate code that will transform a `notion.PropertyValueMap` into a struct so that you can more **easily get the values of a database entry**.
 
 To do this, create a package for each database and define the properties of each database.
 
