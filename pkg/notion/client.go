@@ -76,6 +76,45 @@ func (c Client) GetNotionDatabase(ctx context.Context, id Id) (*Database, error)
 	}
 }
 
+// GetAllDatabaseEntries return all database entries or an error.
+func (c Client) GetAllDatabaseEntries(ctx context.Context, id Id, filter *Filter, sorts *Sorts) (Pages, error) {
+	entries := Pages{}
+
+	var cursor *UUID
+	for {
+		resp, err := c.QueryDatabase(ctx, id,
+			QueryDatabaseJSONRequestBody{
+				Filter:      filter,
+				PageSize:    maxPageSizeInt,
+				Sorts:       sorts,
+				StartCursor: cursor,
+			})
+		if err != nil {
+			return nil, err
+		}
+
+		switch resp.StatusCode() {
+		case http.StatusOK: // ok
+		case http.StatusBadRequest:
+			return nil, resp.JSON400
+		case http.StatusNotFound:
+			return nil, resp.JSON404
+		case http.StatusTooManyRequests:
+			return nil, resp.JSON429
+		default:
+			return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+		}
+
+		entries = append(entries, resp.JSON200.Results...)
+
+		if !resp.JSON200.HasMore {
+			return entries, nil
+		}
+
+		cursor = (*UUID)(&resp.JSON200.NextCursor)
+	}
+}
+
 func ensureDatabaseIsValid(db *Database) {
 	// set mandatory values
 	db.Object = "database"
