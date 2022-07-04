@@ -2,6 +2,7 @@ package gen
 
 import (
 	"fmt"
+	"path/filepath"
 	"sort"
 	"strings"
 	"text/template"
@@ -87,8 +88,9 @@ func PropertyValues(fs afero.Fs, pkgName string, m notion.PropertyMetaMap) error
 		return props[i].Key < props[j].Key
 	})
 
-	return g.WriteTemplate(pkgName+".gen.go", tplPropertyValues, ctxPropertyValues{
-		PkgName:    pkgName,
-		Properties: props,
-	})
+	return g.WriteTemplate(filepath.Join(pkgName, pkgName+".gen.go"),
+		tplPropertyValues, ctxPropertyValues{
+			PkgName:    pkgName,
+			Properties: props,
+		})
 }
