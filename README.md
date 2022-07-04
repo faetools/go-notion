@@ -42,6 +42,10 @@ func main() {
 }
 ```
 
+## Generate Database Property Values
+
+You can use the `pkg/gen` package to generate helpers to get the values of a database entry.
+
 ## Contribution
 
 Feel free to contribute to this repo by making a PR that changes the OpenAPI. We will then run the code generator.

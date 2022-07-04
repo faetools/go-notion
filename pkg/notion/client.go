@@ -76,8 +76,13 @@ func (c Client) GetNotionDatabase(ctx context.Context, id Id) (*Database, error)
 	}
 }
 
-// GetAllDatabaseEntries return all database entries or an error.
-func (c Client) GetAllDatabaseEntries(ctx context.Context, id Id, filter *Filter, sorts *Sorts) (Pages, error) {
+// GetAllDatabaseEntries returns all database entries or an error.
+func (c Client) GetAllDatabaseEntries(ctx context.Context, id Id) (Pages, error) {
+	return c.GetDatabaseEntries(ctx, id, nil, nil)
+}
+
+// GetDatabaseEntries return filtered and sorted database entries or an error.
+func (c Client) GetDatabaseEntries(ctx context.Context, id Id, filter *Filter, sorts *Sorts) (Pages, error) {
 	entries := Pages{}
 
 	var cursor *UUID
