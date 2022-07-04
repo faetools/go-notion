@@ -1,6 +1,7 @@
 package gen_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/faetools/go-notion/pkg/gen"
@@ -16,8 +17,9 @@ var noOptions = &notion.PropertyOptionsWrapper{
 
 var emptyConfig = &map[string]interface{}{}
 
-func TestGen(t *testing.T) {
+func TestPropertyValues(t *testing.T) {
 	t.Parallel()
+	os.Stdout = nil
 
 	memFs := afero.NewMemMapFs()
 
