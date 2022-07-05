@@ -134,31 +134,21 @@ func ensureDatabaseIsValid(db *Database) {
 	}
 
 	// make sure a title property is present
-	titlePresent := false
 	for _, prop := range db.Properties {
-		// assume relation is to itself
-		if prop.Relation != nil && prop.Relation.DatabaseId == "" {
-			prop.Relation.DatabaseId = db.Id
-		}
-
 		if prop.Title != nil {
-			titlePresent = true
+			return
 		}
 	}
 
-	if !titlePresent {
-		db.Properties["Title"] = TitleProperty
-	}
+	db.Properties["Title"] = TitleProperty
 }
 
 // CreateNotionDatabase creates a notion database or returns an error.
 func (c Client) CreateNotionDatabase(ctx context.Context, db Database) (*Database, error) {
-	// create a UUID for the new database
-	if db.Id == "" {
-		db.Id = UUID(uuid.NewString())
-	}
-
 	ensureDatabaseIsValid(&db)
+
+	// create a UUID for the new database
+	db.Id = UUID(uuid.NewString())
 
 	resp, err := c.CreateDatabase(ctx, CreateDatabaseJSONRequestBody(db))
 	if err != nil {
