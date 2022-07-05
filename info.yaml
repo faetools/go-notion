@@ -1,5 +1,5 @@
 name: go-notion
-version: 0.0.10
+version: 0.0.11
 repoType: GoLibrary
 library:
   subType: ThirdPartyAPI
