@@ -32,3 +32,14 @@ func (opts PropertyOptions) GetNames() []string {
 
 	return names
 }
+
+// GetIDs returns the UUIDs of all references.
+func (refs References) GetIDs() []UUID {
+	ids := make([]UUID, len(refs))
+
+	for i, ref := range refs {
+		ids[i] = ref.Id
+	}
+
+	return ids
+}
