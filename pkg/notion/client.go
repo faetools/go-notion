@@ -55,6 +55,27 @@ func (c Client) GetNotionPage(ctx context.Context, id Id) (*Page, error) {
 	}
 }
 
+// UpdateNotionPage updates the notion page or returns an error.
+func (c Client) UpdateNotionPage(ctx context.Context, p Page) (*Page, error) {
+	resp, err := c.UpdatePage(ctx, Id(p.Id), UpdatePageJSONRequestBody(p))
+	if err != nil {
+		return nil, err
+	}
+
+	switch resp.StatusCode() {
+	case http.StatusOK: // ok
+		return resp.JSON200, nil
+	case http.StatusBadRequest:
+		return nil, resp.JSON400
+	case http.StatusNotFound:
+		return nil, resp.JSON404
+	case http.StatusTooManyRequests:
+		return nil, resp.JSON429
+	default:
+		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+	}
+}
+
 // GetNotionDatabase returns the notion database or an error.
 func (c Client) GetNotionDatabase(ctx context.Context, id Id) (*Database, error) {
 	resp, err := c.GetDatabase(ctx, id)

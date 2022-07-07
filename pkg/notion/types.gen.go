@@ -631,10 +631,10 @@ type Page struct {
 	Cover *File `json:"cover,omitempty"`
 
 	// The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.
-	CreatedBy User `json:"created_by"`
+	CreatedBy *User `json:"created_by,omitempty"`
 
 	// Date and time when this page was created. Formatted as an ISO 8601 date time string.
-	CreatedTime time.Time `json:"created_time"`
+	CreatedTime *time.Time `json:"created_time,omitempty"`
 
 	// Page or database icon. It is either an external file or an emoji.
 	Icon *Icon `json:"icon,omitempty"`
@@ -643,7 +643,7 @@ type Page struct {
 	Id UUID `json:"id"`
 
 	// The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.
-	LastEditedBy User `json:"last_edited_by"`
+	LastEditedBy *User `json:"last_edited_by,omitempty"`
 
 	// Date and time when this page was updated. Formatted as an ISO 8601 date time string.
 	LastEditedTime time.Time `json:"last_edited_time"`
@@ -652,7 +652,7 @@ type Page struct {
 	Object string `json:"object"`
 
 	// The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
-	Parent Parent `json:"parent"`
+	Parent *Parent `json:"parent,omitempty"`
 
 	// Properties of a page or database.
 	Properties PropertyValueMap `json:"properties"`
