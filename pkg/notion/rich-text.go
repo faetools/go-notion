@@ -5,19 +5,19 @@ import (
 	"strings"
 )
 
-// RawContent returns the raw content of all the rich texts.
-func (ts RichTexts) rawContent() string {
+// Content returns the raw content of all the rich texts.
+func (ts RichTexts) Content() string {
 	s := make([]string, len(ts))
 	for i, t := range ts {
-		s[i] = t.rawContent()
+		s[i] = t.Content()
 	}
 
-	return strings.Join(s, "\n")
+	return strings.Join(s, "")
 }
 
-// RawContent returns the content of the rich text object.
+// Content returns the content of the rich text object.
 // NOTE: At the moment, only really implemented for text objects.
-func (t RichText) rawContent() string {
+func (t RichText) Content() string {
 	switch t.Type {
 	case RichTextTypeText:
 		return t.Text.Content

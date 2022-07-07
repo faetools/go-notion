@@ -9,7 +9,7 @@ func (p Page) Title() string {
 func (props PropertyValueMap) title() string {
 	for _, prop := range props {
 		if prop.Title != nil {
-			return prop.Title.rawContent()
+			return prop.Title.Content()
 		}
 	}
 
