@@ -1,5 +1,9 @@
 package notion
 
+import (
+	"fmt"
+)
+
 // TitleProperty represents a Title property.
 var TitleProperty = PropertyMeta{
 	Id:    "title", // must be this
@@ -42,4 +46,16 @@ func (refs References) GetIDs() []UUID {
 	}
 
 	return ids
+}
+
+// URL return the URL of the file
+func (f File) URL() string {
+	switch f.Type {
+	case FileTypeExternal:
+		return f.External.Url
+	case FileTypeFile:
+		return f.File.Url
+	default:
+		panic(fmt.Errorf("invalid File of type %q", f.Type))
+	}
 }
