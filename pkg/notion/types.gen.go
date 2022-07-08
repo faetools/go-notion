@@ -885,7 +885,7 @@ type SyncedBlock struct {
 
 // Table defines model for Table.
 type Table struct {
-	Children []TableRow `json:"children"`
+	Children Blocks `json:"children"`
 
 	// Whether or not the table has a column header. If true, the first row in the table will appear visually distinct from the other rows.
 	HasColumnHeader bool `json:"has_column_header"`
