@@ -286,3 +286,65 @@ func (c Client) GetAllBlocks(ctx context.Context, id Id) (Blocks, error) {
 		cursor = (*StartCursor)(&resp.JSON200.NextCursor)
 	}
 }
+
+// GetAllBlocksWithChildren returns all blocks of a given page, including block children.
+func (c Client) GetAllBlocksWithChildren(ctx context.Context, id Id) (Blocks, error) {
+	blocks, err := c.GetAllBlocks(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, b := range blocks {
+		if err := c.getAllChildren(ctx, b); err != nil {
+			return nil, err
+		}
+	}
+
+	return blocks, nil
+}
+
+// getAllChildren returns all block children of a given block.
+func (c Client) getAllChildren(ctx context.Context, b Block) error {
+	if !b.HasChildren {
+		return nil
+	}
+
+	children, err := c.GetAllBlocks(ctx, Id(b.Id))
+	if err != nil {
+		return fmt.Errorf("getting children of %s: %w", b.Id, err)
+	}
+
+	// get nested children as well
+	for _, child := range children {
+		if err := c.getAllChildren(ctx, child); err != nil {
+			return err
+		}
+	}
+
+	switch b.Type {
+	case BlockTypeBulletedListItem:
+		b.BulletedListItem.Children = children
+	case BlockTypeCallout:
+		b.Callout.Children = children
+	case BlockTypeNumberedListItem:
+		b.NumberedListItem.Children = children
+	case BlockTypeParagraph:
+		b.Paragraph.Children = children
+	case BlockTypeQuote:
+		b.Quote.Children = children
+	case BlockTypeSyncedBlock:
+		b.SyncedBlock.Children = children
+	case BlockTypeTable:
+		b.Table.Children = children
+	case BlockTypeTemplate:
+		b.Template.Children = children
+	case BlockTypeToDo:
+		b.ToDo.Children = children
+	case BlockTypeToggle:
+		b.Toggle.Children = children
+	default:
+		return fmt.Errorf("unknown parent block of type %s", b.Type)
+	}
+
+	return nil
+}
