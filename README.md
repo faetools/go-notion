@@ -31,7 +31,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	resp, err := cl.GetNotionPage(ctx, "[page ID]")
+	p, err := cl.GetNotionPage(ctx, "[page ID]")
 	if err != nil {
 		log.Fatal(err)
 	}
