@@ -8,14 +8,10 @@ require (
 	github.com/MarkRosemaker/semver v1.5.1
 	github.com/deepmap/oapi-codegen v1.11.0
 	github.com/google/uuid v1.3.0
-	github.com/stretchr/testify v1.7.2
 )
 
 require (
-	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/rogpeppe/go-internal v1.8.1 // indirect
+	github.com/stretchr/testify v1.7.2 // indirect
 	golang.org/x/sys v0.0.0-20220704084225-05e143d24a9e // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
