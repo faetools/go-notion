@@ -44,7 +44,7 @@ func main() {
 
 There are several expansions (work in progress):
 
-- [ ] [go-notion-codegen](https://github.com/faetools/go-notion-codegen): Generates go code for your databases.
+- [x] [go-notion-codegen](https://github.com/faetools/go-notion-codegen): Generates go code for your databases.
 - [ ] [notion-to-goldmark](https://github.com/faetools/notion-to-goldmark): Transforms notion blocks into [goldmark](https://github.com/yuin/goldmark) nodes.
 - [ ] [notion-to-md](https://github.com/faetools/notion-to-goldmark): Transforms notion blocks into markdown.
 
