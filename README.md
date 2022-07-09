@@ -7,9 +7,7 @@
 
 ## About
 
-This repository contains an [OpenAPI definition](api/openapi.yaml) of Notion's API based on [their documentation](https://developers.notion.com/).
-
-Faetools uses a code generator to generate go code based on that OpenAPI.
+This repository contains an [OpenAPI definition](api/openapi.yaml) of Notion's API based on [their documentation](https://developers.notion.com/) as well as a go library to use the API.
 
 ## Usage
 
@@ -42,51 +40,18 @@ func main() {
 }
 ```
 
-## Generate Database Property Values
+## Expansions
 
-You can use the `pkg/gen` package to generate code that will transform a `notion.PropertyValueMap` into a struct so that you can more **easily get the values of a database entry**.
+There are several expansions (work in progress):
 
-To do this, create a package for each database and define the properties of each database.
-
-For example, you could have three databases, `foo`, `bar`, and `blub`. For each, you create a package in the folder `databases`. Each package has a public variable called `Properties` of type `notion.PropertyMetaMap`
-
-Then you just need to create a file with the following content in `databases`:
-
-```go
-package main
-
-import (
-	"log"
-
-	"github.com/faetools/go-notion/pkg/gen"
-	"github.com/faetools/go-notion/pkg/notion"
-	"github.com/spf13/afero"
-	"github.com/user/myrepo/databases/bar"
-	"github.com/user/myrepo/databases/blub"
-	"github.com/user/myrepo/databases/foo"
-)
-
-//go:generate go run gen.go
-
-func main() {
-	fs := afero.NewOsFs()
-
-	for pkgName, props := range map[string]notion.PropertyMetaMap{
-		"foo":  foo.Properties,
-		"bar":  bar.Properties,
-		"blub": blub.Properties,
-	} {
-		if err := gen.PropertyValues(fs, pkgName, props); err != nil {
-			log.Fatal(err)
-		}
-	}
-}
-```
-
-Run `go generate ./...` and your code will get generated.
+- [ ] [go-notion-codegen](https://github.com/faetools/go-notion-codegen): Generates go code for your databases.
+- [ ] [notion-to-goldmark](https://github.com/faetools/notion-to-goldmark): Transforms notion blocks into [goldmark](https://github.com/yuin/goldmark) nodes.
+- [ ] [notion-to-md](https://github.com/faetools/notion-to-goldmark): Transforms notion blocks into markdown.
 
 ## Contribution
 
-Feel free to contribute to this repo by making a PR that changes the OpenAPI. We will then run the code generator.
+We use a code generator to generate go code based on the OpenAPI. In addition to the auto generated code, we added a number of convenience methods.
 
-Alternatively, feel free to add go code that will make the API easier to use.
+Feel free to contribute to this repo by making a PR that changes the OpenAPI. We will then run the code generator to generate respective go code.
+
+Alternatively, feel free to add to the manually written convenience methods.
