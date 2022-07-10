@@ -6,7 +6,7 @@ import "github.com/MarkRosemaker/semver"
 
 var (
 	// Version is the version of go-notion.
-	Version = semver.MustParse("0.0.16")
+	Version = semver.MustParse("0.0.17")
 
 	// GoVersion declares what version of Go should be used.
 	GoVersion = semver.MustParse("1.18.3")
