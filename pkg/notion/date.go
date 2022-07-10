@@ -13,9 +13,9 @@ const (
 
 // tmpDate is used to unmarshall into this so we can properly adjust the times to be in the right time zone.
 type tmpDate struct {
-	End      *string `json:"end"`
+	End      *string `json:"end,omitempty"`
 	Start    string  `json:"start"`
-	TimeZone *string `json:"time_zone"`
+	TimeZone *string `json:"time_zone,omitempty"`
 }
 
 // UnmarshalJSON fulfils json.Unmarshaller.
@@ -59,18 +59,51 @@ func (d *Date) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// MarshalJSON fulfils json.Marshaler.
+func (d Date) MarshalJSON() ([]byte, error) {
+	tmp := tmpDate{
+		Start:    formatTime(d.Start, true),
+		TimeZone: d.TimeZone,
+	}
+
+	if d.End != nil {
+		end := formatTime(*d.End, true)
+		tmp.End = &end
+	}
+
+	return json.Marshal(tmp)
+}
+
 func parseTimeOrDate(ts string, loc *time.Location) (time.Time, error) {
 	if lenLayoutDate == len(ts) {
 		return time.ParseInLocation(layoutDate, ts, loc)
 	}
 
-	return time.ParseInLocation(time.RFC3339, ts, loc)
+	t, err := time.ParseInLocation(time.RFC3339, ts, loc)
+	if err != nil || loc == nil {
+		return t, err
+	}
+
+	return t.In(loc), nil
 }
 
 func (d Date) String() string {
 	if d.End == nil {
-		return d.Start.String()
+		return formatTime(d.Start, false)
 	}
 
-	return fmt.Sprintf("%s-%s", d.Start, d.End)
+	return fmt.Sprintf("%s - %s",
+		formatTime(d.Start, false), formatTime(*d.End, false))
+}
+
+func formatTime(t time.Time, inUTC bool) string {
+	if t.Hour() == 0 && t.Minute() == 0 && t.Second() == 0 {
+		return t.Format(layoutDate)
+	}
+
+	if inUTC {
+		t = t.In(time.UTC)
+	}
+
+	return t.Format(time.RFC3339)
 }
