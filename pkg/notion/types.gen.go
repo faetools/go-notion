@@ -535,8 +535,6 @@ type IconType string
 
 // An inline link in a text.
 type Link struct {
-	Type string `json:"type"`
-
 	// The web address
 	Url string `json:"url"`
 }

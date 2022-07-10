@@ -1629,16 +1629,11 @@ components:
       type: object
       description: An inline link in a text.
       properties:
-        type:
-          type: string
-          example: url
-          pattern: ^url$
         url:
           type: string
           format: uri
           description: The web address
       required:
-        - type
         - url
     Bookmark:
       description: ''
