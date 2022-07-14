@@ -555,9 +555,9 @@ components:
         heading_3:
           $ref: '#/components/schemas/Heading'
         bulleted_list_item:
-          $ref: '#/components/schemas/BulletedListItem'
+          $ref: '#/components/schemas/ListItem'
         numbered_list_item:
-          $ref: '#/components/schemas/NumberedListItem'
+          $ref: '#/components/schemas/ListItem'
         to_do:
           $ref: '#/components/schemas/ToDo'
         toggle:
@@ -1668,8 +1668,8 @@ components:
           $ref: '#/components/schemas/UUID'
       required:
         - type
-    BulletedListItem:
-      description: ''
+    ListItem:
+      description: List item block objects contain this information within the `numbered_list_item` or `bulleted_list_item` property.
       type: object
       x-examples:
         example-1:
@@ -1899,23 +1899,6 @@ components:
       required:
         - url
         - caption
-    NumberedListItem:
-      title: NumberedListItem
-      x-stoplight:
-        id: 3kmhs7ac2rrvg
-      type: object
-      description: Numbered list item block objects contain this information within the `numbered_list_item` property.
-      properties:
-        rich_text:
-          $ref: '#/components/schemas/RichTexts'
-        color:
-          $ref: '#/components/schemas/Color'
-        children:
-          $ref: '#/components/schemas/Blocks'
-      required:
-        - rich_text
-        - color
-        - children
     Quote:
       type: object
       description: Quote block objects contain the following information within the quote field.

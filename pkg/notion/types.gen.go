@@ -213,9 +213,11 @@ type Annotations struct {
 // The optional fields are filled depending on the value of `type`.
 type Block struct {
 	// The archived status of the block.
-	Archived         bool              `json:"archived"`
-	Bookmark         *Bookmark         `json:"bookmark,omitempty"`
-	BulletedListItem *BulletedListItem `json:"bulleted_list_item,omitempty"`
+	Archived bool      `json:"archived"`
+	Bookmark *Bookmark `json:"bookmark,omitempty"`
+
+	// List item block objects contain this information within the `numbered_list_item` or `bulleted_list_item` property.
+	BulletedListItem *ListItem `json:"bulleted_list_item,omitempty"`
 
 	// Callout block objects contain the following information within the callout field.
 	Callout *Callout `json:"callout,omitempty"`
@@ -274,8 +276,8 @@ type Block struct {
 	LinkPreview *LinkPreview `json:"link_preview,omitempty"`
 	LinkToPage  *LinkToPage  `json:"link_to_page,omitempty"`
 
-	// Numbered list item block objects contain this information within the `numbered_list_item` property.
-	NumberedListItem *NumberedListItem `json:"numbered_list_item,omitempty"`
+	// List item block objects contain this information within the `numbered_list_item` or `bulleted_list_item` property.
+	NumberedListItem *ListItem `json:"numbered_list_item,omitempty"`
 
 	// Always "block".
 	Object string `json:"object"`
@@ -346,15 +348,6 @@ type Bot struct {
 		Type      string `json:"type"`
 		Workspace bool   `json:"workspace"`
 	} `json:"owner"`
-}
-
-// BulletedListItem defines model for BulletedListItem.
-type BulletedListItem struct {
-	Children Blocks `json:"children"`
-
-	// The color of the block.
-	Color    Color     `json:"color"`
-	RichText RichTexts `json:"rich_text"`
 }
 
 // Callout block objects contain the following information within the callout field.
@@ -564,6 +557,15 @@ type LinkToPage struct {
 // Type of this link to page object.
 type LinkToPageType string
 
+// List item block objects contain this information within the `numbered_list_item` or `bulleted_list_item` property.
+type ListItem struct {
+	Children Blocks `json:"children"`
+
+	// The color of the block.
+	Color    Color     `json:"color"`
+	RichText RichTexts `json:"rich_text"`
+}
+
 // Mention defines model for Mention.
 type Mention struct {
 	Database *Reference `json:"database,omitempty"`
@@ -608,15 +610,6 @@ type NumberConfig struct {
 
 // How the number is displayed in Notion.
 type NumberConfigFormat string
-
-// Numbered list item block objects contain this information within the `numbered_list_item` property.
-type NumberedListItem struct {
-	Children Blocks `json:"children"`
-
-	// The color of the block.
-	Color    Color     `json:"color"`
-	RichText RichTexts `json:"rich_text"`
-}
 
 // The Page object contains the [property values](https://developers.notion.com/reference/property-value-object) of a single Notion page.
 //
