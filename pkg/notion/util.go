@@ -59,3 +59,15 @@ func (f File) URL() string {
 		panic(fmt.Errorf("invalid File of type %q", f.Type))
 	}
 }
+
+// ID return the ID of the page or database that it is linked to.
+func (l LinkToPage) ID() UUID {
+	switch l.Type {
+	case LinkToPageTypePageId:
+		return *l.PageId
+	case LinkToPageTypeDatabaseId:
+		return *l.DatabaseId
+	default:
+		panic("invalid LinkToPage of type " + l.Type)
+	}
+}
