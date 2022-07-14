@@ -1127,6 +1127,7 @@ components:
     UUID:
       type: string
       format: uuid
+      x-go-type: string
       description: A unique identifier for a page, block, database, or user.
     Parent:
       type: object
@@ -1946,13 +1947,13 @@ components:
         - children
     TableOfContents:
       title: TableOfContents
-      x-stoplight:
-        id: u8jly2nyb999t
       type: object
       properties:
         color:
           $ref: '#/components/schemas/Color'
       description: Table of contents block objects contain the following information within the `table_of_contents` property.
+      required:
+        - color
     Table:
       type: object
       x-examples:

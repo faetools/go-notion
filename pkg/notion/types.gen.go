@@ -407,9 +407,9 @@ type Database struct {
 	Object string `json:"object"`
 
 	// The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
-	Parent     *Parent       `json:"parent,omitempty"`
+	Parent     *Parent         `json:"parent,omitempty"`
 	Properties PropertyMetaMap `json:"properties"`
-	Title      RichTexts     `json:"title"`
+	Title      RichTexts       `json:"title"`
 
 	// The URL of the Notion page.
 	Url string `json:"url"`
@@ -893,7 +893,7 @@ type Table struct {
 // Table of contents block objects contain the following information within the `table_of_contents` property.
 type TableOfContents struct {
 	// The color of the block.
-	Color *Color `json:"color,omitempty"`
+	Color Color `json:"color"`
 }
 
 // Table row blocks contain this within the table_row property.
@@ -1052,10 +1052,10 @@ type DatabaseRequestBody Database
 // GetBlocksParams defines parameters for GetBlocks.
 type GetBlocksParams struct {
 	// The number of items from the full list desired in the response.
-	PageSize PageSize `json:"page_size"`
+	PageSize PageSize `form:"page_size" json:"page_size"`
 
 	// If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results.
-	StartCursor *StartCursor `json:"start_cursor,omitempty"`
+	StartCursor *StartCursor `form:"start_cursor,omitempty" json:"start_cursor,omitempty"`
 }
 
 // AppendBlocksJSONBody defines parameters for AppendBlocks.
@@ -1076,10 +1076,10 @@ type SearchJSONBody map[string]interface{}
 // ListUsersParams defines parameters for ListUsers.
 type ListUsersParams struct {
 	// The number of items from the full list desired in the response.
-	PageSize PageSize `json:"page_size"`
+	PageSize PageSize `form:"page_size" json:"page_size"`
 
 	// If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results.
-	StartCursor *StartCursor `json:"start_cursor,omitempty"`
+	StartCursor *StartCursor `form:"start_cursor,omitempty" json:"start_cursor,omitempty"`
 }
 
 // AppendBlocksJSONRequestBody defines body for AppendBlocks for application/json ContentType.
