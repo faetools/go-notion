@@ -293,8 +293,10 @@ type Block struct {
 
 	// Table of contents block objects contain the following information within the `table_of_contents` property.
 	TableOfContents *TableOfContents `json:"table_of_contents,omitempty"`
-	TableRow        *TableRow        `json:"table_row,omitempty"`
-	Template        *Template        `json:"template,omitempty"`
+
+	// Table row blocks contain this within the table_row property.
+	TableRow *TableRow `json:"table_row,omitempty"`
+	Template *Template `json:"template,omitempty"`
 
 	// To do block objects contain this information within the `to_do` property.
 	ToDo *ToDo `json:"to_do,omitempty"`
@@ -901,9 +903,10 @@ type TableOfContents struct {
 	Color *Color `json:"color,omitempty"`
 }
 
-// TableRow defines model for TableRow.
+// Table row blocks contain this within the table_row property.
 type TableRow struct {
-	Cells *[]RichTexts `json:"cells,omitempty"`
+	// Array of cell contents in horizontal display order. Each cell itself is an array of rich text objects.
+	Cells []RichTexts `json:"cells"`
 }
 
 // Template defines model for Template.

@@ -2049,8 +2049,12 @@ components:
       properties:
         cells:
           type: array
+          description: Array of cell contents in horizontal display order. Each cell itself is an array of rich text objects.
           items:
             $ref: '#/components/schemas/RichTexts'
+      required:
+        - cells
+      description: Table row blocks contain this within the table_row property.
   responses:
     ErrorResponse:
       description: Something went wrong.
