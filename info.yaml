@@ -4,4 +4,4 @@ repoType: GoLibrary
 library:
   subType: ThirdPartyAPI
 team: firestarters
-devToolVersion: 0.0.18
+devToolVersion: 0.0.21
