@@ -10,6 +10,7 @@ require (
 	github.com/faetools/cgtools v0.0.4
 	github.com/google/gofuzz v1.1.0
 	github.com/google/uuid v1.3.0
+	github.com/kjk/common v0.0.0-20220705191345-4e210bd3860d
 	github.com/stretchr/testify v1.7.2
 	gopkg.in/h2non/gock.v1 v1.1.2
 )
