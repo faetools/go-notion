@@ -192,6 +192,12 @@ type Annotations struct {
 	// Whether the text is **bolded**.
 	Bold bool `json:"bold"`
 
+	// Whether the text is code `style`.
+	Code bool `json:"code"`
+
+	// The color of the block.
+	Color Color `json:"color"`
+
 	// Whether the text is *italicized*.
 	Italic bool `json:"italic"`
 
@@ -200,12 +206,6 @@ type Annotations struct {
 
 	// Whether the text is underlined.
 	Underline bool `json:"underline"`
-
-	// Whether the text is code `style`.
-	Code bool `json:"code"`
-
-	// The color of the block.
-	Color Color `json:"color"`
 }
 
 // A block object represents content within Notion. Blocks can be text, lists, media, and more. A page is a type of block, too!
@@ -473,14 +473,14 @@ type ExternalFile struct {
 
 // File objects contain data about files uploaded to Notion as well as external files linked in Notion.
 type File struct {
-	// Type of this file object.
-	Type FileType `json:"type"`
-
 	// An external file is any URL that isn't hosted by Notion.
 	External *ExternalFile `json:"external,omitempty"`
 
 	// File objects contain this information within the `file` property.
 	File *NotionFile `json:"file,omitempty"`
+
+	// Type of this file object.
+	Type FileType `json:"type"`
 }
 
 // Type of this file object.
@@ -515,11 +515,11 @@ type Heading struct {
 
 // Page or database icon. It is either an external file or an emoji.
 type Icon struct {
-	// Type of icon.
-	Type IconType `json:"type"`
-
 	// Emoji character.
 	Emoji *string `json:"emoji,omitempty"`
+
+	// Type of icon.
+	Type IconType `json:"type"`
 
 	// Link to the externally hosted content.
 	Url *string `json:"url,omitempty"`
@@ -617,35 +617,35 @@ type NumberConfigFormat string
 //
 // Page content is available as [blocks](https://developers.notion.com/reference/block). The content can be read using [retrieve block children](https://developers.notion.com/reference/get-block-children) and appended using [append block children](https://developers.notion.com/reference/patch-block-children).
 type Page struct {
-	// Always "page".
-	Object string `json:"object"`
-
-	// A unique identifier for a page, block, database, or user.
-	Id UUID `json:"id"`
-
-	// Date and time when this page was created. Formatted as an ISO 8601 date time string.
-	CreatedTime *time.Time `json:"created_time,omitempty"`
-
-	// Date and time when this page was updated. Formatted as an ISO 8601 date time string.
-	LastEditedTime time.Time `json:"last_edited_time"`
-
-	// The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.
-	CreatedBy *User `json:"created_by,omitempty"`
-
-	// The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.
-	LastEditedBy *User `json:"last_edited_by,omitempty"`
+	// The archived status of the page.
+	Archived bool `json:"archived"`
 
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion.
 	Cover *File `json:"cover,omitempty"`
 
+	// The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.
+	CreatedBy *User `json:"created_by,omitempty"`
+
+	// Date and time when this page was created. Formatted as an ISO 8601 date time string.
+	CreatedTime *time.Time `json:"created_time,omitempty"`
+
 	// Page or database icon. It is either an external file or an emoji.
 	Icon *Icon `json:"icon,omitempty"`
 
+	// A unique identifier for a page, block, database, or user.
+	Id UUID `json:"id"`
+
+	// The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.
+	LastEditedBy *User `json:"last_edited_by,omitempty"`
+
+	// Date and time when this page was updated. Formatted as an ISO 8601 date time string.
+	LastEditedTime time.Time `json:"last_edited_time"`
+
+	// Always "page".
+	Object string `json:"object"`
+
 	// The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
 	Parent *Parent `json:"parent,omitempty"`
-
-	// The archived status of the page.
-	Archived bool `json:"archived"`
 
 	// Properties of a page or database.
 	Properties PropertyValueMap `json:"properties"`
@@ -678,11 +678,11 @@ type Paragraph struct {
 
 // The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
 type Parent struct {
-	// The type of the parent.
-	Type ParentType `json:"type"`
-
 	// A unique identifier for a page, block, database, or user.
 	PageId UUID `json:"page_id"`
+
+	// The type of the parent.
+	Type ParentType `json:"type"`
 
 	// Always true if the `type` is `workspace`.
 	Workspace *bool `json:"workspace,omitempty"`
@@ -699,9 +699,6 @@ type Person struct {
 
 // Metadata that controls how a database property behaves.
 type PropertyMeta struct {
-	// Type of the property.
-	Type PropertyType `json:"type"`
-
 	// Checkbox database property schema objects have no additional configuration within the `checkbox` property.
 	Checkbox *map[string]interface{} `json:"checkbox,omitempty"`
 
@@ -728,6 +725,9 @@ type PropertyMeta struct {
 
 	// Title database property objects have no additional configuration within the `title` property.
 	Title *map[string]interface{} `json:"title,omitempty"`
+
+	// Type of the property.
+	Type PropertyType `json:"type"`
 }
 
 // PropertyMetas defines model for PropertyMetas.
@@ -755,17 +755,14 @@ type PropertyType string
 
 // A property value defines the identifier, type, and value of a page property in a page object. It's used when retrieving and updating pages ex: Create and Update pages.
 type PropertyValue struct {
+	Checkbox *bool  `json:"checkbox,omitempty"`
+	Date     *Date  `json:"date,omitempty"`
+	Files    *Files `json:"files,omitempty"`
+
 	// Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.
 	//
 	// The id may be used in place of name when creating or updating pages.
 	Id string `json:"id"`
-
-	// Type of the property.
-	Type PropertyType `json:"type"`
-
-	Checkbox *bool  `json:"checkbox,omitempty"`
-	Date     *Date  `json:"date,omitempty"`
-	Files    *Files `json:"files,omitempty"`
 
 	// An array of multi-select or select option values.
 	MultiSelect *PropertyOptions `json:"multi_select,omitempty"`
@@ -776,6 +773,9 @@ type PropertyValue struct {
 	RichText *RichTexts   `json:"rich_text,omitempty"`
 	Select   *SelectValue `json:"select,omitempty"`
 	Title    *RichTexts   `json:"title,omitempty"`
+
+	// Type of the property.
+	Type PropertyType `json:"type"`
 }
 
 // Properties of a page or database.
@@ -813,25 +813,24 @@ type RelationConfiguration struct {
 
 // Rich text objects contain data for displaying formatted text, mentions, and equations. A rich text object also contains annotations for style information. Arrays of rich text objects are used [within property objects](https://developers.notion.com/reference/database-property) and [property value objects](https://developers.notion.com/reference/page-property-value) to create what a user sees as a single text value in Notion.
 type RichText struct {
-	// Type of this rich text object.
-	Type RichTextType `json:"type"`
-
-	// Text objects contain this information within the `text` property of a RichText object.
-	Text *Text `json:"text,omitempty"`
-
 	// Style information which applies to the whole rich text object.
 	Annotations Annotations `json:"annotations"`
 
 	// Equation block objects contain this information within the `equation` property
 	Equation *Equation `json:"equation,omitempty"`
 
+	// The URL of any link or internal Notion mention in this text, if any.
+	Href    *string  `json:"href,omitempty"`
 	Mention *Mention `json:"mention,omitempty"`
 
 	// The plain text without annotations.
 	PlainText string `json:"plain_text"`
 
-	// The URL of any link or internal Notion mention in this text, if any.
-	Href *string `json:"href"`
+	// Text objects contain this information within the `text` property of a RichText object.
+	Text *Text `json:"text,omitempty"`
+
+	// Type of this rich text object.
+	Type RichTextType `json:"type"`
 }
 
 // Type of this rich text object.
@@ -915,7 +914,7 @@ type Text struct {
 	Content string `json:"content"`
 
 	// An inline link in a text.
-	Link *Link `json:"link"`
+	Link *Link `json:"link,omitempty"`
 }
 
 // TextFilter defines model for TextFilter.
@@ -955,24 +954,24 @@ type UUID string
 
 // The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.
 type User struct {
-	// Always "user"
-	Object string `json:"object"`
-
-	// Type of the user.
-	Type UserType `json:"type,omitempty"`
-
 	// Chosen avatar image.
-	AvatarUrl string `json:"avatar_url,omitempty"`
+	AvatarUrl string `json:"avatar_url"`
 	Bot       *Bot   `json:"bot,omitempty"`
 
 	// A unique identifier for a page, block, database, or user.
 	Id UUID `json:"id"`
 
 	// User's name, as displayed in Notion.
-	Name string `json:"name,omitempty"`
+	Name string `json:"name"`
+
+	// Always "user"
+	Object string `json:"object"`
 
 	// User objects that represent people have the `type` property set to `person`. These objects also have these properties.
 	Person *Person `json:"person,omitempty"`
+
+	// Type of the user.
+	Type UserType `json:"type"`
 }
 
 // Type of the user.
