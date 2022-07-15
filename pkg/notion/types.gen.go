@@ -820,7 +820,7 @@ type RichText struct {
 	Equation *Equation `json:"equation,omitempty"`
 
 	// The URL of any link or internal Notion mention in this text, if any.
-	Href    *string  `json:"href,omitempty"`
+	Href    *string  `json:"href"`
 	Mention *Mention `json:"mention,omitempty"`
 
 	// The plain text without annotations.
@@ -914,7 +914,7 @@ type Text struct {
 	Content string `json:"content"`
 
 	// An inline link in a text.
-	Link *Link `json:"link,omitempty"`
+	Link *Link `json:"link"`
 }
 
 // TextFilter defines model for TextFilter.
@@ -955,14 +955,14 @@ type UUID string
 // The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.
 type User struct {
 	// Chosen avatar image.
-	AvatarUrl string `json:"avatar_url"`
-	Bot       *Bot   `json:"bot,omitempty"`
+	AvatarUrl *string `json:"avatar_url,omitempty"`
+	Bot       *Bot    `json:"bot,omitempty"`
 
 	// A unique identifier for a page, block, database, or user.
 	Id UUID `json:"id"`
 
 	// User's name, as displayed in Notion.
-	Name string `json:"name"`
+	Name *string `json:"name,omitempty"`
 
 	// Always "user"
 	Object string `json:"object"`
@@ -971,7 +971,7 @@ type User struct {
 	Person *Person `json:"person,omitempty"`
 
 	// Type of the user.
-	Type UserType `json:"type"`
+	Type *UserType `json:"type,omitempty"`
 }
 
 // Type of the user.
