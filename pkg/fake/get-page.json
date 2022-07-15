@@ -1,55 +1,55 @@
 {
-	"archived": false,
-	"created_by": {
-		"object": "user",
-		"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-	},
-	"created_time": "2022-07-14T05:31:00.000Z",
-	"cover": {
-		"type": "external",
-		"external": {
-			"url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
-		}
-	},
-	"icon": {
-		"type": "emoji",
-		"emoji": "🌄"
-	},
-	"id": "96245c8f-1784-44a4-82ad-1941127c3ec3",
-	"last_edited_time": "2022-07-14T20:06:00.000Z",
-	"last_edited_by": {
-		"object": "user",
-		"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-	},
-	"object": "page",
-	"parent": {
-		"type": "page_id",
-		"page_id": "b8cc5dc7-9204-45f0-b996-e48514357b0f"
-	},
-	"properties": {
-		"title": {
-			"id": "title",
-			"type": "title",
-			"title": [
-				{
-					"type": "text",
-					"text": {
-						"content": "Example Page",
-						"link": null
-					},
-					"annotations": {
-						"bold": false,
-						"italic": false,
-						"strikethrough": false,
-						"underline": false,
-						"code": false,
-						"color": "default"
-					},
-					"plain_text": "Example Page",
-					"href": null
-				}
-			]
-		}
-	},
-	"url": "https://www.notion.so/Example-Page-96245c8f178444a482ad1941127c3ec3"
+  "archived": false,
+  "cover": {
+    "external": {
+      "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
+    },
+    "type": "external"
+  },
+  "created_by": {
+    "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45",
+    "object": "user"
+  },
+  "created_time": "2022-07-14T05:31:00.000Z",
+  "icon": {
+    "emoji": "🌄",
+    "type": "emoji"
+  },
+  "id": "96245c8f-1784-44a4-82ad-1941127c3ec3",
+  "last_edited_by": {
+    "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45",
+    "object": "user"
+  },
+  "last_edited_time": "2022-07-14T20:06:00.000Z",
+  "object": "page",
+  "parent": {
+    "page_id": "b8cc5dc7-9204-45f0-b996-e48514357b0f",
+    "type": "page_id"
+  },
+  "properties": {
+    "title": {
+      "id": "title",
+      "title": [
+        {
+          "annotations": {
+            "bold": false,
+            "code": false,
+            "color": "default",
+            "italic": false,
+            "strikethrough": false,
+            "underline": false
+          },
+          "href": null,
+          "plain_text": "Example Page",
+          "text": {
+            "content": "Example Page",
+            "link": null
+          },
+          "type": "text"
+        }
+      ],
+      "type": "title"
+    }
+  },
+  "url": "https://www.notion.so/Example-Page-96245c8f178444a482ad1941127c3ec3"
 }
