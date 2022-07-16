@@ -60,6 +60,20 @@ func (f File) URL() string {
 	}
 }
 
+// URL return the URL of the file
+func (ic Icon) URL() string {
+	switch ic.Type {
+	case IconTypeExternal:
+		return ic.External.Url
+	case IconTypeFile:
+		return ic.File.Url
+	case IconTypeEmoji:
+		return "<emoji>"
+	default:
+		panic(fmt.Errorf("invalid Icon of type %q", ic.Type))
+	}
+}
+
 // ID return the ID of the page or database that it is linked to.
 func (l LinkToPage) ID() UUID {
 	switch l.Type {
