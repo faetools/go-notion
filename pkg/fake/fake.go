@@ -10,7 +10,8 @@ import (
 	"gopkg.in/h2non/gock.v1"
 )
 
-// PageID is the page ID of our example page.
+// PageID is the ID of our example page.
+// It can be viewed here: https://ancient-gibbon-2cd.notion.site/Example-Page-96245c8f178444a482ad1941127c3ec3
 const PageID notion.Id = "96245c8f178444a482ad1941127c3ec3"
 
 // Responses contains a number of responses we have generated.
@@ -32,7 +33,7 @@ func ResponseTo(t *testing.T, path string) []byte {
 func MockResponseTo(t *testing.T, path string) {
 	t.Helper()
 
-	gock.New("https://api.notion.com").
+	gock.New(notion.DefaultServer).
 		Path(path).
 		Reply(http.StatusOK).
 		SetHeader("Content-Type", "json").
