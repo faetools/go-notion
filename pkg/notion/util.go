@@ -71,3 +71,17 @@ func (l LinkToPage) ID() UUID {
 		panic("invalid LinkToPage of type " + l.Type)
 	}
 }
+
+// ID returns the ID of the object that was mentioned.
+func (m Mention) ID() UUID {
+	switch m.Type {
+	case MentionTypeDatabase:
+		return m.Database.Id
+	case MentionTypePage:
+		return m.Page.Id
+	case MentionTypeUser:
+		return m.User.Id
+	default:
+		return "<no ID>"
+	}
+}
