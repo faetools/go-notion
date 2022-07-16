@@ -696,7 +696,7 @@ components:
         last_edited_by:
           $ref: '#/components/schemas/User'
         cover:
-          $ref: '#/components/schemas/FileNoOmit'
+          $ref: '#/components/schemas/File'
         icon:
           $ref: '#/components/schemas/Icon'
         parent:
@@ -1708,23 +1708,6 @@ components:
         - rich_text
         - color
     File:
-      type: object
-      description: File objects contain data about files uploaded to Notion as well as external files linked in Notion.
-      properties:
-        type:
-          type: string
-          enum:
-            - file
-            - external
-          example: file
-          description: Type of this file object.
-        file:
-          $ref: '#/components/schemas/NotionFile'
-        external:
-          $ref: '#/components/schemas/ExternalFile'
-      required:
-        - type
-    FileNoOmit:
       type: object
       x-omitempty: false
       description: File objects contain data about files uploaded to Notion as well as external files linked in Notion.

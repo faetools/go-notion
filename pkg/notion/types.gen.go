@@ -148,12 +148,6 @@ const (
 	FileTypeFile     FileType = "file"
 )
 
-// Defines values for FileNoOmitType.
-const (
-	FileNoOmitTypeExternal FileNoOmitType = "external"
-	FileNoOmitTypeFile     FileNoOmitType = "file"
-)
-
 // Defines values for FileWithCaptionType.
 const (
 	FileWithCaptionTypeExternal FileWithCaptionType = "external"
@@ -503,7 +497,7 @@ type Database struct {
 	Archived bool `json:"archived"`
 
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion.
-	Cover *File `json:"cover,omitempty"`
+	Cover *File `json:"cover"`
 
 	// The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.
 	CreatedBy *User `json:"created_by,omitempty"`
@@ -607,21 +601,6 @@ type File struct {
 
 // Type of this file object.
 type FileType string
-
-// File objects contain data about files uploaded to Notion as well as external files linked in Notion.
-type FileNoOmit struct {
-	// An external file is any URL that isn't hosted by Notion.
-	External *ExternalFile `json:"external,omitempty"`
-
-	// File objects contain this information within the `file` property.
-	File *NotionFile `json:"file,omitempty"`
-
-	// Type of this file object.
-	Type FileNoOmitType `json:"type"`
-}
-
-// Type of this file object.
-type FileNoOmitType string
 
 // File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
 type FileWithCaption struct {
@@ -776,7 +755,7 @@ type Page struct {
 	Archived bool `json:"archived"`
 
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion.
-	Cover *FileNoOmit `json:"cover"`
+	Cover *File `json:"cover"`
 
 	// The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.
 	CreatedBy *User `json:"created_by,omitempty"`
