@@ -85,3 +85,19 @@ func (m Mention) ID() UUID {
 		return "<no ID>"
 	}
 }
+
+// ID returns the ID of the parent.
+func (p Parent) ID() UUID {
+	switch p.Type {
+	case ParentTypeBlockId:
+		return *p.BlockId
+	case ParentTypeDatabaseId:
+		return *p.DatabaseId
+	case ParentTypePageId:
+		return *p.PageId
+	case ParentTypeWorkspace:
+		return "workspace"
+	default:
+		return UUID(fmt.Sprintf("<invalid parent type %s>", p.Type))
+	}
+}
