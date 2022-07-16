@@ -52,37 +52,35 @@ func TestDate(t *testing.T) {
 	require.NoError(t, err)
 
 	for _, tt := range []struct {
-		name        string
-		startLayout string
-		endLayout   string
+		name   string
+		layout string
+		hasEnd bool
 	}{
-		{"only start, as time", time.RFC3339, ""},
-		{"start and end, as time", time.RFC3339, time.RFC3339},
-		{"only start, as date", layoutDate, ""},
-		{"start and end, as dates", layoutDate, layoutDate},
+		{"only start, as time", time.RFC3339, false},
+		{"start and end, as time", time.RFC3339, true},
+		{"only start, as date", layoutDate, false},
+		{"start and end, as dates", layoutDate, true},
 	} {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			start := randomTime(t, tt.startLayout == layoutDate, shanghai)
-			end := randomTime(t, tt.endLayout == layoutDate, shanghai)
+			start := randomTime(t, tt.layout == layoutDate, shanghai)
+			end := randomTime(t, tt.layout == layoutDate, shanghai)
 
 			rawJSON := bytes.Buffer{}
 			rawJSON.WriteString(`{"end":`)
 
-			hasEnd := tt.endLayout != ""
-
-			if hasEnd {
+			if tt.hasEnd {
 				rawJSON.WriteString(`"`)
-				rawJSON.WriteString(end.Format(tt.endLayout))
+				rawJSON.WriteString(end.Format(tt.layout))
 				rawJSON.WriteString(`"`)
 			} else {
 				rawJSON.WriteString("null")
 			}
 
 			rawJSON.WriteString(`,"start":"`)
-			rawJSON.WriteString(start.Format(tt.startLayout))
+			rawJSON.WriteString(start.Format(tt.layout))
 			rawJSON.WriteString(`","time_zone":"Asia/Shanghai"}`)
 
 			date := notion.Date{}
@@ -94,14 +92,14 @@ func TestDate(t *testing.T) {
 
 			assertSameTime(t, date.Start, start)
 
-			if tt.startLayout != layoutDate {
+			if tt.layout != layoutDate {
 				assert.Equal(t, shanghai, date.Start.Location())
 			}
 
-			if hasEnd {
+			if tt.hasEnd {
 				assert.True(t, date.End.Equal(end))
 
-				if tt.endLayout != layoutDate {
+				if tt.layout != layoutDate {
 					assert.Equal(t, shanghai, date.End.Location())
 				}
 			} else {
@@ -112,13 +110,13 @@ func TestDate(t *testing.T) {
 
 			res := bytes.Buffer{}
 
-			res.WriteString(start.Format(tt.startLayout))
+			res.WriteString(start.Format(tt.layout))
 
-			if hasEnd {
+			if tt.hasEnd {
 				date.End = &end
 
 				res.WriteString(" - ")
-				res.WriteString(end.Format(tt.endLayout))
+				res.WriteString(end.Format(tt.layout))
 			}
 
 			assert.Equal(t, res.String(), date.String(), "String should be equal")
@@ -144,15 +142,15 @@ func TestDate_Errors(t *testing.T) {
 
 	date := notion.Date{}
 
-	assert.EqualError(t, date.UnmarshalJSON([]byte{'{'}),
+	assert.EqualError(t, json.Unmarshal([]byte{'{'}, &date),
 		"unexpected end of JSON input")
 
-	assert.EqualError(t, date.UnmarshalJSON([]byte(`{"time_zone":"foo"}`)),
+	assert.EqualError(t, json.Unmarshal([]byte(`{"time_zone":"foo"}`), &date),
 		"unknown time zone foo")
 
-	assert.EqualError(t, date.UnmarshalJSON([]byte(`{"start":"foo"}`)),
+	assert.EqualError(t, json.Unmarshal([]byte(`{"start":"foo"}`), &date),
 		`parsing time "foo" as "2006-01-02T15:04:05Z07:00": cannot parse "foo" as "2006"`)
 
-	assert.EqualError(t, date.UnmarshalJSON([]byte(`{"start":"2022-07-10T19:01:52Z","end":"foo"}`)),
+	assert.EqualError(t, json.Unmarshal([]byte(`{"start":"2022-07-10T19:01:52Z","end":"foo"}`), &date),
 		`parsing time "foo" as "2006-01-02T15:04:05Z07:00": cannot parse "foo" as "2006"`)
 }

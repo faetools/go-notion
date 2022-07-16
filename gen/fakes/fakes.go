@@ -25,7 +25,9 @@ func main() {
 		cli:       cli,
 	}
 
-	g.genGetPageResponse(ctx, fake.PageID)
+	if err := notion.Walk(ctx, g, notion.ObjectTypePage, fake.PageID); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func checkErr(err error) {
@@ -39,134 +41,84 @@ type fakesGenerator struct {
 	cli *notion.Client
 }
 
-func (g *fakesGenerator) genResponseFactory(
-	urlPathFormat string,
-	getResponse func(context.Context, notion.Id) (*http.Response, []byte),
-	followUp func(context.Context, []byte),
-) func(context.Context, notion.Id) {
-	return func(ctx context.Context, id notion.Id) {
-		urlPath := fmt.Sprintf(urlPathFormat, id)
-		filePath := filepath.Join("../pkg/fake/", urlPath+".json")
+func (g *fakesGenerator) VisitPage(ctx context.Context, id notion.Id) error {
+	_ = g.getResponse("/v1/pages/%s", id, func(id notion.Id) (*http.Response, []byte) {
+		resp, err := g.cli.GetPage(ctx, id)
+		checkErr(err)
 
-		content, err := os.ReadFile(filePath)
-		if err != nil {
-			resp, body := getResponse(ctx, id)
+		return resp.HTTPResponse, resp.Body
+	})
 
-			if want := resp.Request.URL.Path; want != urlPath {
-				log.Fatalf("mismatched paths: %q vs %q", want, urlPath)
-			}
+	return nil
+}
 
-			if resp.StatusCode != http.StatusOK {
-				log.Fatalf("status for %q not OK but %s", urlPath, resp.Status)
-			}
+func (g *fakesGenerator) VisitBlocks(ctx context.Context, id notion.Id) (notion.Blocks, error) {
+	body := g.getResponse("/v1/blocks/%s/children", id, func(id notion.Id) (*http.Response, []byte) {
+		resp, err := g.cli.GetBlocks(ctx, id, &notion.GetBlocksParams{})
+		checkErr(err)
 
-			content = body
+		return resp.HTTPResponse, resp.Body
+	})
 
-			checkErr(g.WriteBytes(filePath, content))
-		}
+	var list notion.BlocksList
+	checkErr(json.Unmarshal(body, &list))
 
-		followUp(ctx, content)
+	return list.Results, nil
+}
+
+func (g *fakesGenerator) VisitDatabase(ctx context.Context, id notion.Id) error {
+	switch id {
+	case "d105edb4-586a-4dcc-aaa6-ea944eb8d864":
+		// not the ID of the actual database
+		return notion.SkipDatabase
 	}
+
+	_ = g.getResponse("/v1/databases/%s", id, func(id notion.Id) (*http.Response, []byte) {
+		resp, err := g.cli.GetDatabase(ctx, id)
+		checkErr(err)
+
+		return resp.HTTPResponse, resp.Body
+	})
+
+	return nil
 }
 
-func (g *fakesGenerator) genGetPageResponse(ctx context.Context, id notion.Id) {
-	g.genResponseFactory(
-		"/v1/pages/%s",
-		func(ctx context.Context, id notion.Id) (*http.Response, []byte) {
-			resp, err := g.cli.GetPage(ctx, id)
-			checkErr(err)
+func (g *fakesGenerator) VisitDatabaseEntries(ctx context.Context, id notion.Id) (notion.Pages, error) {
+	body := g.getResponse("/v1/databases/%s/query", id, func(id notion.Id) (*http.Response, []byte) {
+		resp, err := g.cli.QueryDatabase(ctx, id, notion.QueryDatabaseJSONRequestBody{})
+		checkErr(err)
 
-			return resp.HTTPResponse, resp.Body
-		},
-		func(ctx context.Context, b []byte) {
-			var p notion.Page
-			checkErr(json.Unmarshal(b, &p))
+		return resp.HTTPResponse, resp.Body
+	})
 
-			g.genGetBlocksResponse(ctx, notion.Id(p.Id))
-		},
-	)(ctx, id)
+	var list notion.PagesList
+	checkErr(json.Unmarshal(body, &list))
+
+	return list.Results, nil
 }
 
-func (g *fakesGenerator) genGetBlocksResponse(ctx context.Context, id notion.Id) {
-	g.genResponseFactory(
-		"/v1/blocks/%s/children",
-		func(ctx context.Context, id notion.Id) (*http.Response, []byte) {
-			resp, err := g.cli.GetBlocks(ctx, id, &notion.GetBlocksParams{})
-			checkErr(err)
+func (g *fakesGenerator) getResponse(urlPathFormat string, id notion.Id,
+	getResponse func(id notion.Id) (*http.Response, []byte),
+) []byte {
+	urlPath := fmt.Sprintf(urlPathFormat, id)
+	filePath := filepath.Join("../pkg/fake/", urlPath+".json")
 
-			return resp.HTTPResponse, resp.Body
-		},
-		func(ctx context.Context, b []byte) {
-			var blockList notion.BlocksList
-			checkErr(json.Unmarshal(b, &blockList))
+	content, err := os.ReadFile(filePath)
+	if err == nil {
+		return content
+	}
 
-			for _, b := range blockList.Results {
-				switch b.Type {
-				case notion.BlockTypeChildPage:
-					g.genGetPageResponse(ctx, notion.Id(b.Id))
-				case notion.BlockTypeChildDatabase:
-					// unfortunately, notion does not tell us
-					// if this child database has the same ID as the block ID
-					// or if this child database is referenced
-					if b.Id == "d105edb4-586a-4dcc-aaa6-ea944eb8d864" {
-						continue
-					}
+	resp, body := getResponse(id)
 
-					g.genGetDatabaseResponse(ctx, notion.Id(b.Id))
-				default:
-					if b.HasChildren {
-						g.genGetBlocksResponse(ctx, notion.Id(b.Id))
-					}
-				}
-			}
-		},
-	)(ctx, id)
+	if want := resp.Request.URL.Path; want != urlPath {
+		log.Fatalf("mismatched paths: %q vs %q", want, urlPath)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		log.Fatalf("status for %q not OK but %s", urlPath, resp.Status)
+	}
+
+	checkErr(g.WriteBytes(filePath, body))
+
+	return body
 }
-
-func (g *fakesGenerator) genGetDatabaseResponse(ctx context.Context, id notion.Id) {
-	g.genResponseFactory(
-		"/v1/databases/%s",
-		func(ctx context.Context, id notion.Id) (*http.Response, []byte) {
-			resp, err := g.cli.GetDatabase(ctx, id)
-			checkErr(err)
-
-			return resp.HTTPResponse, resp.Body
-		},
-		func(ctx context.Context, b []byte) {
-			var db notion.Database
-			checkErr(json.Unmarshal(b, &db))
-
-			// TODO database entries
-		},
-	)(ctx, id)
-}
-
-// func (g *fakesGenerator) genQueryDatabaseResponse(ctx context.Context, id notion.Id) {
-// 	g.genResponseFactory(
-// 		"/v1/blocks/%s/children",
-// 		func(ctx context.Context, id notion.Id) (*http.Response, []byte) {
-// 			resp, err := g.cli.QueryDatabase(ctx, id, notion.QueryDatabaseJSONRequestBody{
-// 				PageSize:    0,
-// 				StartCursor: &"",
-// 			})
-// 			checkErr(err)
-
-// 			return resp.HTTPResponse, resp.Body
-// 		},
-// 		func(ctx context.Context, b []byte) {
-// 			var db notion.Database
-// 			checkErr(json.Unmarshal(b, &db))
-
-// 			for _, b := range blockList.Results {
-// 				if b.HasChildren {
-// 					g.genGetBlocksResponse(ctx, notion.Id(b.Id))
-// 				}
-
-// 				switch b.Type {
-// 				case notion.BlockTypeChildPage:
-// 					g.genGetPageResponse(ctx, notion.Id(b.Id))
-// 				}
-// 			}
-// 		},
-// 	)(ctx, id)
-// }

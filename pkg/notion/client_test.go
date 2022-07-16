@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/faetools/go-notion/pkg/fake"
-	"github.com/faetools/go-notion/pkg/notion"
+	. "github.com/faetools/go-notion/pkg/notion"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -19,15 +19,77 @@ func TestClient(t *testing.T) {
 	t.Parallel()
 	t.Cleanup(gock.Off)
 
-	cli, err := notion.NewDefaultClient("")
+	cli, err := NewDefaultClient("")
 	require.NoError(t, err)
+
+	// Walk(context.Background(), &clientTester{Client: cli, t: t}, ObjectTypePage, fake.PageID)
 
 	clientTester{Client: cli}.getPage(t, fake.PageID)
 }
 
-type clientTester struct{ *notion.Client }
+type clientTester struct {
+	*Client
 
-func (c clientTester) getPage(t *testing.T, id notion.Id) {
+	t *testing.T
+}
+
+// func (g *fakesGenerator) VisitPage(ctx context.Context, id notion.Id) error {
+// 	_ = g.getResponse("/v1/pages/%s", id, func(id notion.Id) (*http.Response, []byte) {
+// 		resp, err := g.cli.GetPage(ctx, id)
+// 		checkErr(err)
+
+// 		return resp.HTTPResponse, resp.Body
+// 	})
+
+// 	return nil
+// }
+
+// func (g *fakesGenerator) VisitBlocks(ctx context.Context, id notion.Id) (notion.Blocks, error) {
+// 	body := g.getResponse("/v1/blocks/%s/children", id, func(id notion.Id) (*http.Response, []byte) {
+// 		resp, err := g.cli.GetBlocks(ctx, id, &notion.GetBlocksParams{})
+// 		checkErr(err)
+
+// 		return resp.HTTPResponse, resp.Body
+// 	})
+
+// 	var list notion.BlocksList
+// 	checkErr(json.Unmarshal(body, &list))
+
+// 	return list.Results, nil
+// }
+
+// func (g *fakesGenerator) VisitDatabase(ctx context.Context, id notion.Id) error {
+// 	switch id {
+// 	case "d105edb4-586a-4dcc-aaa6-ea944eb8d864":
+// 		// not the ID of the actual database
+// 		return notion.SkipDatabase
+// 	}
+
+// 	_ = g.getResponse("/v1/databases/%s", id, func(id notion.Id) (*http.Response, []byte) {
+// 		resp, err := g.cli.GetDatabase(ctx, id)
+// 		checkErr(err)
+
+// 		return resp.HTTPResponse, resp.Body
+// 	})
+
+// 	return nil
+// }
+
+// func (g *fakesGenerator) VisitDatabaseEntries(ctx context.Context, id notion.Id) (notion.Pages, error) {
+// 	body := g.getResponse("/v1/databases/%s/query", id, func(id notion.Id) (*http.Response, []byte) {
+// 		resp, err := g.cli.QueryDatabase(ctx, id, notion.QueryDatabaseJSONRequestBody{})
+// 		checkErr(err)
+
+// 		return resp.HTTPResponse, resp.Body
+// 	})
+
+// 	var list notion.PagesList
+// 	checkErr(json.Unmarshal(body, &list))
+
+// 	return list.Results, nil
+// }
+
+func (c clientTester) getPage(t *testing.T, id Id) {
 	t.Helper()
 
 	path := fmt.Sprintf("v1/pages/%s", id)
@@ -41,28 +103,26 @@ func (c clientTester) getPage(t *testing.T, id notion.Id) {
 	c.getBlocks(t, id)
 }
 
-func cleanUUID(id notion.Id) notion.Id {
-	return notion.Id(uuid.MustParse(string(id)).String())
+func cleanUUID(id Id) Id {
+	return Id(uuid.MustParse(string(id)).String())
 }
 
-func (c clientTester) getBlocks(t *testing.T, id notion.Id) {
+func (c clientTester) getBlocks(t *testing.T, id Id) {
 	t.Helper()
 
-	id = cleanUUID(id)
-
-	path := fmt.Sprintf("v1/blocks/%s/children", cleanUUID(id))
+	path := fmt.Sprintf("v1/blocks/%s/children", id)
 	fake.MockResponseTo(t, path)
 
-	resp, err := c.GetBlocks(context.Background(), id, &notion.GetBlocksParams{})
+	resp, err := c.GetBlocks(context.Background(), id, &GetBlocksParams{})
 	require.NoError(t, err)
 
 	assertResponseWellParsed(t, path, resp.JSON200)
 
 	for _, b := range resp.JSON200.Results {
 		switch b.Type {
-		case notion.BlockTypeChildPage:
-			c.getPage(t, notion.Id(b.Id))
-		case notion.BlockTypeChildDatabase:
+		case BlockTypeChildPage:
+			c.getPage(t, Id(b.Id))
+		case BlockTypeChildDatabase:
 			// unfortunately, notion does not tell us
 			// if this child database has the same ID as the block ID
 			// or if this child database is referenced
@@ -70,16 +130,16 @@ func (c clientTester) getBlocks(t *testing.T, id notion.Id) {
 				continue
 			}
 
-			c.getDatabase(t, notion.Id(b.Id))
+			c.getDatabase(t, Id(b.Id))
 		default:
 			if b.HasChildren {
-				c.getBlocks(t, notion.Id(b.Id))
+				c.getBlocks(t, Id(b.Id))
 			}
 		}
 	}
 }
 
-func (c clientTester) getDatabase(t *testing.T, id notion.Id) {
+func (c clientTester) getDatabase(t *testing.T, id Id) {
 	t.Helper()
 
 	path := fmt.Sprintf("v1/databases/%s", id)
@@ -90,7 +150,22 @@ func (c clientTester) getDatabase(t *testing.T, id notion.Id) {
 
 	assertResponseWellParsed(t, path, resp.JSON200)
 
-	// TODO database entries
+	c.queryDatabase(t, id)
+}
+
+func (c clientTester) queryDatabase(t *testing.T, id Id) {
+	t.Helper()
+
+	path := fmt.Sprintf("v1/databases/%s/query", id)
+	fake.MockResponseTo(t, path)
+
+	resp, err := c.QueryDatabase(context.Background(), id, QueryDatabaseJSONRequestBody{})
+	require.NoError(t, err)
+
+	assertResponseWellParsed(t, path, resp.JSON200)
+
+	// TODO each entry
+	// c.queryDatabase(t, id)
 }
 
 func assertResponseWellParsed(t *testing.T, path string, resp any) {
