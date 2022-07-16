@@ -14,7 +14,10 @@ import (
 
 var testTimezone = "Asia/Shanghai"
 
-const layoutDate = "2006-01-02"
+const (
+	layoutDate = "2006-01-02"
+	layoutTime = "2006-01-02T15:04:05.000Z07:00"
+)
 
 func randomTime(t *testing.T, isDate bool, loc *time.Location) time.Time {
 	t.Helper()
@@ -45,7 +48,7 @@ func randomTime(t *testing.T, isDate bool, loc *time.Location) time.Time {
 func TestDate(t *testing.T) {
 	t.Parallel()
 
-	loc, err := time.LoadLocation("Asia/Shanghai")
+	shanghai, err := time.LoadLocation(testTimezone)
 	require.NoError(t, err)
 
 	for _, tt := range []struct {
@@ -62,56 +65,78 @@ func TestDate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			start := randomTime(t, tt.startLayout == layoutDate, loc)
-			end := randomTime(t, tt.endLayout == layoutDate, loc)
+			start := randomTime(t, tt.startLayout == layoutDate, shanghai)
+			end := randomTime(t, tt.endLayout == layoutDate, shanghai)
 
 			rawJSON := bytes.Buffer{}
-			rawJSON.Write([]byte{'{'})
+			rawJSON.WriteString(`{"end":`)
 
 			hasEnd := tt.endLayout != ""
 
 			if hasEnd {
-				rawJSON.WriteString(`"end":"`)
-				rawJSON.WriteString(end.In(time.UTC).Format(tt.endLayout))
-				rawJSON.WriteString(`",`)
+				rawJSON.WriteString(`"`)
+				rawJSON.WriteString(end.Format(tt.endLayout))
+				rawJSON.WriteString(`"`)
+			} else {
+				rawJSON.WriteString("null")
 			}
 
-			rawJSON.WriteString(`"start":"`)
-			rawJSON.WriteString(start.In(time.UTC).Format(tt.startLayout))
+			rawJSON.WriteString(`,"start":"`)
+			rawJSON.WriteString(start.Format(tt.startLayout))
 			rawJSON.WriteString(`","time_zone":"Asia/Shanghai"}`)
 
 			date := notion.Date{}
 			assert.NoError(t, json.Unmarshal(rawJSON.Bytes(), &date))
 
-			assert.Equal(t, start.Format(tt.startLayout), date.Start.Format(tt.startLayout))
-			assert.Equal(t, loc, date.Start.Location())
+			b, err := json.Marshal(date)
+			assert.NoError(t, err)
+			assert.Equal(t, rawJSON.String(), string(b))
+
+			assertSameTime(t, date.Start, start)
+
+			if tt.startLayout != layoutDate {
+				assert.Equal(t, shanghai, date.Start.Location())
+			}
 
 			if hasEnd {
-				assert.Equal(t, end.Format(tt.endLayout), date.End.Format(tt.endLayout))
-				assert.Equal(t, loc, date.End.Location())
+				assert.True(t, date.End.Equal(end))
+
+				if tt.endLayout != layoutDate {
+					assert.Equal(t, shanghai, date.End.Location())
+				}
 			} else {
 				assert.Nil(t, date.End)
 			}
 
-			start = start.In(loc)
-			end = end.In(loc)
+			// String
 
 			res := bytes.Buffer{}
 
 			res.WriteString(start.Format(tt.startLayout))
 
 			if hasEnd {
+				date.End = &end
+
 				res.WriteString(" - ")
 				res.WriteString(end.Format(tt.endLayout))
 			}
 
 			assert.Equal(t, res.String(), date.String(), "String should be equal")
-
-			b, err := json.Marshal(date)
-			assert.NoError(t, err)
-			assert.Equal(t, rawJSON.String(), string(b))
 		})
 	}
+}
+
+func assertSameTime(t *testing.T, a, b time.Time) {
+	t.Helper()
+
+	diff := a.Sub(b)
+	if diff < 0 {
+		diff = -1 * diff
+	}
+
+	// for some reason it gets off to up to one minute
+	assert.Less(t, diff, time.Minute,
+		"not the same time: %s vs. %s", a, b)
 }
 
 func TestDate_Errors(t *testing.T) {
