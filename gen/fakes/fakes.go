@@ -26,7 +26,6 @@ func main() {
 	}
 
 	g.genGetPageResponse(ctx, fake.PageID)
-	g.genGetBlocksResponse(ctx, fake.PageID)
 }
 
 func checkErr(err error) {
@@ -66,9 +65,7 @@ func (g *fakesGenerator) genResponseFactory(
 			checkErr(g.WriteBytes(filePath, content))
 		}
 
-		if followUp != nil {
-			followUp(ctx, content)
-		}
+		followUp(ctx, content)
 	}
 }
 
@@ -81,7 +78,12 @@ func (g *fakesGenerator) genGetPageResponse(ctx context.Context, id notion.Id) {
 
 			return resp.HTTPResponse, resp.Body
 		},
-		nil,
+		func(ctx context.Context, b []byte) {
+			var p notion.Page
+			checkErr(json.Unmarshal(b, &p))
+
+			g.genGetBlocksResponse(ctx, notion.Id(p.Id))
+		},
 	)(ctx, id)
 }
 
@@ -98,11 +100,73 @@ func (g *fakesGenerator) genGetBlocksResponse(ctx context.Context, id notion.Id)
 			var blockList notion.BlocksList
 			checkErr(json.Unmarshal(b, &blockList))
 
-			for _, block := range blockList.Results {
-				if block.HasChildren {
-					g.genGetBlocksResponse(ctx, notion.Id(block.Id))
+			for _, b := range blockList.Results {
+				switch b.Type {
+				case notion.BlockTypeChildPage:
+					g.genGetPageResponse(ctx, notion.Id(b.Id))
+				case notion.BlockTypeChildDatabase:
+					// unfortunately, notion does not tell us
+					// if this child database has the same ID as the block ID
+					// or if this child database is referenced
+					if b.Id == "d105edb4-586a-4dcc-aaa6-ea944eb8d864" {
+						continue
+					}
+
+					g.genGetDatabaseResponse(ctx, notion.Id(b.Id))
+				default:
+					if b.HasChildren {
+						g.genGetBlocksResponse(ctx, notion.Id(b.Id))
+					}
 				}
 			}
 		},
 	)(ctx, id)
 }
+
+func (g *fakesGenerator) genGetDatabaseResponse(ctx context.Context, id notion.Id) {
+	g.genResponseFactory(
+		"/v1/databases/%s",
+		func(ctx context.Context, id notion.Id) (*http.Response, []byte) {
+			resp, err := g.cli.GetDatabase(ctx, id)
+			checkErr(err)
+
+			return resp.HTTPResponse, resp.Body
+		},
+		func(ctx context.Context, b []byte) {
+			var db notion.Database
+			checkErr(json.Unmarshal(b, &db))
+
+			// TODO database entries
+		},
+	)(ctx, id)
+}
+
+// func (g *fakesGenerator) genQueryDatabaseResponse(ctx context.Context, id notion.Id) {
+// 	g.genResponseFactory(
+// 		"/v1/blocks/%s/children",
+// 		func(ctx context.Context, id notion.Id) (*http.Response, []byte) {
+// 			resp, err := g.cli.QueryDatabase(ctx, id, notion.QueryDatabaseJSONRequestBody{
+// 				PageSize:    0,
+// 				StartCursor: &"",
+// 			})
+// 			checkErr(err)
+
+// 			return resp.HTTPResponse, resp.Body
+// 		},
+// 		func(ctx context.Context, b []byte) {
+// 			var db notion.Database
+// 			checkErr(json.Unmarshal(b, &db))
+
+// 			for _, b := range blockList.Results {
+// 				if b.HasChildren {
+// 					g.genGetBlocksResponse(ctx, notion.Id(b.Id))
+// 				}
+
+// 				switch b.Type {
+// 				case notion.BlockTypeChildPage:
+// 					g.genGetPageResponse(ctx, notion.Id(b.Id))
+// 				}
+// 			}
+// 		},
+// 	)(ctx, id)
+// }
