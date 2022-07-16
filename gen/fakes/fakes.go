@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 
 	"github.com/faetools/cgtools"
+	"github.com/faetools/go-notion/pkg/docs"
 	"github.com/faetools/go-notion/pkg/fake"
 	"github.com/faetools/go-notion/pkg/notion"
 )
@@ -25,7 +26,7 @@ func main() {
 		cli:       cli,
 	}
 
-	if err := notion.Walk(ctx, g, notion.ObjectTypePage, fake.PageID); err != nil {
+	if err := docs.Walk(ctx, g, docs.TypePage, fake.PageID); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -70,7 +71,7 @@ func (g *fakesGenerator) VisitDatabase(ctx context.Context, id notion.Id) error 
 	switch id {
 	case "d105edb4-586a-4dcc-aaa6-ea944eb8d864":
 		// not the ID of the actual database
-		return notion.SkipDatabase
+		return docs.Skip
 	}
 
 	_ = g.getResponse("/v1/databases/%s", id, func(id notion.Id) (*http.Response, []byte) {
