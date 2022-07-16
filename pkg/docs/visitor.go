@@ -31,7 +31,7 @@ type Visitor interface {
 }
 
 type visitor struct {
-	*Getter
+	notion.Getter
 
 	atPage            PageVisit
 	atBlocks          BlocksVisit
@@ -41,7 +41,7 @@ type visitor struct {
 
 // NewVisitor returns a visitor.
 func NewVisitor(
-	g *Getter,
+	g notion.Getter,
 	atPage PageVisit, atBlocks BlocksVisit,
 	atDatabase DatabaseVisit, atDatabaseEntries DatabaseEntriesVisit,
 ) Visitor {
@@ -59,7 +59,7 @@ func (v *visitor) VisitPage(ctx context.Context, id notion.Id) error {
 		return nil
 	}
 
-	p, err := v.GetPage(ctx, id)
+	p, err := v.GetNotionPage(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -72,7 +72,7 @@ func (v *visitor) VisitBlocks(ctx context.Context, id notion.Id) (notion.Blocks,
 		return nil, nil
 	}
 
-	bs, err := v.GetBlocks(ctx, id)
+	bs, err := v.GetAllBlocks(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +85,7 @@ func (v *visitor) VisitDatabase(ctx context.Context, id notion.Id) error {
 		return nil
 	}
 
-	db, err := v.GetDatabase(ctx, id)
+	db, err := v.GetNotionDatabase(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -98,7 +98,7 @@ func (v *visitor) VisitDatabaseEntries(ctx context.Context, id notion.Id) (notio
 		return nil, nil
 	}
 
-	entries, err := v.GetDatabaseEntries(ctx, id)
+	entries, err := v.GetAllDatabaseEntries(ctx, id)
 	if err != nil {
 		return nil, err
 	}

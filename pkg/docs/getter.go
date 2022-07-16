@@ -6,24 +6,24 @@ import (
 	"github.com/faetools/go-notion/pkg/notion"
 )
 
-// Getter gets and caches notion documents.
-type Getter struct {
+// getterWithCache gets and caches notion documents.
+type getterWithCache struct {
 	cli   notion.Getter
 	cache *Cache
 }
 
-// NewGetter returns a new Getter.
-func NewGetter(cli notion.Getter, cache *Cache) *Getter {
+// NewGetterWithCache returns a new Getter.
+func NewGetterWithCache(cli notion.Getter, cache *Cache) notion.Getter {
 	if cache == nil {
 		cache = NewCache()
 	}
 
-	return &Getter{cli: cli, cache: cache}
+	return &getterWithCache{cli: cli, cache: cache}
 }
 
-// GetPage returns the notion page or an error.
+// GetNotionPage returns the notion page or an error.
 // An internal cache is used, if available.
-func (c *Getter) GetPage(ctx context.Context, id notion.Id) (*notion.Page, error) {
+func (c *getterWithCache) GetNotionPage(ctx context.Context, id notion.Id) (*notion.Page, error) {
 	var err error
 
 	return c.cache.LoadOrStorePage(id,
@@ -33,9 +33,9 @@ func (c *Getter) GetPage(ctx context.Context, id notion.Id) (*notion.Page, error
 		}), err
 }
 
-// GetBlocks returns all blocks of a given page or block.
+// GetAllBlocks returns all blocks of a given page or block.
 // An internal cache is used, if available.
-func (c *Getter) GetBlocks(ctx context.Context, parentID notion.Id) (notion.Blocks, error) {
+func (c *getterWithCache) GetAllBlocks(ctx context.Context, parentID notion.Id) (notion.Blocks, error) {
 	var err error
 
 	return c.cache.LoadOrStoreBlocks(parentID,
@@ -45,9 +45,9 @@ func (c *Getter) GetBlocks(ctx context.Context, parentID notion.Id) (notion.Bloc
 		}), err
 }
 
-// GetDatabase returns the notion database or an error.
+// GetNotionDatabase returns the notion database or an error.
 // An internal cache is used, if available.
-func (c *Getter) GetDatabase(ctx context.Context, id notion.Id) (*notion.Database, error) {
+func (c *getterWithCache) GetNotionDatabase(ctx context.Context, id notion.Id) (*notion.Database, error) {
 	var err error
 
 	return c.cache.LoadOrStoreDatabase(id,
@@ -57,9 +57,9 @@ func (c *Getter) GetDatabase(ctx context.Context, id notion.Id) (*notion.Databas
 		}), err
 }
 
-// GetDatabaseEntries returns all database entries or an error.
+// GetAllDatabaseEntries returns all database entries or an error.
 // An internal cache is used, if available.
-func (c *Getter) GetDatabaseEntries(ctx context.Context, parentID notion.Id) (notion.Pages, error) {
+func (c *getterWithCache) GetAllDatabaseEntries(ctx context.Context, parentID notion.Id) (notion.Pages, error) {
 	var err error
 
 	return c.cache.LoadOrStoreDatabaseEntries(parentID,

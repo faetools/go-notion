@@ -26,7 +26,7 @@ func TestClient(t *testing.T) {
 
 	v := docs.NewVisitor(
 		// get the document and at the same time check if the response has been parsed correctly
-		docs.NewGetter(&responseTester{cli: cli, t: t}, nil),
+		docs.NewGetterWithCache(&responseTester{cli: cli, t: t}, nil),
 
 		// don't do anything after having fetched the document, just continue
 		func(p *notion.Page) error { return nil },
