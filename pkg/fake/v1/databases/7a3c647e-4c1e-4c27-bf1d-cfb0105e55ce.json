@@ -1,0 +1,65 @@
+{
+  "object": "database",
+  "id": "7a3c647e-4c1e-4c27-bf1d-cfb0105e55ce",
+  "cover": null,
+  "icon": null,
+  "created_time": "2022-07-14T18:03:00.000Z",
+  "created_by": {
+    "object": "user",
+    "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+  },
+  "last_edited_by": {
+    "object": "user",
+    "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+  },
+  "last_edited_time": "2022-07-14T18:41:00.000Z",
+  "title": [
+    {
+      "type": "text",
+      "text": {
+        "content": "My Child Database",
+        "link": null
+      },
+      "annotations": {
+        "bold": false,
+        "italic": false,
+        "strikethrough": false,
+        "underline": false,
+        "code": false,
+        "color": "default"
+      },
+      "plain_text": "My Child Database",
+      "href": null
+    }
+  ],
+  "description": [],
+  "is_inline": true,
+  "properties": {
+    "Tags": {
+      "id": "C%3EZ%5C",
+      "name": "Tags",
+      "type": "multi_select",
+      "multi_select": {
+        "options": []
+      }
+    },
+    "Date": {
+      "id": "Z%3CJj",
+      "name": "Date",
+      "type": "date",
+      "date": {}
+    },
+    "Name": {
+      "id": "title",
+      "name": "Name",
+      "type": "title",
+      "title": {}
+    }
+  },
+  "parent": {
+    "type": "page_id",
+    "page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
+  },
+  "url": "https://www.notion.so/7a3c647e4c1e4c27bf1dcfb0105e55ce",
+  "archived": false
+}
