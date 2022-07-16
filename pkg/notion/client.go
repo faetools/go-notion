@@ -138,7 +138,7 @@ func (c Client) GetDatabaseEntries(ctx context.Context, id Id, filter *Filter, s
 			return entries, nil
 		}
 
-		cursor = resp.JSON200.NextCursor
+		cursor = (*UUID)(resp.JSON200.NextCursor)
 	}
 }
 

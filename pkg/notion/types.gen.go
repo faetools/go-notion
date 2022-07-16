@@ -218,9 +218,10 @@ const (
 
 // Defines values for ParentType.
 const (
-	ParentTypeBlockId   ParentType = "block_id"
-	ParentTypePageId    ParentType = "page_id"
-	ParentTypeWorkspace ParentType = "workspace"
+	ParentTypeBlockId    ParentType = "block_id"
+	ParentTypeDatabaseId ParentType = "database_id"
+	ParentTypePageId     ParentType = "page_id"
+	ParentTypeWorkspace  ParentType = "workspace"
 )
 
 // Defines values for PropertyType.
@@ -727,6 +728,9 @@ type MinimalPropertyMetas struct {
 	Title *PropertyMeta `json:"title,omitempty"`
 }
 
+// A unique identifier for a page, block, database, or user.
+type NextCursor string
+
 // File objects contain this information within the `file` property.
 type NotionFile struct {
 	// Date and time when the URL will expire.
@@ -796,9 +800,9 @@ type PagesList struct {
 	HasMore bool `json:"has_more"`
 
 	// A unique identifier for a page, block, database, or user.
-	NextCursor *UUID                  `json:"next_cursor,omitempty"`
+	NextCursor *NextCursor            `json:"next_cursor"`
 	Object     string                 `json:"object"`
-	Pages      map[string]interface{} `json:"pages"`
+	Page       map[string]interface{} `json:"page"`
 	Results    Pages                  `json:"results"`
 	Type       string                 `json:"type"`
 }
@@ -814,6 +818,9 @@ type Paragraph struct {
 type Parent struct {
 	// A unique identifier for a page, block, database, or user.
 	BlockId *UUID `json:"block_id,omitempty"`
+
+	// A unique identifier for a page, block, database, or user.
+	DatabaseId *UUID `json:"database_id,omitempty"`
 
 	// A unique identifier for a page, block, database, or user.
 	PageId *UUID `json:"page_id,omitempty"`

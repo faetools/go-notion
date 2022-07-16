@@ -731,19 +731,19 @@ components:
         results:
           $ref: '#/components/schemas/Pages'
         next_cursor:
-          $ref: '#/components/schemas/UUID'
+          $ref: '#/components/schemas/NextCursor'
         has_more:
           type: boolean
         type:
           type: string
-        pages:
+        page:
           type: object
       required:
         - object
         - results
         - has_more
         - type
-        - pages
+        - page
     User:
       description: The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.
       type: object
@@ -1140,6 +1140,12 @@ components:
       format: uuid
       x-go-type: string
       description: A unique identifier for a page, block, database, or user.
+    NextCursor:
+      type: string
+      format: uuid
+      x-omitempty: false
+      x-go-type: string
+      description: A unique identifier for a page, block, database, or user.
     Parent:
       type: object
       description: The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
@@ -1153,9 +1159,12 @@ components:
             - page_id
             - workspace
             - block_id
+            - database_id
         page_id:
           $ref: '#/components/schemas/UUID'
         block_id:
+          $ref: '#/components/schemas/UUID'
+        database_id:
           $ref: '#/components/schemas/UUID'
         workspace:
           type: boolean
