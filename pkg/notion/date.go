@@ -72,12 +72,12 @@ func (d Date) MarshalJSON() ([]byte, error) {
 	}
 
 	tmp := tmpDate{
-		Start:    formatTime(d.Start, false, loc),
+		Start:    formatTime(d.Start, loc),
 		TimeZone: d.TimeZone,
 	}
 
 	if d.End != nil {
-		endStr := formatTime(*d.End, false, loc)
+		endStr := formatTime(*d.End, loc)
 		tmp.End = &endStr
 	}
 
@@ -98,20 +98,32 @@ func parseTimeOrDate(ts string, loc *time.Location) (time.Time, error) {
 		return t, err
 	}
 
-	return t.In(loc), nil
+	sec := t.Second()
+
+	t = t.In(loc)
+
+	// adjust seconds offset
+	// see issue: https://github.com/golang/go/issues/53919
+	// and fix: https://github.com/golang/go/pull/53920
+	diff := sec - t.Second()
+	if diff > 0 {
+		diff -= 60
+	}
+
+	return t.Add(time.Duration(diff) * time.Second), nil
 }
 
 func (d Date) String() string {
 	if d.End == nil {
-		return formatTime(d.Start, true, nil)
+		return formatTime(d.Start, nil)
 	}
 
 	return fmt.Sprintf("%s - %s",
-		formatTime(d.Start, true, nil),
-		formatTime(*d.End, true, nil))
+		formatTime(d.Start, nil),
+		formatTime(*d.End, nil))
 }
 
-func formatTime(t time.Time, rfc3339 bool, loc *time.Location) string {
+func formatTime(t time.Time, loc *time.Location) string {
 	if t.Hour() == 0 && t.Minute() == 0 && t.Second() == 0 {
 		return t.Format(layoutDate)
 	}
