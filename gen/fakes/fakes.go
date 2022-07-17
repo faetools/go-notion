@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/faetools/cgtools"
 	_client "github.com/faetools/client"
 	"github.com/faetools/go-notion/pkg/client"
 	"github.com/faetools/go-notion/pkg/docs"
@@ -17,29 +16,22 @@ import (
 	"github.com/faetools/kit/terminal"
 	"github.com/logrusorgru/aurora"
 	"github.com/spf13/afero"
-	"golang.org/x/sync/errgroup"
 )
 
 func main() {
 	ctx := context.Background()
-
 	fakes := afero.NewBasePathFs(afero.NewOsFs(), "../pkg/fake/")
 
-	files, err := client.NewFSClient(afero.NewIOFS(fakes), nil)
+	g, err := client.NewFSClientWriter(
+		client.NewRequestValidator(http.DefaultClient,
+			func(req *http.Request) error {
+				if req.URL.Path == "/v1/databases/d105edb4-586a-4dcc-aaa6-ea944eb8d864" {
+					return docs.Skip
+				}
+
+				return nil
+			}), fakes)
 	checkErr(err)
-
-	g := &fakesGenerator{
-		gen:   cgtools.NewGenerator(fakes),
-		files: client.NewCachingClient(files),
-		cli: NewRequestValidator(http.DefaultClient, func(req *http.Request) error {
-			if req.URL.Path == "/v1/databases/d105edb4-586a-4dcc-aaa6-ea944eb8d864" {
-				return docs.Skip
-			}
-
-			return nil
-		}),
-		wg: &errgroup.Group{},
-	}
 
 	cli, err := notion.NewDefaultClient(os.Getenv("NOTION_TOKEN"), _client.WithHTTPClient(g))
 	checkErr(err)
@@ -56,10 +48,10 @@ func main() {
 	checkErr(docs.Walk(ctx, v, docs.TypePage, fake.PageID))
 
 	// create files
-	checkErr(g.wg.Wait())
+	checkErr(g.Wait())
 
 	// remove unneccessary files
-	for _, path := range files.Unseen() {
+	for _, path := range g.Unseen() {
 		if filepath.Dir(path) == "." {
 			continue
 		}
@@ -82,7 +74,7 @@ func main() {
 			checkErr(fakes.RemoveAll(path))
 
 			terminal.Printf(aurora.Red, "  • %v was removed\n", path)
-			return fs.SkipDir
+			return nil
 		}
 
 		return nil
