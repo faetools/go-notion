@@ -65,7 +65,7 @@ func Walk(ctx context.Context, v Visitor, tp Type, id notion.Id) error {
 						continue
 					}
 
-					return fmt.Errorf("visting block child database of %q: %w", id, err)
+					return fmt.Errorf("visiting block child database of %q: %w", id, err)
 				}
 
 				if err := Walk(ctx, v, TypeDatabaseEntries, notion.Id(b.Id)); err != nil {
