@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/faetools/cgtools"
@@ -32,11 +32,13 @@ func (c *fakesGenerator) Do(req *http.Request) (*http.Response, error) {
 		return nil, fmt.Errorf("%s %s - got %s", req.Method, req.URL.Path, resp.Status)
 	}
 
-	w := &bytes.Buffer{}
+	r, w := io.Pipe()
+
+	// write to w and close when done
 	resp.Body = TeeReadCloser(resp.Body, w)
 
 	c.wg.Go(func() error {
-		return c.gen.Write(req.URL.Path+".json", w)
+		return c.gen.Write(req.URL.Path+".json", r)
 	})
 
 	return resp, nil

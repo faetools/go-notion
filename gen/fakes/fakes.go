@@ -30,7 +30,7 @@ func main() {
 
 	g := &fakesGenerator{
 		gen:   cgtools.NewGenerator(fakes),
-		files: files,
+		files: client.NewCachingClient(files),
 		cli: NewRequestValidator(http.DefaultClient, func(req *http.Request) error {
 			if req.URL.Path == "/v1/databases/d105edb4-586a-4dcc-aaa6-ea944eb8d864" {
 				return docs.Skip
