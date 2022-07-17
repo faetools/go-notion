@@ -21,12 +21,12 @@ func TestClient(t *testing.T) {
 
 	ctx := context.Background()
 
-	cli, err := fake.NewClient()
+	cli, fsClient, err := fake.NewClient()
 	assert.NoError(t, err)
 
 	v := docs.NewVisitor(
 		// get the document and at the same time check if the response has been parsed correctly
-		docs.NewGetterWithCache(&responseTester{cli: cli}, nil),
+		&responseTester{cli: cli},
 
 		// don't do anything after having fetched the document, just continue
 		func(p *notion.Page) error { return nil },
@@ -35,6 +35,8 @@ func TestClient(t *testing.T) {
 		func(entries notion.Pages) error { return nil })
 
 	assert.NoError(t, docs.Walk(ctx, v, docs.TypePage, fake.PageID))
+
+	assert.Empty(t, fsClient.Unseen())
 }
 
 type responseTester struct{ cli *notion.Client }
@@ -79,10 +81,6 @@ func (rt *responseTester) GetAllDatabaseEntries(ctx context.Context, id notion.I
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(resp.JSON200)
-	fmt.Println(resp.HTTPResponse)
-	fmt.Println(string(resp.Body))
 
 	return resp.JSON200.Results, validateResponseParsing(resp.HTTPResponse, resp.Body, resp.JSON200)
 }

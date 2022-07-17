@@ -34,21 +34,21 @@ func Walk(ctx context.Context, v Visitor, tp Type, id notion.Id) error {
 				return nil
 			}
 
-			return err
+			return fmt.Errorf("visiting page %q: %w", id, err)
 		}
 
 		return Walk(ctx, v, TypeBlocks, id)
 	case TypeBlocks:
 		blocks, err := v.VisitBlocks(ctx, id)
 		if err != nil {
-			return err
+			return fmt.Errorf("visiting block children of %q: %w", id, err)
 		}
 
 		for _, b := range blocks {
 			switch b.Type {
 			case notion.BlockTypeChildPage:
 				if err := Walk(ctx, v, TypePage, notion.Id(b.Id)); err != nil {
-					return err
+					return fmt.Errorf("walking block child page of %q: %w", id, err)
 				}
 			case notion.BlockTypeChildDatabase:
 				if err := v.VisitDatabase(ctx, notion.Id(b.Id)); err != nil {
@@ -61,20 +61,20 @@ func Walk(ctx context.Context, v Visitor, tp Type, id notion.Id) error {
 					//
 					// We're still calling Walk, and check here for existence of a database with the ID.
 					apiErr := &notion.Error{}
-					if errors.As(err, &apiErr) || apiErr.Status == http.StatusNotFound {
+					if errors.As(err, &apiErr) && apiErr.Status == http.StatusNotFound {
 						continue
 					}
 
-					return err
+					return fmt.Errorf("visting block child database of %q: %w", id, err)
 				}
 
 				if err := Walk(ctx, v, TypeDatabaseEntries, notion.Id(b.Id)); err != nil {
-					return err
+					return fmt.Errorf("walking child database entries of %q: %w", id, err)
 				}
 			default:
 				if b.HasChildren {
 					if err := Walk(ctx, v, TypeBlocks, notion.Id(b.Id)); err != nil {
-						return err
+						return fmt.Errorf("walking children a block in %q: %w", id, err)
 					}
 				}
 			}
@@ -87,7 +87,7 @@ func Walk(ctx context.Context, v Visitor, tp Type, id notion.Id) error {
 				return nil
 			}
 
-			return err
+			return fmt.Errorf("visiting database %q: %w", id, err)
 		}
 
 		return Walk(ctx, v, TypeDatabaseEntries, id)
@@ -98,12 +98,12 @@ func Walk(ctx context.Context, v Visitor, tp Type, id notion.Id) error {
 				return nil
 			}
 
-			return err
+			return fmt.Errorf("visiting database entries of %q: %w", id, err)
 		}
 
 		for _, p := range entries {
 			if err := Walk(ctx, v, TypePage, notion.Id(p.Id)); err != nil {
-				return err
+				return fmt.Errorf("walking entry in database %q: %w", id, err)
 			}
 		}
 
