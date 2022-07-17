@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/faetools/go-notion/pkg/notion"
 )
@@ -50,12 +51,24 @@ func Walk(ctx context.Context, v Visitor, tp Type, id notion.Id) error {
 					return err
 				}
 			case notion.BlockTypeChildDatabase:
-				// Unfortunately, notion does not tell us if this child database
-				// has the same ID as the block ID or if a child database was just referenced.
-				//
-				// We're still calling Walk, the user will need to filter out such references
-				// in their VisitDatabase method.
-				if err := Walk(ctx, v, TypeDatabase, notion.Id(b.Id)); err != nil {
+				if err := v.VisitDatabase(ctx, notion.Id(b.Id)); err != nil {
+					if errors.Is(err, Skip) {
+						continue
+					}
+
+					// Unfortunately, notion does not tell us if a child database
+					// has the same ID as the block ID or if a child database was merely referenced.
+					//
+					// We're still calling Walk, and check here for existence of a database with the ID.
+					apiErr := &notion.Error{}
+					if errors.As(err, &apiErr) || apiErr.Status == http.StatusNotFound {
+						continue
+					}
+
+					return err
+				}
+
+				if err := Walk(ctx, v, TypeDatabaseEntries, notion.Id(b.Id)); err != nil {
 					return err
 				}
 			default:
