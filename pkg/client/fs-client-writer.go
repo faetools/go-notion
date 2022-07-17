@@ -22,7 +22,7 @@ type FSClientWriter struct {
 	// the already existing files
 	files client.HTTPRequestDoer
 	// a wait group for writing files in parallel
-	wg *errgroup.Group
+	eg *errgroup.Group
 
 	fsClient *FSClient
 }
@@ -44,7 +44,7 @@ func NewFSClientWriter(cli client.HTTPRequestDoer, fs afero.Fs) (*FSClientWriter
 		// because the generator could be in the middle of writing
 		files: NewCachingClient(fsClient),
 
-		wg:       &errgroup.Group{},
+		eg:       &errgroup.Group{},
 		fsClient: fsClient,
 	}, nil
 }
@@ -67,20 +67,26 @@ func (c *FSClientWriter) Do(req *http.Request) (*http.Response, error) {
 		return nil, fmt.Errorf("%s %s - got %s", req.Method, req.URL.Path, resp.Status)
 	}
 
-	r, w := io.Pipe()
-
-	// write to w and close when done
-	resp.Body = _io.TeeReadCloser(resp.Body, w)
-
-	// write the response to file
-	c.wg.Go(func() error {
-		return c.gen.Write(req.URL.Path+".json", r)
-	})
+	c.eg.Go(c.write(req.URL.Path+".json", InterceptReadCloser(&resp.Body)))
 
 	return resp, nil
 }
 
+func (c *FSClientWriter) write(fileName string, r io.Reader) func() error {
+	return func() error {
+		return c.gen.Write(fileName, r)
+	}
+}
+
+
+func InterceptReadCloser(body *io.ReadCloser) io.Reader {
+	r, w := io.Pipe()
+	*body = _io.TeeReadCloser(*body, w)
+
+	return r
+}
+
 // Wait waits for all files to be written.
-func (c FSClientWriter) Wait() error { return c.wg.Wait() }
+func (c FSClientWriter) Wait() error { return c.eg.Wait() }
 
 func (c FSClientWriter) Unseen() []string { return c.fsClient.Unseen() }
