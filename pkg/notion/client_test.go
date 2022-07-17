@@ -1,9 +1,12 @@
 package notion_test
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"net/http"
 	"testing"
 	"time"
 
@@ -11,22 +14,19 @@ import (
 	"github.com/faetools/go-notion/pkg/fake"
 	"github.com/faetools/go-notion/pkg/notion"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	gock "gopkg.in/h2non/gock.v1"
 )
 
 func TestClient(t *testing.T) {
 	t.Parallel()
-	t.Cleanup(gock.Off)
 
 	ctx := context.Background()
 
-	cli, err := notion.NewDefaultClient("")
-	require.NoError(t, err)
+	cli, err := fake.NewClient()
+	assert.NoError(t, err)
 
 	v := docs.NewVisitor(
 		// get the document and at the same time check if the response has been parsed correctly
-		docs.NewGetterWithCache(&responseTester{cli: cli, t: t}, nil),
+		docs.NewGetterWithCache(&responseTester{cli: cli}, nil),
 
 		// don't do anything after having fetched the document, just continue
 		func(p *notion.Page) error { return nil },
@@ -37,89 +37,94 @@ func TestClient(t *testing.T) {
 	assert.NoError(t, docs.Walk(ctx, v, docs.TypePage, fake.PageID))
 }
 
-type responseTester struct {
-	cli *notion.Client
-
-	t *testing.T
-}
+type responseTester struct{ cli *notion.Client }
 
 // GetNotionPage implements notion.Getter
-func (g *responseTester) GetNotionPage(ctx context.Context, id notion.Id) (*notion.Page, error) {
-	g.t.Helper()
+func (rt *responseTester) GetNotionPage(ctx context.Context, id notion.Id) (*notion.Page, error) {
+	resp, err := rt.cli.GetPage(ctx, id)
+	if err != nil {
+		return nil, err
+	}
 
-	path := fmt.Sprintf("v1/pages/%s", id)
-	fake.MockResponseTo(g.t, path)
-
-	p, err := g.cli.GetNotionPage(ctx, id)
-	require.NoError(g.t, err)
-
-	assertResponseWellParsed(g.t, path, p)
-
-	return p, nil
+	return resp.JSON200, validateResponseParsing(resp.HTTPResponse, resp.Body, resp.JSON200)
 }
 
 // GetAllBlocks implements notion.Getter
 func (rt *responseTester) GetAllBlocks(ctx context.Context, id notion.Id) (notion.Blocks, error) {
-	rt.t.Helper()
-
-	path := fmt.Sprintf("v1/blocks/%s/children", id)
-	fake.MockResponseTo(rt.t, path)
-
 	resp, err := rt.cli.GetBlocks(ctx, id, &notion.GetBlocksParams{})
-	require.NoError(rt.t, err)
+	if err != nil {
+		return nil, err
+	}
 
-	assertResponseWellParsed(rt.t, path, resp.JSON200)
-
-	return resp.JSON200.Results, nil
+	return resp.JSON200.Results, validateResponseParsing(resp.HTTPResponse, resp.Body, resp.JSON200)
 }
 
 // GetNotionDatabase implements notion.Getter
 func (rt *responseTester) GetNotionDatabase(ctx context.Context, id notion.Id) (*notion.Database, error) {
-	rt.t.Helper()
-
-	switch id {
-	case "d105edb4-586a-4dcc-aaa6-ea944eb8d864":
+	resp, err := rt.cli.GetDatabase(ctx, id)
+	switch {
+	case err != nil:
+		return nil, err
+	case resp.StatusCode() == http.StatusNotFound:
 		// not the ID of the actual database
-		return nil, docs.Skip
+		return nil, resp.JSON404
 	}
 
-	path := fmt.Sprintf("v1/databases/%s", id)
-	fake.MockResponseTo(rt.t, path)
-
-	resp, err := rt.cli.GetDatabase(ctx, id)
-	require.NoError(rt.t, err)
-
-	assertResponseWellParsed(rt.t, path, resp.JSON200)
-
-	return resp.JSON200, nil
+	return resp.JSON200, validateResponseParsing(resp.HTTPResponse, resp.Body, resp.JSON200)
 }
 
 // GetAllDatabaseEntries implements notion.Getter
 func (rt *responseTester) GetAllDatabaseEntries(ctx context.Context, id notion.Id) (notion.Pages, error) {
-	rt.t.Helper()
-
-	path := fmt.Sprintf("v1/databases/%s/query", id)
-	fake.MockResponseTo(rt.t, path)
-
 	resp, err := rt.cli.QueryDatabase(ctx, id, notion.QueryDatabaseJSONRequestBody{})
-	require.NoError(rt.t, err)
+	if err != nil {
+		return nil, err
+	}
 
-	assertResponseWellParsed(rt.t, path, resp.JSON200)
+	fmt.Println(resp.JSON200)
+	fmt.Println(resp.HTTPResponse)
+	fmt.Println(string(resp.Body))
 
-	return resp.JSON200.Results, nil
+	return resp.JSON200.Results, validateResponseParsing(resp.HTTPResponse, resp.Body, resp.JSON200)
 }
 
-func assertResponseWellParsed(t *testing.T, path string, resp any) {
-	t.Helper()
+// validateResponseParsing check whether we have parsed the response correctly,
+// or if we missed or added fields.
+func validateResponseParsing(resp *http.Response, body []byte, parsed any) error {
+	path := resp.Request.URL.Path
 
-	respMarshalled, err := json.Marshal(resp)
-	require.NoError(t, err)
+	gotMarshalled, err := json.Marshal(parsed)
+	if err != nil {
+		return fmt.Errorf("marshalling the parsed response for %q: %w", path, err)
+	}
 
-	var expected, actual any
-	assert.NoError(t, json.Unmarshal(fake.ResponseTo(t, path), &expected))
-	assert.NoError(t, json.Unmarshal(respMarshalled, &actual))
+	// unmarshal both as general as we can
+	var want, got any
 
-	assert.Equal(t, expected, cleanTimestamps(actual), "result of GET %s was not well parsed", path)
+	if err := json.Unmarshal(body, &want); err != nil {
+		return fmt.Errorf("unmarshalling response body for %q: %w", path, err)
+	}
+
+	if err := json.Unmarshal(gotMarshalled, &got); err != nil {
+		return fmt.Errorf("unmarshalling back the response we marshalled for %q: %w", path, err)
+	}
+
+	t := &testBuffer{}
+	assert.Equal(t, want, cleanTimestamps(got), "result of GET %s was not well parsed", path)
+	return t.Err()
+}
+
+type testBuffer struct{ bytes.Buffer }
+
+func (t *testBuffer) Errorf(format string, args ...interface{}) {
+	t.WriteString(fmt.Sprintf(format, args...))
+}
+
+func (t testBuffer) Err() error {
+	if t.Len() == 0 {
+		return nil
+	}
+
+	return errors.New(t.String())
 }
 
 func cleanTimestamps(a any) any {
