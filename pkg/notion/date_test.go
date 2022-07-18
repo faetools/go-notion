@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var testTimezone = "Asia/Shanghai"
+var tzName = "Asia/Shanghai"
 
 const (
 	layoutDate = "2006-01-02"
@@ -48,7 +48,7 @@ func randomTime(t *testing.T, isDate bool, loc *time.Location) time.Time {
 func TestDate(t *testing.T) {
 	t.Parallel()
 
-	shanghai, err := time.LoadLocation(testTimezone)
+	shanghai, err := time.LoadLocation(tzName)
 	require.NoError(t, err)
 
 	for _, tt := range []struct {
@@ -153,4 +153,28 @@ func TestDate_Errors(t *testing.T) {
 
 	assert.EqualError(t, json.Unmarshal([]byte(`{"start":"2022-07-10T19:01:52Z","end":"foo"}`), &date),
 		`parsing time "foo" as "2006-01-02T15:04:05Z07:00": cannot parse "foo" as "2006"`)
+}
+
+func TestDate_UnusualTime(t *testing.T) {
+	t.Parallel()
+
+	z, err := time.LoadLocation(tzName)
+	assert.NoError(t, err)
+
+	ts := time.Date(1900, 1, 1, 0, 0, 3, 0, z)
+
+	d := notion.Date{Start: ts, TimeZone: &tzName}
+
+	b, err := json.Marshal(d)
+	assert.NoError(t, err)
+
+	assert.Equal(t, `{"end":null,"start":"1900-01-01T00:00:03+08:05","time_zone":"Asia/Shanghai"}`, string(b))
+
+	newD := notion.Date{}
+	assert.NoError(t, json.Unmarshal(b, &newD))
+
+	assert.Equal(t, d.TimeZone, newD.TimeZone)
+	assert.Equal(t, z, newD.Start.Location())
+
+	assert.True(t, d.Start.Equal(newD.Start), "time is off by %s", newD.Start.Sub(d.Start))
 }
