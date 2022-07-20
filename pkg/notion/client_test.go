@@ -12,8 +12,9 @@ import (
 
 	"github.com/faetools/go-notion/pkg/docs"
 	"github.com/faetools/go-notion/pkg/fake"
-	"github.com/faetools/go-notion/pkg/notion"
+	. "github.com/faetools/go-notion/pkg/notion"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestClient(t *testing.T) {
@@ -29,20 +30,20 @@ func TestClient(t *testing.T) {
 		&responseTester{cli: cli},
 
 		// don't do anything after having fetched the document, just continue
-		func(p *notion.Page) error { return nil },
-		func(blocks notion.Blocks) error { return nil },
-		func(db *notion.Database) error { return nil },
-		func(entries notion.Pages) error { return nil })
+		func(p *Page) error { return nil },
+		func(blocks Blocks) error { return nil },
+		func(db *Database) error { return nil },
+		func(entries Pages) error { return nil })
 
-	assert.NoError(t, docs.Walk(ctx, v, docs.TypePage, fake.PageID))
+	require.NoError(t, docs.Walk(ctx, v, docs.TypePage, fake.PageID))
 
 	assert.Empty(t, fsClient.Unseen())
 }
 
-type responseTester struct{ cli *notion.Client }
+type responseTester struct{ cli *Client }
 
-// GetNotionPage implements notion.Getter
-func (rt *responseTester) GetNotionPage(ctx context.Context, id notion.Id) (*notion.Page, error) {
+// GetNotionPage implements Getter
+func (rt *responseTester) GetNotionPage(ctx context.Context, id Id) (*Page, error) {
 	resp, err := rt.cli.GetPage(ctx, id)
 	if err != nil {
 		return nil, err
@@ -51,18 +52,22 @@ func (rt *responseTester) GetNotionPage(ctx context.Context, id notion.Id) (*not
 	return resp.JSON200, validateResponseParsing(resp.HTTPResponse, resp.Body, resp.JSON200)
 }
 
-// GetAllBlocks implements notion.Getter
-func (rt *responseTester) GetAllBlocks(ctx context.Context, id notion.Id) (notion.Blocks, error) {
-	resp, err := rt.cli.GetBlocks(ctx, id, &notion.GetBlocksParams{})
+// GetAllBlocks implements Getter
+func (rt *responseTester) GetAllBlocks(ctx context.Context, id Id) (Blocks, error) {
+	resp, err := rt.cli.GetBlocks(ctx, id, &GetBlocksParams{})
 	if err != nil {
+		return nil, err
+	}
+
+	if err := validateBlocks(resp.JSON200.Results); err != nil {
 		return nil, err
 	}
 
 	return resp.JSON200.Results, validateResponseParsing(resp.HTTPResponse, resp.Body, resp.JSON200)
 }
 
-// GetNotionDatabase implements notion.Getter
-func (rt *responseTester) GetNotionDatabase(ctx context.Context, id notion.Id) (*notion.Database, error) {
+// GetNotionDatabase implements Getter
+func (rt *responseTester) GetNotionDatabase(ctx context.Context, id Id) (*Database, error) {
 	resp, err := rt.cli.GetDatabase(ctx, id)
 	switch {
 	case err != nil:
@@ -72,12 +77,18 @@ func (rt *responseTester) GetNotionDatabase(ctx context.Context, id notion.Id) (
 		return nil, resp.JSON404
 	}
 
-	return resp.JSON200, validateResponseParsing(resp.HTTPResponse, resp.Body, resp.JSON200)
+	db := resp.JSON200
+
+	if err := validateDatabase(db); err != nil {
+		return nil, err
+	}
+
+	return db, validateResponseParsing(resp.HTTPResponse, resp.Body, db)
 }
 
-// GetAllDatabaseEntries implements notion.Getter
-func (rt *responseTester) GetAllDatabaseEntries(ctx context.Context, id notion.Id) (notion.Pages, error) {
-	resp, err := rt.cli.QueryDatabase(ctx, id, notion.QueryDatabaseJSONRequestBody{})
+// GetAllDatabaseEntries implements Getter
+func (rt *responseTester) GetAllDatabaseEntries(ctx context.Context, id Id) (Pages, error) {
+	resp, err := rt.cli.QueryDatabase(ctx, id, QueryDatabaseJSONRequestBody{})
 	if err != nil {
 		return nil, err
 	}

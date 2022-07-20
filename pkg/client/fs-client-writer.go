@@ -78,7 +78,6 @@ func (c *FSClientWriter) write(fileName string, r io.Reader) func() error {
 	}
 }
 
-
 func InterceptReadCloser(body *io.ReadCloser) io.Reader {
 	r, w := io.Pipe()
 	*body = _io.TeeReadCloser(*body, w)

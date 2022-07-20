@@ -526,6 +526,9 @@ components:
             - link_to_page
             - table
             - table_row
+            - code
+            - breadcrumb
+            - audio
             - unsupported
           description: Type of block.
           example: paragraph
@@ -550,19 +553,19 @@ components:
         paragraph:
           $ref: '#/components/schemas/Paragraph'
         heading_1:
-          $ref: '#/components/schemas/Heading'
+          $ref: '#/components/schemas/Paragraph'
         heading_2:
-          $ref: '#/components/schemas/Heading'
+          $ref: '#/components/schemas/Paragraph'
         heading_3:
-          $ref: '#/components/schemas/Heading'
+          $ref: '#/components/schemas/Paragraph'
         bulleted_list_item:
-          $ref: '#/components/schemas/ListItem'
+          $ref: '#/components/schemas/Paragraph'
         numbered_list_item:
-          $ref: '#/components/schemas/ListItem'
+          $ref: '#/components/schemas/Paragraph'
         to_do:
           $ref: '#/components/schemas/ToDo'
         toggle:
-          $ref: '#/components/schemas/Toggle'
+          $ref: '#/components/schemas/Paragraph'
         code:
           $ref: '#/components/schemas/Code'
         child_page:
@@ -586,7 +589,7 @@ components:
         callout:
           $ref: '#/components/schemas/Callout'
         quote:
-          $ref: '#/components/schemas/Quote'
+          $ref: '#/components/schemas/Paragraph'
         equation:
           $ref: '#/components/schemas/Equation'
         divider:
@@ -1023,7 +1026,7 @@ components:
         - color
     Paragraph:
       type: object
-      description: Paragraph block objects contain this information within the `paragraph` property.
+      description: Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
       properties:
         rich_text:
           $ref: '#/components/schemas/RichTexts'
@@ -1695,27 +1698,6 @@ components:
           $ref: '#/components/schemas/UUID'
       required:
         - type
-    ListItem:
-      description: List item block objects contain this information within the `numbered_list_item` or `bulleted_list_item` property.
-      type: object
-      x-examples:
-        example-1:
-          rich_text:
-            - type: text
-              text:
-                content: Lacinato kale
-                link: null
-          color: default
-          children:
-            - type: paragraph
-      properties:
-        rich_text:
-          $ref: '#/components/schemas/RichTexts'
-        color:
-          $ref: '#/components/schemas/Color'
-      required:
-        - rich_text
-        - color
     File:
       type: object
       x-omitempty: false
@@ -1804,24 +1786,7 @@ components:
           $ref: '#/components/schemas/RichTexts'
       required:
         - type
-    Heading:
-      type: object
-      x-examples:
-        example:
-          rich_text:
-            - type: text
-              text:
-                content: Lacinato kale
-                link: null
-          color: default
-      properties:
-        rich_text:
-          $ref: '#/components/schemas/RichTexts'
-        color:
-          $ref: '#/components/schemas/Color'
-      required:
-        - rich_text
-        - color
+        - caption
     SyncedBlock:
       type: object
       x-examples:
@@ -1944,28 +1909,6 @@ components:
       required:
         - url
         - caption
-    Quote:
-      type: object
-      description: Quote block objects contain the following information within the quote field.
-      properties:
-        rich_text:
-          $ref: '#/components/schemas/RichTexts'
-        color:
-          $ref: '#/components/schemas/Color'
-      required:
-        - rich_text
-        - color
-    Toggle:
-      type: object
-      description: Toggle block objects contain the following information within the toggle field.
-      properties:
-        rich_text:
-          $ref: '#/components/schemas/RichTexts'
-        color:
-          $ref: '#/components/schemas/Color'
-      required:
-        - rich_text
-        - color
     Callout:
       type: object
       description: Callout block objects contain the following information within the callout field.

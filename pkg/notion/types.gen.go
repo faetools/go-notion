@@ -11,11 +11,14 @@ import (
 
 // Defines values for BlockType.
 const (
+	BlockTypeAudio            BlockType = "audio"
 	BlockTypeBookmark         BlockType = "bookmark"
+	BlockTypeBreadcrumb       BlockType = "breadcrumb"
 	BlockTypeBulletedListItem BlockType = "bulleted_list_item"
 	BlockTypeCallout          BlockType = "callout"
 	BlockTypeChildDatabase    BlockType = "child_database"
 	BlockTypeChildPage        BlockType = "child_page"
+	BlockTypeCode             BlockType = "code"
 	BlockTypeColumn           BlockType = "column"
 	BlockTypeColumnList       BlockType = "column_list"
 	BlockTypeDivider          BlockType = "divider"
@@ -312,8 +315,8 @@ type Block struct {
 	// Breadcrumb block objects do not contain any information within the breadcrumb property
 	Breadcrumb *map[string]interface{} `json:"breadcrumb,omitempty"`
 
-	// List item block objects contain this information within the `numbered_list_item` or `bulleted_list_item` property.
-	BulletedListItem *ListItem `json:"bulleted_list_item,omitempty"`
+	// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
+	BulletedListItem *Paragraph `json:"bulleted_list_item,omitempty"`
 
 	// Callout block objects contain the following information within the callout field.
 	Callout *Callout `json:"callout,omitempty"`
@@ -352,10 +355,16 @@ type Block struct {
 	File *FileWithCaption `json:"file,omitempty"`
 
 	// Whether or not the block has children blocks nested within it.
-	HasChildren bool     `json:"has_children"`
-	Heading1    *Heading `json:"heading_1,omitempty"`
-	Heading2    *Heading `json:"heading_2,omitempty"`
-	Heading3    *Heading `json:"heading_3,omitempty"`
+	HasChildren bool `json:"has_children"`
+
+	// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
+	Heading1 *Paragraph `json:"heading_1,omitempty"`
+
+	// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
+	Heading2 *Paragraph `json:"heading_2,omitempty"`
+
+	// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
+	Heading3 *Paragraph `json:"heading_3,omitempty"`
 
 	// A unique identifier for a page, block, database, or user.
 	Id UUID `json:"id"`
@@ -375,13 +384,13 @@ type Block struct {
 	LinkPreview *LinkPreview `json:"link_preview,omitempty"`
 	LinkToPage  *LinkToPage  `json:"link_to_page,omitempty"`
 
-	// List item block objects contain this information within the `numbered_list_item` or `bulleted_list_item` property.
-	NumberedListItem *ListItem `json:"numbered_list_item,omitempty"`
+	// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
+	NumberedListItem *Paragraph `json:"numbered_list_item,omitempty"`
 
 	// Always "block".
 	Object string `json:"object"`
 
-	// Paragraph block objects contain this information within the `paragraph` property.
+	// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
 	Paragraph *Paragraph `json:"paragraph,omitempty"`
 
 	// The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
@@ -390,8 +399,8 @@ type Block struct {
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
 	Pdf *FileWithCaption `json:"pdf,omitempty"`
 
-	// Quote block objects contain the following information within the quote field.
-	Quote       *Quote       `json:"quote,omitempty"`
+	// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
+	Quote       *Paragraph   `json:"quote,omitempty"`
 	SyncedBlock *SyncedBlock `json:"synced_block,omitempty"`
 	Table       *Table       `json:"table,omitempty"`
 
@@ -405,8 +414,8 @@ type Block struct {
 	// To do block objects contain this information within the `to_do` property.
 	ToDo *ToDo `json:"to_do,omitempty"`
 
-	// Toggle block objects contain the following information within the toggle field.
-	Toggle *Toggle `json:"toggle,omitempty"`
+	// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
+	Toggle *Paragraph `json:"toggle,omitempty"`
 
 	// Type of block.
 	Type BlockType `json:"type"`
@@ -640,13 +649,6 @@ type Filter struct {
 // Filters defines model for Filters.
 type Filters []Filter
 
-// Heading defines model for Heading.
-type Heading struct {
-	// The color of the block.
-	Color    Color     `json:"color"`
-	RichText RichTexts `json:"rich_text"`
-}
-
 // Page or database icon. It is either an emoji or a file.
 type Icon struct {
 	// Emoji character.
@@ -693,13 +695,6 @@ type LinkToPage struct {
 
 // Type of this link to page object.
 type LinkToPageType string
-
-// List item block objects contain this information within the `numbered_list_item` or `bulleted_list_item` property.
-type ListItem struct {
-	// The color of the block.
-	Color    Color     `json:"color"`
-	RichText RichTexts `json:"rich_text"`
-}
 
 // Mention defines model for Mention.
 type Mention struct {
@@ -807,7 +802,7 @@ type PagesList struct {
 	Type       string                 `json:"type"`
 }
 
-// Paragraph block objects contain this information within the `paragraph` property.
+// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
 type Paragraph struct {
 	// The color of the block.
 	Color    Color     `json:"color"`
@@ -924,13 +919,6 @@ type PropertyValue struct {
 
 // Properties of a page or database.
 type PropertyValues interface{}
-
-// Quote block objects contain the following information within the quote field.
-type Quote struct {
-	// The color of the block.
-	Color    Color     `json:"color"`
-	RichText RichTexts `json:"rich_text"`
-}
 
 // Reference defines model for Reference.
 type Reference struct {
@@ -1087,13 +1075,6 @@ type ToDo struct {
 	RichText RichTexts `json:"rich_text"`
 }
 
-// Toggle block objects contain the following information within the toggle field.
-type Toggle struct {
-	// The color of the block.
-	Color    Color     `json:"color"`
-	RichText RichTexts `json:"rich_text"`
-}
-
 // A unique identifier for a page, block, database, or user.
 type UUID string
 
@@ -1137,7 +1118,7 @@ type UsersList struct {
 
 // File objects contain data about files uploaded to Notion as well as external files linked in Notion.
 type Video struct {
-	Caption *RichTexts `json:"caption,omitempty"`
+	Caption RichTexts `json:"caption"`
 
 	// An external file is any URL that isn't hosted by Notion.
 	External *ExternalFile `json:"external,omitempty"`
