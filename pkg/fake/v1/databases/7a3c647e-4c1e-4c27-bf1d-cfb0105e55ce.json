@@ -12,7 +12,7 @@
     "object": "user",
     "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
   },
-  "last_edited_time": "2022-07-14T18:41:00.000Z",
+  "last_edited_time": "2022-07-22T17:22:00.000Z",
   "title": [
     {
       "type": "text",
@@ -35,19 +35,200 @@
   "description": [],
   "is_inline": true,
   "properties": {
-    "Tags": {
-      "id": "C%3EZ%5C",
-      "name": "Tags",
-      "type": "multi_select",
-      "multi_select": {
-        "options": []
+    "count of relations": {
+      "id": "%40ft%3F",
+      "name": "count of relations",
+      "type": "rollup",
+      "rollup": {
+        "rollup_property_name": "Name",
+        "relation_property_name": "Equal relation",
+        "rollup_property_id": "title",
+        "relation_property_id": "EUgY",
+        "function": "count"
       }
     },
-    "Date": {
-      "id": "Z%3CJj",
-      "name": "Date",
+    "A number": {
+      "id": "CQUf",
+      "name": "A number",
+      "type": "number",
+      "number": {
+        "format": "number"
+      }
+    },
+    "Equal relation": {
+      "id": "EUgY",
+      "name": "Equal relation",
+      "type": "relation",
+      "relation": {
+        "database_id": "7a3c647e-4c1e-4c27-bf1d-cfb0105e55ce",
+        "synced_property_id": "EUgY",
+        "synced_property_name": "Equal relation"
+      }
+    },
+    "My checkbox": {
+      "id": "JuTz",
+      "name": "My checkbox",
+      "type": "checkbox",
+      "checkbox": {}
+    },
+    "files": {
+      "id": "KXdF",
+      "name": "files",
+      "type": "files",
+      "files": {}
+    },
+    "when it was created": {
+      "id": "NeE%60",
+      "name": "when it was created",
+      "type": "created_time",
+      "created_time": {}
+    },
+    "Property": {
+      "id": "RYYU",
+      "name": "Property",
+      "type": "phone_number",
+      "phone_number": {}
+    },
+    "contact": {
+      "id": "TWA%3B",
+      "name": "contact",
+      "type": "email",
+      "email": {}
+    },
+    "Top": {
+      "id": "UtGj",
+      "name": "Top",
+      "type": "relation",
+      "relation": {
+        "database_id": "7a3c647e-4c1e-4c27-bf1d-cfb0105e55ce",
+        "synced_property_name": "Sub",
+        "synced_property_id": "VN:D"
+      }
+    },
+    "tags": {
+      "id": "UuqS",
+      "name": "tags",
+      "type": "multi_select",
+      "multi_select": {
+        "options": [
+          {
+            "id": "5e3a1052-bbdd-4b06-a321-1a6006877d34",
+            "name": "tag 1",
+            "color": "orange"
+          },
+          {
+            "id": "a013f196-72c4-44bd-b40d-1acbf65249c3",
+            "name": "tag 2",
+            "color": "red"
+          },
+          {
+            "id": "5f469e5d-e74d-45a9-aa89-a87dad5abaf8",
+            "name": "tag 3",
+            "color": "gray"
+          }
+        ]
+      }
+    },
+    "Sub": {
+      "id": "VN%3AD",
+      "name": "Sub",
+      "type": "relation",
+      "relation": {
+        "database_id": "7a3c647e-4c1e-4c27-bf1d-cfb0105e55ce",
+        "synced_property_name": "Top",
+        "synced_property_id": "UtGj"
+      }
+    },
+    "formula": {
+      "id": "XJ%3Dc",
+      "name": "formula",
+      "type": "formula",
+      "formula": {
+        "expression": "if(prop(\"yes or no?\"), \"yes\", \"no\")"
+      }
+    },
+    "people": {
+      "id": "%60cG%5E",
+      "name": "people",
+      "type": "people",
+      "people": {}
+    },
+    "who last edited it": {
+      "id": "eszR",
+      "name": "who last edited it",
+      "type": "last_edited_by",
+      "last_edited_by": {}
+    },
+    "select": {
+      "id": "hiMX",
+      "name": "select",
+      "type": "select",
+      "select": {
+        "options": [
+          {
+            "id": "[;Jv",
+            "name": "bar",
+            "color": "blue"
+          },
+          {
+            "id": "q~Z:",
+            "name": "foo",
+            "color": "green"
+          }
+        ]
+      }
+    },
+    "yes or no?": {
+      "id": "pt%3F%5D",
+      "name": "yes or no?",
+      "type": "checkbox",
+      "checkbox": {}
+    },
+    "some date": {
+      "id": "uK%60G",
+      "name": "some date",
       "type": "date",
       "date": {}
+    },
+    "Money": {
+      "id": "wtdu",
+      "name": "Money",
+      "type": "number",
+      "number": {
+        "format": "euro"
+      }
+    },
+    "number with commas": {
+      "id": "yUX%3B",
+      "name": "number with commas",
+      "type": "number",
+      "number": {
+        "format": "number_with_commas"
+      }
+    },
+    "meme links": {
+      "id": "z%3BWh",
+      "name": "meme links",
+      "type": "url",
+      "url": {}
+    },
+    "Some text": {
+      "id": "~FiP",
+      "name": "Some text",
+      "type": "rich_text",
+      "rich_text": {}
+    },
+    "who created it": {
+      "id": "~esH",
+      "name": "who created it",
+      "type": "created_by",
+      "created_by": {}
+    },
+    "Status": {
+      "id": "~%7CtN",
+      "name": "Status",
+      "type": "status",
+      "status": {}
     },
     "Name": {
       "id": "title",

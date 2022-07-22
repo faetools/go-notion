@@ -1299,6 +1299,37 @@ components:
           $ref: '#/components/schemas/RelationConfiguration'
         number:
           $ref: '#/components/schemas/NumberConfig'
+        status:
+          type: object
+          description: Status database properties cannot currently be configured via the API and so have no additional configuration within the `status` property.
+        rollup:
+          $ref: '#/components/schemas/Rollup'
+        formula:
+          $ref: '#/components/schemas/Formula'
+        created_time:
+          type: object
+          description: Created time database property objects have no additional configuration within the `created_time` property.
+        created_by:
+          type: object
+          description: Created by database property objects have no additional configuration within the `created_by` property.
+        last_edited_time:
+          type: object
+          description: Last edited time database property objects have no additional configuration within the `last_edited_time` property.
+        last_edited_by:
+          type: object
+          description: Last edited by database property objects have no additional configuration within the `last_edited_by` property.
+        people:
+          type: object
+          description: People database property objects have no additional configuration within the `people` property.
+        url:
+          type: object
+          description: URL database property objects have no additional configuration within the `url` property.
+        email:
+          type: object
+          description: Email database property objects have no additional configuration within the `email` property.
+        phone_number:
+          type: object
+          description: Phone number database property objects have no additional configuration within the `phone_number` property.
       required:
         - id
         - name
@@ -1879,6 +1910,60 @@ components:
           example: percent
       required:
         - format
+    Rollup:
+      type: object
+      description: Rollup database property objects contain the following configuration within the `rollup` property.
+      properties:
+        relation_property_name:
+          type: string
+          description: The name of the relation property this property is responsible for rolling up.
+          example: Meals
+        relation_property_id:
+          type: string
+          example: fy:{
+          description: The `id` of the relation property this property is responsible for rolling up.
+        rollup_property_name:
+          type: string
+          example: Name
+          description: The name of the property of the pages in the related database that is used as an input to `function`.
+        rollup_property_id:
+          type: string
+          example: fy:{
+          description: The `id` of the property of the pages in the related database that is used as an input to function.
+        function:
+          type: string
+          description: The function that is evaluated for every page in the relation of the rollup.
+          example: count_unique_values
+          enum:
+            - count_all
+            - count_values
+            - count_unique_values
+            - count_empty
+            - count_not_empty
+            - percent_empty
+            - percent_not_empty
+            - sum
+            - average
+            - median
+            - min
+            - max
+            - range
+            - show_original
+      required:
+        - relation_property_name
+        - relation_property_id
+        - rollup_property_name
+        - rollup_property_id
+        - function
+    Formula:
+      type: object
+      description: Formula database property objects contain this configuration within the `formula` property.
+      properties:
+        expression:
+          type: string
+          description: 'Formula to evaluate for this property. You can read more about the syntax for formulas in the help center: https://notion.so/notion/Formulas-28f3f5c3ae644c59b4d862046ea6a541'
+      required:
+        - expression
     ToDo:
       description: To do block objects contain this information within the `to_do` property.
       type: object

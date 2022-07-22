@@ -257,6 +257,24 @@ const (
 	RichTextTypeText     RichTextType = "text"
 )
 
+// Defines values for RollupFunction.
+const (
+	RollupFunctionAverage           RollupFunction = "average"
+	RollupFunctionCountAll          RollupFunction = "count_all"
+	RollupFunctionCountEmpty        RollupFunction = "count_empty"
+	RollupFunctionCountNotEmpty     RollupFunction = "count_not_empty"
+	RollupFunctionCountUniqueValues RollupFunction = "count_unique_values"
+	RollupFunctionCountValues       RollupFunction = "count_values"
+	RollupFunctionMax               RollupFunction = "max"
+	RollupFunctionMedian            RollupFunction = "median"
+	RollupFunctionMin               RollupFunction = "min"
+	RollupFunctionPercentEmpty      RollupFunction = "percent_empty"
+	RollupFunctionPercentNotEmpty   RollupFunction = "percent_not_empty"
+	RollupFunctionRange             RollupFunction = "range"
+	RollupFunctionShowOriginal      RollupFunction = "show_original"
+	RollupFunctionSum               RollupFunction = "sum"
+)
+
 // Defines values for SortDirection.
 const (
 	SortDirectionAscending  SortDirection = "ascending"
@@ -649,6 +667,12 @@ type Filter struct {
 // Filters defines model for Filters.
 type Filters []Filter
 
+// Formula database property objects contain this configuration within the `formula` property.
+type Formula struct {
+	// Formula to evaluate for this property. You can read more about the syntax for formulas in the help center: https://notion.so/notion/Formulas-28f3f5c3ae644c59b4d862046ea6a541
+	Expression string `json:"expression"`
+}
+
 // Page or database icon. It is either an emoji or a file.
 type Icon struct {
 	// Emoji character.
@@ -841,32 +865,65 @@ type PropertyMeta struct {
 	// Checkbox database property schema objects have no additional configuration within the `checkbox` property.
 	Checkbox *map[string]interface{} `json:"checkbox,omitempty"`
 
+	// Created by database property objects have no additional configuration within the `created_by` property.
+	CreatedBy *map[string]interface{} `json:"created_by,omitempty"`
+
+	// Created time database property objects have no additional configuration within the `created_time` property.
+	CreatedTime *map[string]interface{} `json:"created_time,omitempty"`
+
 	// Date database property schema objects have no additional configuration within the `date` property.
 	Date *map[string]interface{} `json:"date,omitempty"`
+
+	// Email database property objects have no additional configuration within the `email` property.
+	Email *map[string]interface{} `json:"email,omitempty"`
 
 	// File database property schema objects have no additional configuration within the `file` property.
 	Files *map[string]interface{} `json:"files,omitempty"`
 
+	// Formula database property objects contain this configuration within the `formula` property.
+	Formula *Formula `json:"formula,omitempty"`
+
 	// A short identifier (not a UUID).
-	Id          string                  `json:"id"`
-	MultiSelect *PropertyOptionsWrapper `json:"multi_select,omitempty"`
+	Id string `json:"id"`
+
+	// Last edited by database property objects have no additional configuration within the `last_edited_by` property.
+	LastEditedBy *map[string]interface{} `json:"last_edited_by,omitempty"`
+
+	// Last edited time database property objects have no additional configuration within the `last_edited_time` property.
+	LastEditedTime *map[string]interface{} `json:"last_edited_time,omitempty"`
+	MultiSelect    *PropertyOptionsWrapper `json:"multi_select,omitempty"`
 
 	// The name of the property as it appears in Notion.
 	Name string `json:"name"`
 
 	// Number database property schema objects contain this configuration within the number property.
-	Number   *NumberConfig          `json:"number,omitempty"`
-	Relation *RelationConfiguration `json:"relation,omitempty"`
+	Number *NumberConfig `json:"number,omitempty"`
+
+	// People database property objects have no additional configuration within the `people` property.
+	People *map[string]interface{} `json:"people,omitempty"`
+
+	// Phone number database property objects have no additional configuration within the `phone_number` property.
+	PhoneNumber *map[string]interface{} `json:"phone_number,omitempty"`
+	Relation    *RelationConfiguration  `json:"relation,omitempty"`
 
 	// Text database property schema objects have no additional configuration within the `rich_text` property.
 	RichText *map[string]interface{} `json:"rich_text,omitempty"`
-	Select   *PropertyOptionsWrapper `json:"select,omitempty"`
+
+	// Rollup database property objects contain the following configuration within the `rollup` property.
+	Rollup *Rollup                 `json:"rollup,omitempty"`
+	Select *PropertyOptionsWrapper `json:"select,omitempty"`
+
+	// Status database properties cannot currently be configured via the API and so have no additional configuration within the `status` property.
+	Status *map[string]interface{} `json:"status,omitempty"`
 
 	// Title database property objects have no additional configuration within the `title` property.
 	Title *map[string]interface{} `json:"title,omitempty"`
 
 	// Type of the property.
 	Type PropertyType `json:"type"`
+
+	// URL database property objects have no additional configuration within the `url` property.
+	Url *map[string]interface{} `json:"url,omitempty"`
 }
 
 // PropertyMetas defines model for PropertyMetas.
@@ -968,6 +1025,27 @@ type RichTextType string
 
 // RichTexts defines model for RichTexts.
 type RichTexts []RichText
+
+// Rollup database property objects contain the following configuration within the `rollup` property.
+type Rollup struct {
+	// The function that is evaluated for every page in the relation of the rollup.
+	Function RollupFunction `json:"function"`
+
+	// The `id` of the relation property this property is responsible for rolling up.
+	RelationPropertyId string `json:"relation_property_id"`
+
+	// The name of the relation property this property is responsible for rolling up.
+	RelationPropertyName string `json:"relation_property_name"`
+
+	// The `id` of the property of the pages in the related database that is used as an input to function.
+	RollupPropertyId string `json:"rollup_property_id"`
+
+	// The name of the property of the pages in the related database that is used as an input to `function`.
+	RollupPropertyName string `json:"rollup_property_name"`
+}
+
+// The function that is evaluated for every page in the relation of the rollup.
+type RollupFunction string
 
 // SelectValue defines model for SelectValue.
 type SelectValue struct {

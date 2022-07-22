@@ -109,67 +109,6 @@ var (
 	}
 )
 
-var allNumberConfigFormats = []NumberConfigFormat{
-	NumberConfigFormatBaht,
-	NumberConfigFormatCanadianDollar,
-	NumberConfigFormatChileanPeso,
-	NumberConfigFormatColombianPeso,
-	NumberConfigFormatDanishKrone,
-	NumberConfigFormatDirham,
-	NumberConfigFormatDollar,
-	NumberConfigFormatEuro,
-	NumberConfigFormatForint,
-	NumberConfigFormatFranc,
-	NumberConfigFormatHongKongDollar,
-	NumberConfigFormatKoruna,
-	NumberConfigFormatKrona,
-	NumberConfigFormatLeu,
-	NumberConfigFormatLira,
-	NumberConfigFormatMexicanPeso,
-	NumberConfigFormatNewTaiwanDollar,
-	NumberConfigFormatNewZealandDollar,
-	NumberConfigFormatNorwegianKrone,
-	NumberConfigFormatNumber,
-	NumberConfigFormatNumberWithCommas,
-	NumberConfigFormatPercent,
-	NumberConfigFormatPhilippinePeso,
-	NumberConfigFormatPound,
-	NumberConfigFormatRand,
-	NumberConfigFormatReal,
-	NumberConfigFormatRinggit,
-	NumberConfigFormatRiyal,
-	NumberConfigFormatRuble,
-	NumberConfigFormatRupee,
-	NumberConfigFormatRupiah,
-	NumberConfigFormatShekel,
-	NumberConfigFormatWon,
-	NumberConfigFormatYen,
-	NumberConfigFormatYuan,
-	NumberConfigFormatZloty,
-}
-
-var allPropertyTypes = []PropertyType{
-	PropertyTypeCheckbox,
-	PropertyTypeCreatedBy,
-	PropertyTypeCreatedTime,
-	PropertyTypeDate,
-	PropertyTypeEmail,
-	PropertyTypeFiles,
-	PropertyTypeFormula,
-	PropertyTypeLastEditedBy,
-	PropertyTypeLastEditedTime,
-	PropertyTypeMultiSelect,
-	PropertyTypeNumber,
-	PropertyTypePeople,
-	PropertyTypePhoneNumber,
-	PropertyTypeRelation,
-	PropertyTypeRichText,
-	PropertyTypeRollup,
-	PropertyTypeSelect,
-	PropertyTypeTitle,
-	PropertyTypeUrl,
-}
-
 func validateBlocks(bs Blocks) error {
 	return firstError(bs, validateBlock)
 }
@@ -207,7 +146,7 @@ func validateBlock(b Block) error {
 
 	switch b.Type {
 	case BlockTypeAudio:
-		return validateFile(b.Audio)
+		return validateFileWithCaption(b.Audio)
 	case BlockTypeBookmark:
 		if err := validateURL(b.Bookmark.Url); err != nil {
 			return err
@@ -248,7 +187,7 @@ func validateBlock(b Block) error {
 	case BlockTypeEquation:
 		return validateEquation(b.Equation)
 	case BlockTypeFile:
-		return validateFile(b.File)
+		return validateFileWithCaption(b.File)
 	case BlockTypeHeading1:
 		return validateParagraph(b.Heading1)
 	case BlockTypeHeading2:
@@ -256,7 +195,7 @@ func validateBlock(b Block) error {
 	case BlockTypeHeading3:
 		return validateParagraph(b.Heading3)
 	case BlockTypeImage:
-		return validateFile(b.Image)
+		return validateFileWithCaption(b.Image)
 	case BlockTypeLinkPreview:
 		return validateURL(b.LinkPreview.Url)
 	case BlockTypeLinkToPage:
@@ -266,7 +205,7 @@ func validateBlock(b Block) error {
 	case BlockTypeParagraph:
 		return validateParagraph(b.Paragraph)
 	case BlockTypePdf:
-		return validateFile(b.Pdf)
+		return validateFileWithCaption(b.Pdf)
 	case BlockTypeQuote:
 		return validateParagraph(b.Quote)
 	case BlockTypeSyncedBlock:
@@ -396,7 +335,7 @@ func firstError[T any](collection []T, validate func(T) error) error {
 	return nil
 }
 
-func validateFile(f *FileWithCaption) error {
+func validateFileWithCaption(f *FileWithCaption) error {
 	if f.Caption != nil {
 		if err := validateRichTexts(*f.Caption); err != nil {
 			return err
@@ -553,14 +492,18 @@ func validateEquation(eq *Equation) error {
 func validateMention(m *Mention) error {
 	switch m.Type {
 	case MentionTypeDatabase:
-		// TODO continue here
+		_, err := uuid.Parse(string(m.Database.Id))
+		return err
 	case MentionTypeDate:
+		return nil
 	case MentionTypeLinkPreview:
+		return validateURL(m.LinkPreview.Url)
 	case MentionTypePage:
+		_, err := uuid.Parse(string(m.Page.Id))
+		return err
 	case MentionTypeUser:
+		return validateUser(m.User)
 	default:
 		return fmt.Errorf("unknown mention type %q", m.Type)
 	}
-
-	return nil
 }
