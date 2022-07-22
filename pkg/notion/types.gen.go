@@ -157,6 +157,14 @@ const (
 	FileWithCaptionTypeFile     FileWithCaptionType = "file"
 )
 
+// Defines values for FormulaType.
+const (
+	FormulaTypeBoolean FormulaType = "boolean"
+	FormulaTypeDate    FormulaType = "date"
+	FormulaTypeNumber  FormulaType = "number"
+	FormulaTypeString  FormulaType = "string"
+)
+
 // Defines values for IconType.
 const (
 	IconTypeEmoji    IconType = "emoji"
@@ -246,6 +254,7 @@ const (
 	PropertyTypeRichText       PropertyType = "rich_text"
 	PropertyTypeRollup         PropertyType = "rollup"
 	PropertyTypeSelect         PropertyType = "select"
+	PropertyTypeStatus         PropertyType = "status"
 	PropertyTypeTitle          PropertyType = "title"
 	PropertyTypeUrl            PropertyType = "url"
 )
@@ -257,22 +266,30 @@ const (
 	RichTextTypeText     RichTextType = "text"
 )
 
-// Defines values for RollupFunction.
+// Defines values for RollupType.
 const (
-	RollupFunctionAverage           RollupFunction = "average"
-	RollupFunctionCountAll          RollupFunction = "count_all"
-	RollupFunctionCountEmpty        RollupFunction = "count_empty"
-	RollupFunctionCountNotEmpty     RollupFunction = "count_not_empty"
-	RollupFunctionCountUniqueValues RollupFunction = "count_unique_values"
-	RollupFunctionCountValues       RollupFunction = "count_values"
-	RollupFunctionMax               RollupFunction = "max"
-	RollupFunctionMedian            RollupFunction = "median"
-	RollupFunctionMin               RollupFunction = "min"
-	RollupFunctionPercentEmpty      RollupFunction = "percent_empty"
-	RollupFunctionPercentNotEmpty   RollupFunction = "percent_not_empty"
-	RollupFunctionRange             RollupFunction = "range"
-	RollupFunctionShowOriginal      RollupFunction = "show_original"
-	RollupFunctionSum               RollupFunction = "sum"
+	RollupTypeArray  RollupType = "array"
+	RollupTypeDate   RollupType = "date"
+	RollupTypeNumber RollupType = "number"
+	RollupTypeString RollupType = "string"
+)
+
+// Defines values for RollupConfigFunction.
+const (
+	RollupConfigFunctionAverage           RollupConfigFunction = "average"
+	RollupConfigFunctionCountAll          RollupConfigFunction = "count_all"
+	RollupConfigFunctionCountEmpty        RollupConfigFunction = "count_empty"
+	RollupConfigFunctionCountNotEmpty     RollupConfigFunction = "count_not_empty"
+	RollupConfigFunctionCountUniqueValues RollupConfigFunction = "count_unique_values"
+	RollupConfigFunctionCountValues       RollupConfigFunction = "count_values"
+	RollupConfigFunctionMax               RollupConfigFunction = "max"
+	RollupConfigFunctionMedian            RollupConfigFunction = "median"
+	RollupConfigFunctionMin               RollupConfigFunction = "min"
+	RollupConfigFunctionPercentEmpty      RollupConfigFunction = "percent_empty"
+	RollupConfigFunctionPercentNotEmpty   RollupConfigFunction = "percent_not_empty"
+	RollupConfigFunctionRange             RollupConfigFunction = "range"
+	RollupConfigFunctionShowOriginal      RollupConfigFunction = "show_original"
+	RollupConfigFunctionSum               RollupConfigFunction = "sum"
 )
 
 // Defines values for SortDirection.
@@ -623,6 +640,9 @@ type File struct {
 	// File objects contain this information within the `file` property.
 	File *NotionFile `json:"file,omitempty"`
 
+	// A string value corresponding to a filename of the original file upload
+	Name *string `json:"name,omitempty"`
+
 	// Type of this file object.
 	Type FileType `json:"type"`
 }
@@ -667,8 +687,31 @@ type Filter struct {
 // Filters defines model for Filters.
 type Filters []Filter
 
-// Formula database property objects contain this configuration within the `formula` property.
+// Formula property value objects represent the result of evaluating a formula described in the database's properties. These objects contain a type key and a key corresponding with the value of type. The value of a formula cannot be updated directly.
+//
+// ## Formula values may not match the Notion UI.
+//
+// Formulas returned in page objects are subject to a 25 page reference limitation. The Retrieve a page property endpoint should be used to get an accurate formula value.
 type Formula struct {
+	// Boolean formula property values contain a boolean within the boolean property.
+	Boolean *bool `json:"boolean,omitempty"`
+
+	// Date formula property values contain an optional date property value within the date property.
+	Date *time.Time `json:"date,omitempty"`
+
+	// Number formula property values contain an optional number within the number property.
+	Number *float32 `json:"number,omitempty"`
+
+	// String formula property values contain an optional string within the string property.
+	String *string     `json:"string,omitempty"`
+	Type   FormulaType `json:"type"`
+}
+
+// FormulaType defines model for Formula.Type.
+type FormulaType string
+
+// Formula database property objects contain this configuration within the `formula` property.
+type FormulaConfig struct {
 	// Formula to evaluate for this property. You can read more about the syntax for formulas in the help center: https://notion.so/notion/Formulas-28f3f5c3ae644c59b4d862046ea6a541
 	Expression string `json:"expression"`
 }
@@ -881,7 +924,7 @@ type PropertyMeta struct {
 	Files *map[string]interface{} `json:"files,omitempty"`
 
 	// Formula database property objects contain this configuration within the `formula` property.
-	Formula *Formula `json:"formula,omitempty"`
+	Formula *FormulaConfig `json:"formula,omitempty"`
 
 	// A short identifier (not a UUID).
 	Id string `json:"id"`
@@ -910,7 +953,7 @@ type PropertyMeta struct {
 	RichText *map[string]interface{} `json:"rich_text,omitempty"`
 
 	// Rollup database property objects contain the following configuration within the `rollup` property.
-	Rollup *Rollup                 `json:"rollup,omitempty"`
+	Rollup *RollupConfig           `json:"rollup,omitempty"`
 	Select *PropertyOptionsWrapper `json:"select,omitempty"`
 
 	// Status database properties cannot currently be configured via the API and so have no additional configuration within the `status` property.
@@ -951,27 +994,55 @@ type PropertyType string
 
 // A property value defines the identifier, type, and value of a page property in a page object. It's used when retrieving and updating pages ex: Create and Update pages.
 type PropertyValue struct {
-	Checkbox *bool  `json:"checkbox,omitempty"`
-	Date     *Date  `json:"date,omitempty"`
-	Files    *Files `json:"files,omitempty"`
+	Checkbox *bool `json:"checkbox,omitempty"`
+
+	// The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.
+	CreatedBy   *User      `json:"created_by,omitempty"`
+	CreatedTime *time.Time `json:"created_time,omitempty"`
+	Date        *Date      `json:"date,omitempty"`
+	Email       *string    `json:"email,omitempty"`
+	Files       *Files     `json:"files,omitempty"`
+
+	// Formula property value objects represent the result of evaluating a formula described in the database's properties. These objects contain a type key and a key corresponding with the value of type. The value of a formula cannot be updated directly.
+	//
+	// ## Formula values may not match the Notion UI.
+	//
+	// Formulas returned in page objects are subject to a 25 page reference limitation. The Retrieve a page property endpoint should be used to get an accurate formula value.
+	Formula *Formula `json:"formula,omitempty"`
 
 	// Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.
 	//
 	// The id may be used in place of name when creating or updating pages.
 	Id string `json:"id"`
 
+	// The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.
+	LastEditedBy *User `json:"last_edited_by,omitempty"`
+
 	// An array of multi-select or select option values.
 	MultiSelect *PropertyOptions `json:"multi_select,omitempty"`
 
 	// Number property value objects contain a number within the `number` property.
-	Number   *float32     `json:"number,omitempty"`
-	Relation *References  `json:"relation,omitempty"`
-	RichText *RichTexts   `json:"rich_text,omitempty"`
-	Select   *SelectValue `json:"select,omitempty"`
-	Title    *RichTexts   `json:"title,omitempty"`
+	Number      *float32    `json:"number,omitempty"`
+	People      *[]User     `json:"people,omitempty"`
+	PhoneNumber *string     `json:"phone_number,omitempty"`
+	Relation    *References `json:"relation,omitempty"`
+	RichText    *RichTexts  `json:"rich_text,omitempty"`
+
+	// Rollup property value objects represent the result of evaluating a rollup described in the database's properties. These objects contain a type key and a key corresponding with the value of type. The value of a rollup cannot be updated directly.
+	//
+	// ## Rollup values may not match the Notion UI.
+	//
+	// Rollups returned in page objects are subject to a 25 page reference limitation. The Retrieve a page property endpoint should be used to get an accurate formula value.
+	Rollup *Rollup      `json:"rollup,omitempty"`
+	Select *SelectValue `json:"select,omitempty"`
+	Status *SelectValue `json:"status,omitempty"`
+	Title  *RichTexts   `json:"title,omitempty"`
 
 	// Type of the property.
 	Type PropertyType `json:"type"`
+
+	// URL property value objects contain a non-empty string within the url property. The string describes a web address.
+	Url *string `json:"url,omitempty"`
 }
 
 // Properties of a page or database.
@@ -1026,10 +1097,34 @@ type RichTextType string
 // RichTexts defines model for RichTexts.
 type RichTexts []RichText
 
-// Rollup database property objects contain the following configuration within the `rollup` property.
+// Rollup property value objects represent the result of evaluating a rollup described in the database's properties. These objects contain a type key and a key corresponding with the value of type. The value of a rollup cannot be updated directly.
+//
+// ## Rollup values may not match the Notion UI.
+//
+// Rollups returned in page objects are subject to a 25 page reference limitation. The Retrieve a page property endpoint should be used to get an accurate formula value.
 type Rollup struct {
+	// Array rollup property values contain an array of number, date, or string objects within the results property.
+	Array *[]interface{} `json:"array,omitempty"`
+
+	// Date rollup property values contain a date property value within the date property.
+	Date     *time.Time `json:"date,omitempty"`
+	Function string     `json:"function"`
+
+	// Number rollup property values contain a number within the number property.
+	Number *float32 `json:"number,omitempty"`
+
+	// String rollup property values contain an optional string within the string property.
+	String *string    `json:"string,omitempty"`
+	Type   RollupType `json:"type"`
+}
+
+// RollupType defines model for Rollup.Type.
+type RollupType string
+
+// Rollup database property objects contain the following configuration within the `rollup` property.
+type RollupConfig struct {
 	// The function that is evaluated for every page in the relation of the rollup.
-	Function RollupFunction `json:"function"`
+	Function RollupConfigFunction `json:"function"`
 
 	// The `id` of the relation property this property is responsible for rolling up.
 	RelationPropertyId string `json:"relation_property_id"`
@@ -1045,7 +1140,7 @@ type Rollup struct {
 }
 
 // The function that is evaluated for every page in the relation of the rollup.
-type RollupFunction string
+type RollupConfigFunction string
 
 // SelectValue defines model for SelectValue.
 type SelectValue struct {

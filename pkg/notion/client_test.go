@@ -50,7 +50,6 @@ func (rt *responseTester) GetNotionPage(ctx context.Context, id Id) (*Page, erro
 		return nil, err
 	}
 
-	return resp.JSON200, nil
 	return resp.JSON200, validateResponseParsing(resp.HTTPResponse, resp.Body, resp.JSON200)
 }
 
@@ -95,7 +94,6 @@ func (rt *responseTester) GetAllDatabaseEntries(ctx context.Context, id Id) (Pag
 		return nil, err
 	}
 
-	return resp.JSON200.Results, nil
 	return resp.JSON200.Results, validateResponseParsing(resp.HTTPResponse, resp.Body, resp.JSON200)
 }
 
