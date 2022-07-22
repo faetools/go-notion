@@ -12,7 +12,7 @@
     "object": "user",
     "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
   },
-  "last_edited_time": "2022-07-22T17:22:00.000Z",
+  "last_edited_time": "2022-07-22T19:29:00.000Z",
   "title": [
     {
       "type": "text",
@@ -153,6 +153,18 @@
       "type": "people",
       "people": {}
     },
+    "rollup date": {
+      "id": "czmt",
+      "name": "rollup date",
+      "type": "rollup",
+      "rollup": {
+        "rollup_property_name": "some date",
+        "relation_property_name": "Equal relation",
+        "rollup_property_id": "uK`G",
+        "relation_property_id": "EUgY",
+        "function": "show_unique"
+      }
+    },
     "who last edited it": {
       "id": "eszR",
       "name": "who last edited it",
@@ -176,6 +188,18 @@
             "color": "green"
           }
         ]
+      }
+    },
+    "rollup string": {
+      "id": "kSwR",
+      "name": "rollup string",
+      "type": "rollup",
+      "rollup": {
+        "rollup_property_name": "Name",
+        "relation_property_name": "Equal relation",
+        "rollup_property_id": "title",
+        "relation_property_id": "EUgY",
+        "function": "show_unique"
       }
     },
     "yes or no?": {

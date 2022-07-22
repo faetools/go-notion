@@ -108,6 +108,20 @@
       "type": "people",
       "people": []
     },
+    "rollup date": {
+      "id": "czmt",
+      "type": "rollup",
+      "rollup": {
+        "type": "array",
+        "array": [
+          {
+            "type": "date",
+            "date": null
+          }
+        ],
+        "function": "show_unique"
+      }
+    },
     "who last edited it": {
       "id": "eszR",
       "type": "last_edited_by",
@@ -129,6 +143,20 @@
         "id": "[;Jv",
         "name": "bar",
         "color": "blue"
+      }
+    },
+    "rollup string": {
+      "id": "kSwR",
+      "type": "rollup",
+      "rollup": {
+        "type": "array",
+        "array": [
+          {
+            "type": "title",
+            "title": []
+          }
+        ],
+        "function": "show_unique"
       }
     },
     "yes or no?": {

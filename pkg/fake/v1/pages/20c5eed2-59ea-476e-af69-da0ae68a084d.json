@@ -62,8 +62,8 @@
           "name": "dog.webp",
           "type": "file",
           "file": {
-            "url": "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/3741848b-55b4-439c-aa13-e0fa996c715a/dog.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220722%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220722T183209Z&X-Amz-Expires=3600&X-Amz-Signature=8a073221b55f0704361bfa671991a124724cd948d01c6f39ce25beced192faf4&X-Amz-SignedHeaders=host&x-id=GetObject",
-            "expiry_time": "2022-07-22T19:32:09.630Z"
+            "url": "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/3741848b-55b4-439c-aa13-e0fa996c715a/dog.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220722%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220722T193025Z&X-Amz-Expires=3600&X-Amz-Signature=af98aa5ec2eb6c22e95bc079b0e3ca8befa9bed6c7b36bd9c5bfc1bd222cfbe1&X-Amz-SignedHeaders=host&x-id=GetObject",
+            "expiry_time": "2022-07-22T20:30:25.304Z"
           }
         }
       ]
@@ -142,6 +142,20 @@
         }
       ]
     },
+    "rollup date": {
+      "id": "czmt",
+      "type": "rollup",
+      "rollup": {
+        "type": "array",
+        "array": [
+          {
+            "type": "date",
+            "date": null
+          }
+        ],
+        "function": "show_unique"
+      }
+    },
     "who last edited it": {
       "id": "eszR",
       "type": "last_edited_by",
@@ -163,6 +177,20 @@
         "id": "q~Z:",
         "name": "foo",
         "color": "green"
+      }
+    },
+    "rollup string": {
+      "id": "kSwR",
+      "type": "rollup",
+      "rollup": {
+        "type": "array",
+        "array": [
+          {
+            "type": "title",
+            "title": []
+          }
+        ],
+        "function": "show_unique"
       }
     },
     "yes or no?": {

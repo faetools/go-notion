@@ -5,7 +5,7 @@
       "object": "page",
       "id": "c85a6329-44c0-4a8f-98d4-0ddd0e756b10",
       "created_time": "2022-07-22T17:13:00.000Z",
-      "last_edited_time": "2022-07-22T17:13:00.000Z",
+      "last_edited_time": "2022-07-22T19:14:00.000Z",
       "created_by": {
         "object": "user",
         "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
@@ -71,7 +71,7 @@
         "contact": {
           "id": "TWA%3B",
           "type": "email",
-          "email": null
+          "email": "not a real email"
         },
         "Top": {
           "id": "UtGj",
@@ -105,6 +105,32 @@
           "type": "people",
           "people": []
         },
+        "rollup date": {
+          "id": "czmt",
+          "type": "rollup",
+          "rollup": {
+            "type": "array",
+            "array": [
+              {
+                "type": "date",
+                "date": {
+                  "start": "2022-07-30",
+                  "end": null,
+                  "time_zone": null
+                }
+              },
+              {
+                "type": "date",
+                "date": {
+                  "start": "2022-08-05T16:00:00.000+02:00",
+                  "end": "2022-08-12T03:00:00.000+02:00",
+                  "time_zone": null
+                }
+              }
+            ],
+            "function": "show_unique"
+          }
+        },
         "who last edited it": {
           "id": "eszR",
           "type": "last_edited_by",
@@ -123,6 +149,60 @@
           "id": "hiMX",
           "type": "select",
           "select": null
+        },
+        "rollup string": {
+          "id": "kSwR",
+          "type": "rollup",
+          "rollup": {
+            "type": "array",
+            "array": [
+              {
+                "type": "title",
+                "title": [
+                  {
+                    "type": "text",
+                    "text": {
+                      "content": "entry 1",
+                      "link": null
+                    },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "entry 1",
+                    "href": null
+                  }
+                ]
+              },
+              {
+                "type": "title",
+                "title": [
+                  {
+                    "type": "text",
+                    "text": {
+                      "content": "entry 2",
+                      "link": null
+                    },
+                    "annotations": {
+                      "bold": false,
+                      "italic": false,
+                      "strikethrough": false,
+                      "underline": false,
+                      "code": false,
+                      "color": "default"
+                    },
+                    "plain_text": "entry 2",
+                    "href": null
+                  }
+                ]
+              }
+            ],
+            "function": "show_unique"
+          }
         },
         "yes or no?": {
           "id": "pt%3F%5D",
@@ -245,8 +325,8 @@
               "name": "dog.webp",
               "type": "file",
               "file": {
-                "url": "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/3741848b-55b4-439c-aa13-e0fa996c715a/dog.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220722%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220722T182129Z&X-Amz-Expires=3600&X-Amz-Signature=7448d4129416e4f8a9b481eb7e869ea1667d69585ac9e2804bad06deb43d4f67&X-Amz-SignedHeaders=host&x-id=GetObject",
-                "expiry_time": "2022-07-22T19:21:29.798Z"
+                "url": "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/3741848b-55b4-439c-aa13-e0fa996c715a/dog.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220722%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220722T193024Z&X-Amz-Expires=3600&X-Amz-Signature=9e69873a449149111b5c8ab533c744049ee8126fb4b5837020284f01dd3a3a79&X-Amz-SignedHeaders=host&x-id=GetObject",
+                "expiry_time": "2022-07-22T20:30:24.427Z"
               }
             }
           ]
@@ -325,6 +405,20 @@
             }
           ]
         },
+        "rollup date": {
+          "id": "czmt",
+          "type": "rollup",
+          "rollup": {
+            "type": "array",
+            "array": [
+              {
+                "type": "date",
+                "date": null
+              }
+            ],
+            "function": "show_unique"
+          }
+        },
         "who last edited it": {
           "id": "eszR",
           "type": "last_edited_by",
@@ -346,6 +440,20 @@
             "id": "q~Z:",
             "name": "foo",
             "color": "green"
+          }
+        },
+        "rollup string": {
+          "id": "kSwR",
+          "type": "rollup",
+          "rollup": {
+            "type": "array",
+            "array": [
+              {
+                "type": "title",
+                "title": []
+              }
+            ],
+            "function": "show_unique"
           }
         },
         "yes or no?": {
@@ -480,8 +588,8 @@
               "name": "Cat03.jpeg",
               "type": "file",
               "file": {
-                "url": "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/89ddf0a7-2a82-4e1e-b09e-b50198fce7d5/Cat03.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220722%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220722T182129Z&X-Amz-Expires=3600&X-Amz-Signature=6eb7f5e49c64707006a8a0561a098e950c3b62949153ff611f15b078b9dae518&X-Amz-SignedHeaders=host&x-id=GetObject",
-                "expiry_time": "2022-07-22T19:21:29.797Z"
+                "url": "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/89ddf0a7-2a82-4e1e-b09e-b50198fce7d5/Cat03.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220722%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220722T193024Z&X-Amz-Expires=3600&X-Amz-Signature=1d83cbe0b7e3f28faea4dfcbb00f1b6780c97eb6f32edd928f6808a1f4cf2073&X-Amz-SignedHeaders=host&x-id=GetObject",
+                "expiry_time": "2022-07-22T20:30:24.426Z"
               }
             }
           ]
@@ -548,6 +656,15 @@
             }
           ]
         },
+        "rollup date": {
+          "id": "czmt",
+          "type": "rollup",
+          "rollup": {
+            "type": "array",
+            "array": [],
+            "function": "show_unique"
+          }
+        },
         "who last edited it": {
           "id": "eszR",
           "type": "last_edited_by",
@@ -566,6 +683,15 @@
           "id": "hiMX",
           "type": "select",
           "select": null
+        },
+        "rollup string": {
+          "id": "kSwR",
+          "type": "rollup",
+          "rollup": {
+            "type": "array",
+            "array": [],
+            "function": "show_unique"
+          }
         },
         "yes or no?": {
           "id": "pt%3F%5D",
@@ -756,6 +882,20 @@
           "type": "people",
           "people": []
         },
+        "rollup date": {
+          "id": "czmt",
+          "type": "rollup",
+          "rollup": {
+            "type": "array",
+            "array": [
+              {
+                "type": "date",
+                "date": null
+              }
+            ],
+            "function": "show_unique"
+          }
+        },
         "who last edited it": {
           "id": "eszR",
           "type": "last_edited_by",
@@ -777,6 +917,20 @@
             "id": "[;Jv",
             "name": "bar",
             "color": "blue"
+          }
+        },
+        "rollup string": {
+          "id": "kSwR",
+          "type": "rollup",
+          "rollup": {
+            "type": "array",
+            "array": [
+              {
+                "type": "title",
+                "title": []
+              }
+            ],
+            "function": "show_unique"
           }
         },
         "yes or no?": {
