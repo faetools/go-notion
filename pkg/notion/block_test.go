@@ -7,7 +7,6 @@ import (
 	"unicode/utf8"
 
 	. "github.com/faetools/go-notion/pkg/notion"
-	"github.com/google/uuid"
 )
 
 var (
@@ -124,7 +123,7 @@ func validateURL(rawURL string) error {
 }
 
 func validateBlock(b Block) error {
-	if _, err := uuid.Parse(string(b.Id)); err != nil {
+	if err := validateUUID(b.Id); err != nil {
 		return err
 	}
 
@@ -140,7 +139,7 @@ func validateBlock(b Block) error {
 		return err
 	}
 
-	if err := validateParent(b.Parent); err != nil {
+	if err := validateParent(&b.Parent); err != nil {
 		return err
 	}
 
@@ -216,8 +215,7 @@ func validateBlock(b Block) error {
 
 		switch from.Type {
 		case SyncedFromTypeBlockId:
-			_, err := uuid.Parse(string(*from.BlockId))
-			return err
+			return validateUUID(*from.BlockId)
 		default:
 			return fmt.Errorf("synced block was synced from %q", from.Type)
 		}
@@ -395,7 +393,7 @@ func validateIcon(c Icon) error {
 }
 
 func validateUser(u *User) error {
-	if _, err := uuid.Parse(string(u.Id)); err != nil {
+	if err := validateUUID(u.Id); err != nil {
 		return err
 	}
 
@@ -434,27 +432,26 @@ func validateUser(u *User) error {
 func validateLinkToPage(l *LinkToPage) error {
 	switch l.Type {
 	case LinkToPageTypeDatabaseId:
-		_, err := uuid.Parse(string(*l.DatabaseId))
-		return err
+		return validateUUID(*l.DatabaseId)
 	case LinkToPageTypePageId:
-		_, err := uuid.Parse(string(*l.PageId))
-		return err
+		return validateUUID(*l.PageId)
 	default:
 		return fmt.Errorf("unknown link to page type %q", l.Type)
 	}
 }
 
-func validateParent(p Parent) error {
+func validateParent(p *Parent) error {
+	if p == nil {
+		return nil
+	}
+
 	switch p.Type {
 	case ParentTypeBlockId:
-		_, err := uuid.Parse(string(*p.BlockId))
-		return err
+		return validateUUID(*p.BlockId)
 	case ParentTypeDatabaseId:
-		_, err := uuid.Parse(string(*p.DatabaseId))
-		return err
+		return validateUUID(*p.DatabaseId)
 	case ParentTypePageId:
-		_, err := uuid.Parse(string(*p.PageId))
-		return err
+		return validateUUID(*p.PageId)
 	case ParentTypeWorkspace:
 		if p.Workspace == nil || !*p.Workspace {
 			return errors.New("workspace parent does not have flag set")
@@ -492,15 +489,13 @@ func validateEquation(eq *Equation) error {
 func validateMention(m *Mention) error {
 	switch m.Type {
 	case MentionTypeDatabase:
-		_, err := uuid.Parse(string(m.Database.Id))
-		return err
+		return validateUUID(m.Database.Id)
 	case MentionTypeDate:
 		return nil
 	case MentionTypeLinkPreview:
 		return validateURL(m.LinkPreview.Url)
 	case MentionTypePage:
-		_, err := uuid.Parse(string(m.Page.Id))
-		return err
+		return validateUUID(m.Page.Id)
 	case MentionTypeUser:
 		return validateUser(m.User)
 	default:

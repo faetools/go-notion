@@ -22,6 +22,14 @@
       },
       "archived": false,
       "properties": {
+        "formula number": {
+          "id": "%3DuTh",
+          "type": "formula",
+          "formula": {
+            "type": "number",
+            "number": null
+          }
+        },
         "count of relations": {
           "id": "%40ft%3F",
           "type": "rollup",
@@ -31,10 +39,26 @@
             "function": "count"
           }
         },
+        "equal relations": {
+          "id": "ASTz",
+          "type": "formula",
+          "formula": {
+            "type": "number",
+            "number": 16
+          }
+        },
         "A number": {
           "id": "CQUf",
           "type": "number",
           "number": null
+        },
+        "Property checkbox": {
+          "id": "C%5EC%3A",
+          "type": "formula",
+          "formula": {
+            "type": "boolean",
+            "boolean": false
+          }
         },
         "Equal relation": {
           "id": "EUgY",
@@ -149,6 +173,14 @@
           "id": "hiMX",
           "type": "select",
           "select": null
+        },
+        "date formula": {
+          "id": "jWgQ",
+          "type": "formula",
+          "formula": {
+            "type": "date",
+            "date": null
+          }
         },
         "rollup string": {
           "id": "kSwR",
@@ -282,6 +314,14 @@
       },
       "archived": false,
       "properties": {
+        "formula number": {
+          "id": "%3DuTh",
+          "type": "formula",
+          "formula": {
+            "type": "number",
+            "number": 31.3
+          }
+        },
         "count of relations": {
           "id": "%40ft%3F",
           "type": "rollup",
@@ -291,10 +331,26 @@
             "function": "count"
           }
         },
+        "equal relations": {
+          "id": "ASTz",
+          "type": "formula",
+          "formula": {
+            "type": "number",
+            "number": 0
+          }
+        },
         "A number": {
           "id": "CQUf",
           "type": "number",
           "number": 31.3
+        },
+        "Property checkbox": {
+          "id": "C%5EC%3A",
+          "type": "formula",
+          "formula": {
+            "type": "boolean",
+            "boolean": false
+          }
         },
         "Equal relation": {
           "id": "EUgY",
@@ -325,8 +381,8 @@
               "name": "dog.webp",
               "type": "file",
               "file": {
-                "url": "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/3741848b-55b4-439c-aa13-e0fa996c715a/dog.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220722%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220722T193024Z&X-Amz-Expires=3600&X-Amz-Signature=9e69873a449149111b5c8ab533c744049ee8126fb4b5837020284f01dd3a3a79&X-Amz-SignedHeaders=host&x-id=GetObject",
-                "expiry_time": "2022-07-22T20:30:24.427Z"
+                "url": "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/3741848b-55b4-439c-aa13-e0fa996c715a/dog.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220723%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220723T122507Z&X-Amz-Expires=3600&X-Amz-Signature=dc9d029f061692e22609472eaa853f0aef91b1b0543a5822a80961e5c83d1436&X-Amz-SignedHeaders=host&x-id=GetObject",
+                "expiry_time": "2022-07-23T13:25:07.428Z"
               }
             }
           ]
@@ -440,6 +496,18 @@
             "id": "q~Z:",
             "name": "foo",
             "color": "green"
+          }
+        },
+        "date formula": {
+          "id": "jWgQ",
+          "type": "formula",
+          "formula": {
+            "type": "date",
+            "date": {
+              "start": "2022-07-30",
+              "end": null,
+              "time_zone": null
+            }
           }
         },
         "rollup string": {
@@ -556,6 +624,14 @@
       },
       "archived": false,
       "properties": {
+        "formula number": {
+          "id": "%3DuTh",
+          "type": "formula",
+          "formula": {
+            "type": "number",
+            "number": 132
+          }
+        },
         "count of relations": {
           "id": "%40ft%3F",
           "type": "rollup",
@@ -565,10 +641,26 @@
             "function": "count"
           }
         },
+        "equal relations": {
+          "id": "ASTz",
+          "type": "formula",
+          "formula": {
+            "type": "number",
+            "number": 0
+          }
+        },
         "A number": {
           "id": "CQUf",
           "type": "number",
           "number": 132
+        },
+        "Property checkbox": {
+          "id": "C%5EC%3A",
+          "type": "formula",
+          "formula": {
+            "type": "boolean",
+            "boolean": false
+          }
         },
         "Equal relation": {
           "id": "EUgY",
@@ -588,8 +680,8 @@
               "name": "Cat03.jpeg",
               "type": "file",
               "file": {
-                "url": "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/89ddf0a7-2a82-4e1e-b09e-b50198fce7d5/Cat03.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220722%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220722T193024Z&X-Amz-Expires=3600&X-Amz-Signature=1d83cbe0b7e3f28faea4dfcbb00f1b6780c97eb6f32edd928f6808a1f4cf2073&X-Amz-SignedHeaders=host&x-id=GetObject",
-                "expiry_time": "2022-07-22T20:30:24.426Z"
+                "url": "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/89ddf0a7-2a82-4e1e-b09e-b50198fce7d5/Cat03.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220723%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220723T122507Z&X-Amz-Expires=3600&X-Amz-Signature=9b2bc7d73be99c044234d093b31c0039c72f5b4ceb4052371285e18d4eafb480&X-Amz-SignedHeaders=host&x-id=GetObject",
+                "expiry_time": "2022-07-23T13:25:07.426Z"
               }
             }
           ]
@@ -683,6 +775,14 @@
           "id": "hiMX",
           "type": "select",
           "select": null
+        },
+        "date formula": {
+          "id": "jWgQ",
+          "type": "formula",
+          "formula": {
+            "type": "date",
+            "date": null
+          }
         },
         "rollup string": {
           "id": "kSwR",
@@ -793,6 +893,14 @@
       },
       "archived": false,
       "properties": {
+        "formula number": {
+          "id": "%3DuTh",
+          "type": "formula",
+          "formula": {
+            "type": "number",
+            "number": 32.7
+          }
+        },
         "count of relations": {
           "id": "%40ft%3F",
           "type": "rollup",
@@ -802,10 +910,26 @@
             "function": "count"
           }
         },
+        "equal relations": {
+          "id": "ASTz",
+          "type": "formula",
+          "formula": {
+            "type": "number",
+            "number": 0
+          }
+        },
         "A number": {
           "id": "CQUf",
           "type": "number",
           "number": 32.7
+        },
+        "Property checkbox": {
+          "id": "C%5EC%3A",
+          "type": "formula",
+          "formula": {
+            "type": "boolean",
+            "boolean": false
+          }
         },
         "Equal relation": {
           "id": "EUgY",
@@ -917,6 +1041,18 @@
             "id": "[;Jv",
             "name": "bar",
             "color": "blue"
+          }
+        },
+        "date formula": {
+          "id": "jWgQ",
+          "type": "formula",
+          "formula": {
+            "type": "date",
+            "date": {
+              "start": "2022-08-05T16:00:00.000+02:00",
+              "end": "2022-08-12T03:00:00.000+02:00",
+              "time_zone": null
+            }
           }
         },
         "rollup string": {

@@ -13,7 +13,9 @@ import (
 	"github.com/faetools/client"
 )
 
-// TODO move to "github.com/faetools/client"
+// TODO move to "github.com/faetools/clueo" (see client in latin -> cliens -> alteration of cluēns, present active participle of clueō)
+
+// consider voco: I call, summon, beckon; I invoke, call upon
 
 // FSClient returns responses using files in a filesystem.
 // It keeps track of which files were seen.
@@ -23,18 +25,25 @@ type FSClient struct {
 	mu   sync.Mutex
 	seen map[string]bool
 
-	onNotFound func(path string) any
+	onNotExists func(path string) any
 }
+
+// request transform client -> remove query parameters, for example
+// clueo.Client -> http.Client
 
 // NewFSClient returns a new client that returns responses using files in a filesystem.
 // The other arguments define what kind of body should be returned when a file does not exist.
 func NewFSClient(files fs.FS,
+	// TODO options
+	// - on not exists
+	// - on read error
+	// - add file extension
 	onNotExists func(path string) any,
 ) (*FSClient, error) {
 	c := &FSClient{
-		fs:         files,
-		seen:       map[string]bool{},
-		onNotFound: onNotExists,
+		fs:          files,
+		seen:        map[string]bool{},
+		onNotExists: onNotExists,
 	}
 
 	return c, fs.WalkDir(files, ".", func(path string, d fs.DirEntry, err error) error {
@@ -60,7 +69,7 @@ func (c *FSClient) readFile(path string) ([]byte, error) {
 	defer f.Close()
 
 	c.mu.Lock()
-	c.seen[path] = true
+	c.seen[path] = true // TODO separate client for this
 	c.mu.Unlock()
 
 	return io.ReadAll(f)
@@ -93,11 +102,11 @@ func (c *FSClient) Do(req *http.Request) (*http.Response, error) {
 }
 
 func (c *FSClient) respond404(req *http.Request) (*http.Response, error) {
-	if c.onNotFound == nil {
+	if c.onNotExists == nil {
 		return c.response(http.StatusNotFound, nil, req), nil
 	}
 
-	body := c.onNotFound(req.URL.Path)
+	body := c.onNotExists(req.URL.Path)
 
 	b, err := json.Marshal(body)
 	if err != nil {

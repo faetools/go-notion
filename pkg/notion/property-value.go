@@ -7,10 +7,16 @@ import (
 type (
 	propertyValue PropertyValue
 
-	propertyValueDate struct {
-		ID   string       `json:"id"`
-		Type PropertyType `json:"type"`
-		Date *Date        `json:"date"`
+	date struct {
+		ID   string `json:"id,omitempty"`
+		Type string `json:"type"`
+		Date *Date  `json:"date"`
+	}
+
+	number struct {
+		ID     string   `json:"id,omitempty"`
+		Type   string   `json:"type"`
+		Number *float32 `json:"number"`
 	}
 
 	propertyValueSelect struct {
@@ -23,12 +29,6 @@ type (
 		ID     string       `json:"id"`
 		Type   PropertyType `json:"type"`
 		Status *SelectValue `json:"status"`
-	}
-
-	propertyValueNumber struct {
-		ID     string       `json:"id"`
-		Type   PropertyType `json:"type"`
-		Number *float32     `json:"number"`
 	}
 
 	propertyValueURL struct {
@@ -54,10 +54,16 @@ type (
 func (v PropertyValue) MarshalJSON() ([]byte, error) {
 	switch v.Type {
 	case PropertyTypeDate:
-		return json.Marshal(propertyValueDate{
+		return json.Marshal(date{
 			ID:   v.Id,
-			Type: v.Type,
+			Type: string(v.Type),
 			Date: v.Date,
+		})
+	case PropertyTypeNumber:
+		return json.Marshal(number{
+			ID:     v.Id,
+			Type:   string(v.Type),
+			Number: v.Number,
 		})
 	case PropertyTypeSelect:
 		return json.Marshal(propertyValueSelect{
@@ -70,12 +76,6 @@ func (v PropertyValue) MarshalJSON() ([]byte, error) {
 			ID:     v.Id,
 			Type:   v.Type,
 			Status: v.Status,
-		})
-	case PropertyTypeNumber:
-		return json.Marshal(propertyValueNumber{
-			ID:     v.Id,
-			Type:   v.Type,
-			Number: v.Number,
 		})
 	case PropertyTypeUrl:
 		return json.Marshal(propertyValueURL{

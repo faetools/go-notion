@@ -50,6 +50,10 @@ func (rt *responseTester) GetNotionPage(ctx context.Context, id Id) (*Page, erro
 		return nil, err
 	}
 
+	if err := validatePage(resp.JSON200); err != nil {
+		return nil, err
+	}
+
 	return resp.JSON200, validateResponseParsing(resp.HTTPResponse, resp.Body, resp.JSON200)
 }
 
@@ -92,6 +96,12 @@ func (rt *responseTester) GetAllDatabaseEntries(ctx context.Context, id Id) (Pag
 	resp, err := rt.cli.QueryDatabase(ctx, id, QueryDatabaseJSONRequestBody{})
 	if err != nil {
 		return nil, err
+	}
+
+	for _, p := range resp.JSON200.Results {
+		if err := validatePage(&p); err != nil {
+			return nil, err
+		}
 	}
 
 	return resp.JSON200.Results, validateResponseParsing(resp.HTTPResponse, resp.Body, resp.JSON200)

@@ -401,7 +401,7 @@ type Block struct {
 	// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
 	Heading3 *Paragraph `json:"heading_3,omitempty"`
 
-	// A unique identifier for a page, block, database, or user.
+	// A unique identifier for a page, block, database, user, or option.
 	Id UUID `json:"id"`
 
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
@@ -554,7 +554,7 @@ type Database struct {
 	// Page or database icon. It is either an emoji or a file.
 	Icon *Icon `json:"icon"`
 
-	// A unique identifier for a page, block, database, or user.
+	// A unique identifier for a page, block, database, user, or option.
 	Id       UUID `json:"id"`
 	IsInline bool `json:"is_inline"`
 
@@ -584,7 +584,7 @@ type DatabaseQuery struct {
 	PageSize int    `json:"page_size"`
 	Sorts    *Sorts `json:"sorts,omitempty"`
 
-	// A unique identifier for a page, block, database, or user.
+	// A unique identifier for a page, block, database, user, or option.
 	StartCursor *UUID `json:"start_cursor,omitempty"`
 }
 
@@ -695,9 +695,7 @@ type Filters []Filter
 type Formula struct {
 	// Boolean formula property values contain a boolean within the boolean property.
 	Boolean *bool `json:"boolean,omitempty"`
-
-	// Date formula property values contain an optional date property value within the date property.
-	Date *time.Time `json:"date,omitempty"`
+	Date    *Date `json:"date,omitempty"`
 
 	// Number formula property values contain an optional number within the number property.
 	Number *float32 `json:"number,omitempty"`
@@ -750,10 +748,10 @@ type LinkPreview struct {
 
 // LinkToPage defines model for LinkToPage.
 type LinkToPage struct {
-	// A unique identifier for a page, block, database, or user.
+	// A unique identifier for a page, block, database, user, or option.
 	DatabaseId *UUID `json:"database_id,omitempty"`
 
-	// A unique identifier for a page, block, database, or user.
+	// A unique identifier for a page, block, database, user, or option.
 	PageId *UUID `json:"page_id,omitempty"`
 
 	// Type of this link to page object.
@@ -832,7 +830,7 @@ type Page struct {
 	// Page or database icon. It is either an emoji or a file.
 	Icon *Icon `json:"icon"`
 
-	// A unique identifier for a page, block, database, or user.
+	// A unique identifier for a page, block, database, user, or option.
 	Id UUID `json:"id"`
 
 	// The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.
@@ -878,13 +876,13 @@ type Paragraph struct {
 
 // The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
 type Parent struct {
-	// A unique identifier for a page, block, database, or user.
+	// A unique identifier for a page, block, database, user, or option.
 	BlockId *UUID `json:"block_id,omitempty"`
 
-	// A unique identifier for a page, block, database, or user.
+	// A unique identifier for a page, block, database, user, or option.
 	DatabaseId *UUID `json:"database_id,omitempty"`
 
-	// A unique identifier for a page, block, database, or user.
+	// A unique identifier for a page, block, database, user, or option.
 	PageId *UUID `json:"page_id,omitempty"`
 
 	// The type of the parent.
@@ -975,9 +973,11 @@ type PropertyMetas interface{}
 // Multi-select or select option values.
 type PropertyOption struct {
 	// The color of the block.
-	Color Color  `json:"color"`
-	Id    string `json:"id"`
-	Name  string `json:"name"`
+	Color Color `json:"color"`
+
+	// A unique identifier for a page, block, database, user, or option.
+	Id   UUID   `json:"id"`
+	Name string `json:"name"`
 }
 
 // An array of multi-select or select option values.
@@ -1050,7 +1050,7 @@ type PropertyValues interface{}
 
 // Reference defines model for Reference.
 type Reference struct {
-	// A unique identifier for a page, block, database, or user.
+	// A unique identifier for a page, block, database, user, or option.
 	Id UUID `json:"id"`
 }
 
@@ -1059,7 +1059,7 @@ type References []Reference
 
 // RelationConfiguration defines model for RelationConfiguration.
 type RelationConfiguration struct {
-	// A unique identifier for a page, block, database, or user.
+	// A unique identifier for a page, block, database, user, or option.
 	DatabaseId UUID `json:"database_id"`
 
 	// By default, relations are formed as two synced properties across databases: if you make a change to one property, it updates the synced property at the same time. `synced_property_id` refers to the `id` of the property in the related database. This is usually a short string of random letters and symbols.
@@ -1147,8 +1147,8 @@ type SelectValue struct {
 	// The color of the block.
 	Color Color `json:"color"`
 
-	// A unique identifier for a page, block, database, or user.
-	Id UUID `json:"id"`
+	// ID of the option. Contrary to the documentation, this is usally not a UUID.
+	Id string `json:"id"`
 
 	// Name of the option as it appears in Notion.
 	//
@@ -1180,7 +1180,7 @@ type SyncedBlock struct {
 
 // SyncedFrom defines model for SyncedFrom.
 type SyncedFrom struct {
-	// A unique identifier for a page, block, database, or user.
+	// A unique identifier for a page, block, database, user, or option.
 	BlockId *UUID          `json:"block_id,omitempty"`
 	Type    SyncedFromType `json:"type"`
 }
@@ -1248,7 +1248,7 @@ type ToDo struct {
 	RichText RichTexts `json:"rich_text"`
 }
 
-// A unique identifier for a page, block, database, or user.
+// A unique identifier for a page, block, database, user, or option.
 type UUID string
 
 // The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.
@@ -1257,7 +1257,7 @@ type User struct {
 	AvatarUrl *string `json:"avatar_url,omitempty"`
 	Bot       *Bot    `json:"bot,omitempty"`
 
-	// A unique identifier for a page, block, database, or user.
+	// A unique identifier for a page, block, database, user, or option.
 	Id UUID `json:"id"`
 
 	// User's name, as displayed in Notion.
@@ -1306,7 +1306,7 @@ type Video struct {
 // Type of this file object.
 type VideoType string
 
-// A unique identifier for a page, block, database, or user.
+// A unique identifier for a page, block, database, user, or option.
 type Id UUID
 
 // The number of items from the full list desired in the response.

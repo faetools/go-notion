@@ -1142,7 +1142,7 @@ components:
       type: string
       format: uuid
       x-go-type: string
-      description: A unique identifier for a page, block, database, or user.
+      description: A unique identifier for a page, block, database, user, or option.
     NextCursor:
       type: string
       format: uuid
@@ -1344,7 +1344,7 @@ components:
           color: pink
       properties:
         id:
-          type: string
+          $ref: '#/components/schemas/UUID'
         name:
           type: string
         color:
@@ -1647,7 +1647,9 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/UUID'
+          type: string
+          description: ID of the option. Contrary to the documentation, this is usally not a UUID.
+          example: q~Z
         name:
           type: string
           description: |-
@@ -2055,9 +2057,7 @@ components:
           type: boolean
           description: Boolean formula property values contain a boolean within the boolean property.
         date:
-          type: string
-          format: date-time
-          description: Date formula property values contain an optional date property value within the date property.
+          $ref: '#/components/schemas/Date'
       required:
         - type
     ToDo:

@@ -1,6 +1,7 @@
 package notion_test
 
 import (
+	"errors"
 	"fmt"
 
 	. "github.com/faetools/go-notion/pkg/notion"
@@ -65,7 +66,7 @@ func validateDatabase(db *Database) error {
 		}
 	}
 
-	if _, err := uuid.Parse(string(db.Id)); err != nil {
+	if err := validateUUID(db.Id); err != nil {
 		return err
 	}
 
@@ -117,9 +118,25 @@ func validatePropertyMetaMap(m PropertyMetaMap) error {
 	return nil
 }
 
-func errIfNil[T any](propName string, meta *T) error {
-	if meta == nil {
-		return fmt.Errorf("%s is empty", propName)
+func errIfNil(tp PropertyType, config *map[string]any) error {
+	if config == nil {
+		return fmt.Errorf("%s is empty", tp)
+	}
+
+	return nil
+}
+
+func validateShortID(name, id string) error {
+	if 3 < len(id) && len(id) < 9 {
+		return nil
+	}
+
+	return fmt.Errorf("%s %q has length %d", name, id, len(id))
+}
+
+func validateUUID(id UUID) error {
+	if _, err := uuid.Parse(string(id)); err != nil {
+		return fmt.Errorf("UUID %q: %w", id, err)
 	}
 
 	return nil
@@ -128,25 +145,33 @@ func errIfNil[T any](propName string, meta *T) error {
 func validatePropertyMeta(p PropertyMeta) error {
 	switch p.Type {
 	case PropertyTypeCheckbox:
-		return errIfNil("checkbox", p.Checkbox)
-	// case PropertyTypeCreatedBy:
-	// 	return errIfNil("created_by", p.)
-	// case PropertyTypeCreatedTime:
-	// 	return errIfNil("checkbox", p.Crea)
+		return errIfNil(p.Type, p.Checkbox)
+	case PropertyTypePeople:
+		return errIfNil(p.Type, p.People)
+	case PropertyTypeStatus:
+		return errIfNil(p.Type, p.Status)
+	case PropertyTypeCreatedBy:
+		return errIfNil(p.Type, p.CreatedBy)
+	case PropertyTypeCreatedTime:
+		return errIfNil(p.Type, p.CreatedTime)
 	case PropertyTypeDate:
-		return errIfNil("date", p.Date)
-	// case PropertyTypeEmail:
-	// 	return errIfNil("checkbox", p.Checkbox)
-	// case PropertyTypeFiles:
-	// 	return errIfNil("checkbox", p.Checkbox)
-	// case PropertyTypeFormula:
-	// 	return errIfNil("checkbox", p.Checkbox)
-	// case PropertyTypeLastEditedBy:
-	// 	return errIfNil("checkbox", p.Checkbox)
-	// case PropertyTypeLastEditedTime:
-	// 	return errIfNil("checkbox", p.Checkbox)
+		return errIfNil(p.Type, p.Date)
+	case PropertyTypeEmail:
+		return errIfNil(p.Type, p.Email)
+	case PropertyTypeFiles:
+		return errIfNil(p.Type, p.Files)
+	case PropertyTypeFormula:
+		if p.Formula.Expression == "" {
+			return errors.New("formula expression is empty")
+		}
+	case PropertyTypeLastEditedBy:
+		return errIfNil(p.Type, p.LastEditedBy)
+	case PropertyTypeLastEditedTime:
+		return errIfNil(p.Type, p.LastEditedTime)
 	case PropertyTypeMultiSelect:
-		return errIfNil("multi_select", p.MultiSelect)
+		if p.MultiSelect == nil {
+			return fmt.Errorf("%s is empty", p.Type)
+		}
 	case PropertyTypeNumber:
 		for _, format := range allNumberConfigFormats {
 			if format == p.Number.Format {
@@ -155,25 +180,51 @@ func validatePropertyMeta(p PropertyMeta) error {
 		}
 
 		return fmt.Errorf("unkown number format %q", p.Number.Format)
-	// case PropertyTypePeople:
-	// 	return errIfNil("checkbox", p.Checkbox)
-	// case PropertyTypePhoneNumber:
-	// 	return errIfNil("checkbox", p.Checkbox)
-	// case PropertyTypeRelation:
-	// 	return errIfNil("checkbox", p.Checkbox)
-	// case PropertyTypeRichText:
-	// 	return errIfNil("checkbox", p.Checkbox)
-	// case PropertyTypeRollup:
-	// 	return errIfNil("checkbox", p.Checkbox)
-	// case PropertyTypeSelect:
-	// 	return errIfNil("checkbox", p.Checkbox)
+	case PropertyTypePhoneNumber:
+		return errIfNil(p.Type, p.PhoneNumber)
+	case PropertyTypeRelation:
+		if p.Relation.SyncedPropertyName == "" {
+			return fmt.Errorf("SyncedPropertyName is empty in %#v", p)
+		}
+
+		if err := validateShortID("synced_property_id", *p.Relation.SyncedPropertyId); err != nil {
+			return err
+		}
+
+		if err := validateUUID(p.Relation.DatabaseId); err != nil {
+			return fmt.Errorf("database_id %q: %w", p.Relation.DatabaseId, err)
+		}
+	case PropertyTypeRichText:
+		return errIfNil(p.Type, p.RichText)
+	case PropertyTypeRollup:
+		if err := validateShortID("rollup_property_id", p.Rollup.RollupPropertyId); err != nil {
+			return err
+		}
+
+		if err := validateShortID("relation_property_id", p.Rollup.RelationPropertyId); err != nil {
+			return err
+		}
+
+		if p.Rollup.Function == "" {
+			return fmt.Errorf("function is empty in %#v", p)
+		}
+
+		if p.Rollup.RelationPropertyName == "" {
+			return fmt.Errorf("RelationPropertyName is empty in %#v", p)
+		}
+
+		if p.Rollup.RollupPropertyName == "" {
+			return fmt.Errorf("RollupPropertyName is empty in %#v", p)
+		}
+	case PropertyTypeSelect:
+		if p.Select == nil {
+			return fmt.Errorf("%s is empty", p.Type)
+		}
 	case PropertyTypeTitle:
-		return errIfNil("title", p.Title)
+		return errIfNil(p.Type, p.Title)
 	case PropertyTypeUrl:
-		// return errIfNil("url", p.)
-		return nil
+		return errIfNil(p.Type, p.Url)
 	default:
-		return nil // TODO delete
 		return fmt.Errorf("unknown property type %q", p.Type)
 	}
 

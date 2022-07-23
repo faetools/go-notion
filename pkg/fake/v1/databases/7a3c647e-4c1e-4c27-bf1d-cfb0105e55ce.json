@@ -12,7 +12,7 @@
     "object": "user",
     "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
   },
-  "last_edited_time": "2022-07-22T19:29:00.000Z",
+  "last_edited_time": "2022-07-23T11:44:00.000Z",
   "title": [
     {
       "type": "text",
@@ -35,6 +35,14 @@
   "description": [],
   "is_inline": true,
   "properties": {
+    "formula number": {
+      "id": "%3DuTh",
+      "name": "formula number",
+      "type": "formula",
+      "formula": {
+        "expression": "prop(\"A number\")"
+      }
+    },
     "count of relations": {
       "id": "%40ft%3F",
       "name": "count of relations",
@@ -47,12 +55,28 @@
         "function": "count"
       }
     },
+    "equal relations": {
+      "id": "ASTz",
+      "name": "equal relations",
+      "type": "formula",
+      "formula": {
+        "expression": "length(prop(\"Equal relation\"))"
+      }
+    },
     "A number": {
       "id": "CQUf",
       "name": "A number",
       "type": "number",
       "number": {
         "format": "number"
+      }
+    },
+    "Property checkbox": {
+      "id": "C%5EC%3A",
+      "name": "Property checkbox",
+      "type": "formula",
+      "formula": {
+        "expression": "prop(\"My checkbox\")"
       }
     },
     "Equal relation": {
@@ -188,6 +212,14 @@
             "color": "green"
           }
         ]
+      }
+    },
+    "date formula": {
+      "id": "jWgQ",
+      "name": "date formula",
+      "type": "formula",
+      "formula": {
+        "expression": "prop(\"some date\")"
       }
     },
     "rollup string": {
