@@ -61,7 +61,7 @@ func main() {
 
 	// remove unneccessary files
 	for _, path := range g.Unseen() {
-		if filepath.Dir(path) == "." {
+		if filepath.Ext(path) != ".json" {
 			continue
 		}
 
