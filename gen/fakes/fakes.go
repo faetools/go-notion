@@ -41,7 +41,16 @@ func main() {
 
 		// don't do anything after having fetched the document, just continue
 		func(p *notion.Page) error { return nil },
-		func(blocks notion.Blocks) error { return nil },
+		func(blocks notion.Blocks) error {
+			for _, b := range blocks {
+				_, err := cli.GetBlock(ctx, notion.Id(b.Id))
+				if err != nil {
+					return err
+				}
+			}
+
+			return nil
+		},
 		func(db *notion.Database) error { return nil },
 		func(entries notion.Pages) error { return nil })
 

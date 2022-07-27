@@ -19,6 +19,14 @@
   },
   "archived": false,
   "properties": {
+    "formula number": {
+      "id": "%3DuTh",
+      "type": "formula",
+      "formula": {
+        "type": "number",
+        "number": 31.3
+      }
+    },
     "count of relations": {
       "id": "%40ft%3F",
       "type": "rollup",
@@ -28,10 +36,26 @@
         "function": "count"
       }
     },
+    "equal relations": {
+      "id": "ASTz",
+      "type": "formula",
+      "formula": {
+        "type": "number",
+        "number": 0
+      }
+    },
     "A number": {
       "id": "CQUf",
       "type": "number",
       "number": 31.3
+    },
+    "Property checkbox": {
+      "id": "C%5EC%3A",
+      "type": "formula",
+      "formula": {
+        "type": "boolean",
+        "boolean": false
+      }
     },
     "Equal relation": {
       "id": "EUgY",
@@ -62,8 +86,8 @@
           "name": "dog.webp",
           "type": "file",
           "file": {
-            "url": "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/3741848b-55b4-439c-aa13-e0fa996c715a/dog.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220722%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220722T193025Z&X-Amz-Expires=3600&X-Amz-Signature=af98aa5ec2eb6c22e95bc079b0e3ca8befa9bed6c7b36bd9c5bfc1bd222cfbe1&X-Amz-SignedHeaders=host&x-id=GetObject",
-            "expiry_time": "2022-07-22T20:30:25.304Z"
+            "url": "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/3741848b-55b4-439c-aa13-e0fa996c715a/dog.webp?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220727%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220727T190401Z&X-Amz-Expires=3600&X-Amz-Signature=5417d4a70729020323c788d7390eac6a3c2bf5046e5e4d7e0c7acd828f7bd5a3&X-Amz-SignedHeaders=host&x-id=GetObject",
+            "expiry_time": "2022-07-27T20:04:01.590Z"
           }
         }
       ]
@@ -177,6 +201,18 @@
         "id": "q~Z:",
         "name": "foo",
         "color": "green"
+      }
+    },
+    "date formula": {
+      "id": "jWgQ",
+      "type": "formula",
+      "formula": {
+        "type": "date",
+        "date": {
+          "start": "2022-07-30",
+          "end": null,
+          "time_zone": null
+        }
       }
     },
     "rollup string": {

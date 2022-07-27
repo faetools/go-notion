@@ -19,6 +19,14 @@
   },
   "archived": false,
   "properties": {
+    "formula number": {
+      "id": "%3DuTh",
+      "type": "formula",
+      "formula": {
+        "type": "number",
+        "number": 132
+      }
+    },
     "count of relations": {
       "id": "%40ft%3F",
       "type": "rollup",
@@ -28,10 +36,26 @@
         "function": "count"
       }
     },
+    "equal relations": {
+      "id": "ASTz",
+      "type": "formula",
+      "formula": {
+        "type": "number",
+        "number": 0
+      }
+    },
     "A number": {
       "id": "CQUf",
       "type": "number",
       "number": 132
+    },
+    "Property checkbox": {
+      "id": "C%5EC%3A",
+      "type": "formula",
+      "formula": {
+        "type": "boolean",
+        "boolean": false
+      }
     },
     "Equal relation": {
       "id": "EUgY",
@@ -51,8 +75,8 @@
           "name": "Cat03.jpeg",
           "type": "file",
           "file": {
-            "url": "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/89ddf0a7-2a82-4e1e-b09e-b50198fce7d5/Cat03.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220722%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220722T193025Z&X-Amz-Expires=3600&X-Amz-Signature=aa2860cda60b06fb51cb731677961616ef97eddee0099ebff76b21d5b4832349&X-Amz-SignedHeaders=host&x-id=GetObject",
-            "expiry_time": "2022-07-22T20:30:25.570Z"
+            "url": "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/89ddf0a7-2a82-4e1e-b09e-b50198fce7d5/Cat03.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220727%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220727T190402Z&X-Amz-Expires=3600&X-Amz-Signature=5defd536f764a669d3f715f226a74e910d60f428633a375b5688ada953de5a13&X-Amz-SignedHeaders=host&x-id=GetObject",
+            "expiry_time": "2022-07-27T20:04:02.114Z"
           }
         }
       ]
@@ -146,6 +170,14 @@
       "id": "hiMX",
       "type": "select",
       "select": null
+    },
+    "date formula": {
+      "id": "jWgQ",
+      "type": "formula",
+      "formula": {
+        "type": "date",
+        "date": null
+      }
     },
     "rollup string": {
       "id": "kSwR",

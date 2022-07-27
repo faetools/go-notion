@@ -19,6 +19,14 @@
   },
   "archived": false,
   "properties": {
+    "formula number": {
+      "id": "%3DuTh",
+      "type": "formula",
+      "formula": {
+        "type": "number",
+        "number": null
+      }
+    },
     "count of relations": {
       "id": "%40ft%3F",
       "type": "rollup",
@@ -28,10 +36,26 @@
         "function": "count"
       }
     },
+    "equal relations": {
+      "id": "ASTz",
+      "type": "formula",
+      "formula": {
+        "type": "number",
+        "number": 16
+      }
+    },
     "A number": {
       "id": "CQUf",
       "type": "number",
       "number": null
+    },
+    "Property checkbox": {
+      "id": "C%5EC%3A",
+      "type": "formula",
+      "formula": {
+        "type": "boolean",
+        "boolean": false
+      }
     },
     "Equal relation": {
       "id": "EUgY",
@@ -146,6 +170,14 @@
       "id": "hiMX",
       "type": "select",
       "select": null
+    },
+    "date formula": {
+      "id": "jWgQ",
+      "type": "formula",
+      "formula": {
+        "type": "date",
+        "date": null
+      }
     },
     "rollup string": {
       "id": "kSwR",

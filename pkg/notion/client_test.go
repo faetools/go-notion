@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"regexp"
 	"testing"
 	"time"
 
@@ -15,6 +16,8 @@ import (
 	. "github.com/faetools/go-notion/pkg/notion"
 	"github.com/stretchr/testify/assert"
 )
+
+var reBlock = regexp.MustCompile("^v1/blocks/[a-z0-9-]+.json$")
 
 func TestClient(t *testing.T) {
 	t.Parallel()
@@ -38,7 +41,13 @@ func TestClient(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	assert.Empty(t, fsClient.Unseen())
+	for _, unseen := range fsClient.Unseen() {
+		if reBlock.MatchString(unseen) {
+			continue
+		}
+
+		t.Fatalf("did not test file %q", unseen)
+	}
 }
 
 type responseTester struct{ cli *Client }

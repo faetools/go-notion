@@ -19,6 +19,14 @@
   },
   "archived": false,
   "properties": {
+    "formula number": {
+      "id": "%3DuTh",
+      "type": "formula",
+      "formula": {
+        "type": "number",
+        "number": 32.7
+      }
+    },
     "count of relations": {
       "id": "%40ft%3F",
       "type": "rollup",
@@ -28,10 +36,26 @@
         "function": "count"
       }
     },
+    "equal relations": {
+      "id": "ASTz",
+      "type": "formula",
+      "formula": {
+        "type": "number",
+        "number": 0
+      }
+    },
     "A number": {
       "id": "CQUf",
       "type": "number",
       "number": 32.7
+    },
+    "Property checkbox": {
+      "id": "C%5EC%3A",
+      "type": "formula",
+      "formula": {
+        "type": "boolean",
+        "boolean": false
+      }
     },
     "Equal relation": {
       "id": "EUgY",
@@ -143,6 +167,18 @@
         "id": "[;Jv",
         "name": "bar",
         "color": "blue"
+      }
+    },
+    "date formula": {
+      "id": "jWgQ",
+      "type": "formula",
+      "formula": {
+        "type": "date",
+        "date": {
+          "start": "2022-08-05T16:00:00.000+02:00",
+          "end": "2022-08-12T03:00:00.000+02:00",
+          "time_zone": null
+        }
       }
     },
     "rollup string": {
