@@ -14,3 +14,13 @@ const PageID notion.Id = "96245c8f-1784-44a4-82ad-1941127c3ec3"
 //
 //go:embed v1
 var responses embed.FS
+
+// HTMLExport contains the export of the example page as HTML.
+//
+//go:embed html
+var HTMLExport embed.FS
+
+// MDCSVExport contains the export of the example page as markdown and CSV.
+//
+//go:embed md-csv
+var MDCSVExport embed.FS
