@@ -585,7 +585,7 @@ components:
         pdf:
           $ref: '#/components/schemas/FileWithCaption'
         bookmark:
-          $ref: '#/components/schemas/Bookmark'
+          $ref: '#/components/schemas/Embed'
         callout:
           $ref: '#/components/schemas/Callout'
         quote:
@@ -1709,22 +1709,6 @@ components:
           description: The web address
       required:
         - url
-    Bookmark:
-      description: ''
-      type: object
-      x-examples:
-        example:
-          url: https://website.domain
-      properties:
-        url:
-          type: string
-          description: Bookmark link
-          format: uri
-        caption:
-          $ref: '#/components/schemas/RichTexts'
-      required:
-        - url
-        - caption
     LinkToPage:
       title: LinkToPage
       type: object
@@ -2072,7 +2056,7 @@ components:
       properties:
         url:
           type: string
-          minLength: 1
+          description: Embedded link.
         caption:
           $ref: '#/components/schemas/RichTexts'
       required:

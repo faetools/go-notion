@@ -346,8 +346,10 @@ type Block struct {
 	Archived bool `json:"archived"`
 
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
-	Audio    *FileWithCaption `json:"audio,omitempty"`
-	Bookmark *Bookmark        `json:"bookmark,omitempty"`
+	Audio *FileWithCaption `json:"audio,omitempty"`
+
+	// Embed blocks include block types that allow displaying another website within Notion.
+	Bookmark *Embed `json:"bookmark,omitempty"`
 
 	// Breadcrumb block objects do not contain any information within the breadcrumb property
 	Breadcrumb *map[string]interface{} `json:"breadcrumb,omitempty"`
@@ -485,14 +487,6 @@ type BlocksList struct {
 	Type       string                 `json:"type"`
 }
 
-// Bookmark defines model for Bookmark.
-type Bookmark struct {
-	Caption RichTexts `json:"caption"`
-
-	// Bookmark link
-	Url string `json:"url"`
-}
-
 // Bot defines model for Bot.
 type Bot struct {
 	Owner struct {
@@ -611,7 +605,9 @@ type Date struct {
 // Embed blocks include block types that allow displaying another website within Notion.
 type Embed struct {
 	Caption RichTexts `json:"caption"`
-	Url     string    `json:"url"`
+
+	// Embedded link.
+	Url string `json:"url"`
 }
 
 // Equation block objects contain this information within the `equation` property
