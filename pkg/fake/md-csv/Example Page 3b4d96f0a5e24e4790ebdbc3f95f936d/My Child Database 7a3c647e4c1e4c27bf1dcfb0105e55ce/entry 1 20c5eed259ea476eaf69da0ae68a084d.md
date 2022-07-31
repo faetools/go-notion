@@ -8,14 +8,14 @@ Property: +1-202-555-0146
 Property checkbox: No
 Status: I've taken a look
 Sub: entry%203%2045d81ac0bf714a31b096941dd050f3e1.md
-contact: <mark@faetools.com>
+contact: mark@faetools.com
 count of relations: 1
 date formula: July 30, 2022
 equal relations: 0
-files: <https://www.princeton.edu/sites/default/files/styles/full_2x/public/images/2022/02/KOA_Nassau_2697x1517.jpg?itok=Hy5eTACi>, dog.webp
+files: https://www.princeton.edu/sites/default/files/styles/full_2x/public/images/2022/02/KOA_Nassau_2697x1517.jpg?itok=Hy5eTACi, dog.webp
 formula: no
 formula number: 31.3
-meme links: <https://www.reddit.com/r/wholesomememes/>
+meme links: https://www.reddit.com/r/wholesomememes/
 number with commas: 3.333
 people: Mark Rösler
 select: foo
