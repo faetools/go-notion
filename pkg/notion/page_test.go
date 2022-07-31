@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/faetools/go-notion/pkg/notion"
 	. "github.com/faetools/go-notion/pkg/notion"
 )
 
@@ -105,7 +106,7 @@ func validatePropertyValue(p PropertyValue) error {
 		return validateSelect(p.Select)
 	case PropertyTypeMultiSelect:
 		for _, sel := range *p.MultiSelect {
-			if err := validateOption(sel); err != nil {
+			if err := validateSelect(&sel); err != nil {
 				return err
 			}
 		}
@@ -126,9 +127,7 @@ func validateRollup(r *Rollup) error {
 			return errors.New("rollup string is empty")
 		}
 	case RollupTypeArray:
-		if r.Array == nil {
-			return errors.New("rollup array is empty")
-		}
+		return validateRollupArray(r.Array)
 	case RollupTypeNumber:
 		if r.Number == nil {
 			return errors.New("rollup number is empty")
@@ -150,18 +149,6 @@ func validateSelect(s *SelectValue) error {
 		if err := validateShortID("select value", s.Id); err != nil {
 			return err
 		}
-	}
-
-	if s.Name == "" {
-		return fmt.Errorf("select value %q has no name", s.Id)
-	}
-
-	return validateColor(s.Color)
-}
-
-func validateOption(s PropertyOption) error {
-	if err := validateUUID(s.Id); err != nil {
-		return err
 	}
 
 	if s.Name == "" {
@@ -197,5 +184,42 @@ func validateFormula(f *Formula) error {
 	default:
 		return fmt.Errorf("unknown formula type %q", f.Type)
 	}
+	return nil
+}
+
+func validateRollupArray(array *notion.RollupArray) error {
+	if array == nil {
+		return errors.New("rollup array is empty")
+	}
+
+	if len(*array) == 0 {
+		return nil
+	}
+
+	tp := (*array)[0].Type
+
+	for _, v := range *array {
+		if v.Type != tp {
+			return fmt.Errorf("conflicting types in rollup array: %q vs. %q", tp, v.Type)
+		}
+
+		switch v.Type {
+		case notion.RollupArrayItemTypeDate,
+			notion.RollupArrayItemTypeNumber,
+			notion.RollupArrayItemTypeString: // Ok
+		case notion.RollupArrayItemTypeTitle:
+			if v.Title == nil {
+				continue
+			}
+
+			if err := validateRichTexts(*v.Title); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unkown rollup array type %q", v.Type)
+
+		}
+	}
+
 	return nil
 }

@@ -276,7 +276,6 @@ const (
 
 // Defines values for RollupArrayItemType.
 const (
-	RollupArrayItemTypeArray  RollupArrayItemType = "array"
 	RollupArrayItemTypeDate   RollupArrayItemType = "date"
 	RollupArrayItemTypeNumber RollupArrayItemType = "number"
 	RollupArrayItemTypeString RollupArrayItemType = "string"
@@ -941,7 +940,7 @@ type PropertyMeta struct {
 
 	// Last edited time database property objects have no additional configuration within the `last_edited_time` property.
 	LastEditedTime *map[string]interface{} `json:"last_edited_time,omitempty"`
-	MultiSelect    *PropertyOptionsWrapper `json:"multi_select,omitempty"`
+	MultiSelect    *SelectValuesWrapper    `json:"multi_select,omitempty"`
 
 	// The name of the property as it appears in Notion.
 	Name string `json:"name"`
@@ -960,8 +959,8 @@ type PropertyMeta struct {
 	RichText *map[string]interface{} `json:"rich_text,omitempty"`
 
 	// Rollup database property objects contain the following configuration within the `rollup` property.
-	Rollup *RollupConfig           `json:"rollup,omitempty"`
-	Select *PropertyOptionsWrapper `json:"select,omitempty"`
+	Rollup *RollupConfig        `json:"rollup,omitempty"`
+	Select *SelectValuesWrapper `json:"select,omitempty"`
 
 	// Status database properties cannot currently be configured via the API and so have no additional configuration within the `status` property.
 	Status *map[string]interface{} `json:"status,omitempty"`
@@ -978,25 +977,6 @@ type PropertyMeta struct {
 
 // PropertyMetas defines model for PropertyMetas.
 type PropertyMetas interface{}
-
-// Multi-select or select option values.
-type PropertyOption struct {
-	// The color of the block.
-	Color Color `json:"color"`
-
-	// A unique identifier for a page, block, database, user, or option.
-	Id   UUID   `json:"id"`
-	Name string `json:"name"`
-}
-
-// An array of multi-select or select option values.
-type PropertyOptions []PropertyOption
-
-// PropertyOptionsWrapper defines model for PropertyOptionsWrapper.
-type PropertyOptionsWrapper struct {
-	// An array of multi-select or select option values.
-	Options PropertyOptions `json:"options"`
-}
 
 // Type of the property.
 type PropertyType string
@@ -1028,7 +1008,7 @@ type PropertyValue struct {
 	LastEditedBy *User `json:"last_edited_by,omitempty"`
 
 	// An array of multi-select or select option values.
-	MultiSelect *PropertyOptions `json:"multi_select,omitempty"`
+	MultiSelect *SelectValues `json:"multi_select,omitempty"`
 
 	// Number property value objects contain a number within the `number` property.
 	Number      *float32    `json:"number,omitempty"`
@@ -1042,8 +1022,12 @@ type PropertyValue struct {
 	// ## Rollup values may not match the Notion UI.
 	//
 	// Rollups returned in page objects are subject to a 25 page reference limitation. The Retrieve a page property endpoint should be used to get an accurate formula value.
-	Rollup *Rollup      `json:"rollup,omitempty"`
+	Rollup *Rollup `json:"rollup,omitempty"`
+
+	// Multi-select or select option values.
 	Select *SelectValue `json:"select,omitempty"`
+
+	// Multi-select or select option values.
 	Status *SelectValue `json:"status,omitempty"`
 	Title  *RichTexts   `json:"title,omitempty"`
 
@@ -1168,7 +1152,7 @@ type RollupConfig struct {
 // The function that is evaluated for every page in the relation of the rollup.
 type RollupConfigFunction string
 
-// SelectValue defines model for SelectValue.
+// Multi-select or select option values.
 type SelectValue struct {
 	// The color of the block.
 	Color Color `json:"color"`
@@ -1182,6 +1166,15 @@ type SelectValue struct {
 	//
 	// Note: Commas (",") are not valid for select values.
 	Name string `json:"name"`
+}
+
+// An array of multi-select or select option values.
+type SelectValues []SelectValue
+
+// SelectValuesWrapper defines model for SelectValuesWrapper.
+type SelectValuesWrapper struct {
+	// An array of multi-select or select option values.
+	Options SelectValues `json:"options"`
 }
 
 // Sort defines model for Sort.
