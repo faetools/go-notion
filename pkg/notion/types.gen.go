@@ -274,6 +274,15 @@ const (
 	RollupTypeString RollupType = "string"
 )
 
+// Defines values for RollupArrayItemType.
+const (
+	RollupArrayItemTypeArray  RollupArrayItemType = "array"
+	RollupArrayItemTypeDate   RollupArrayItemType = "date"
+	RollupArrayItemTypeNumber RollupArrayItemType = "number"
+	RollupArrayItemTypeString RollupArrayItemType = "string"
+	RollupArrayItemTypeTitle  RollupArrayItemType = "title"
+)
+
 // Defines values for RollupConfigFunction.
 const (
 	RollupConfigFunctionAverage           RollupConfigFunction = "average"
@@ -1104,11 +1113,9 @@ type RichTexts []RichText
 // Rollups returned in page objects are subject to a 25 page reference limitation. The Retrieve a page property endpoint should be used to get an accurate formula value.
 type Rollup struct {
 	// Array rollup property values contain an array of number, date, or string objects within the results property.
-	Array *[]interface{} `json:"array,omitempty"`
-
-	// Date rollup property values contain a date property value within the date property.
-	Date     *time.Time `json:"date,omitempty"`
-	Function string     `json:"function"`
+	Array    *RollupArray `json:"array,omitempty"`
+	Date     *Date        `json:"date,omitempty"`
+	Function string       `json:"function"`
 
 	// Number rollup property values contain a number within the number property.
 	Number *float32 `json:"number,omitempty"`
@@ -1120,6 +1127,25 @@ type Rollup struct {
 
 // RollupType defines model for Rollup.Type.
 type RollupType string
+
+// Array rollup property values contain an array of number, date, or string objects within the results property.
+type RollupArray []RollupArrayItem
+
+// RollupArrayItem defines model for RollupArrayItem.
+type RollupArrayItem struct {
+	Date *Date `json:"date,omitempty"`
+
+	// Number rollup property values contain a number within the number property.
+	Number *float32 `json:"number,omitempty"`
+
+	// String rollup property values contain an optional string within the string property.
+	String *string             `json:"string,omitempty"`
+	Title  *RichTexts          `json:"title,omitempty"`
+	Type   RollupArrayItemType `json:"type"`
+}
+
+// RollupArrayItemType defines model for RollupArrayItem.Type.
+type RollupArrayItemType string
 
 // Rollup database property objects contain the following configuration within the `rollup` property.
 type RollupConfig struct {

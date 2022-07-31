@@ -2011,17 +2011,42 @@ components:
           type: number
           description: Number rollup property values contain a number within the number property.
         date:
-          type: string
-          format: date-time
-          description: Date rollup property values contain a date property value within the date property.
+          $ref: '#/components/schemas/Date'
         array:
-          type: array
-          description: Array rollup property values contain an array of number, date, or string objects within the results property.
+          $ref: '#/components/schemas/RollupArray'
         function:
           type: string
       required:
         - type
         - function
+    RollupArray:
+      type: array
+      description: Array rollup property values contain an array of number, date, or string objects within the results property.
+      items:
+        $ref: '#/components/schemas/RollupArrayItem'
+    RollupArrayItem:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - title
+            - string
+            - number
+            - date
+            - array
+        title:
+          $ref: '#/components/schemas/RichTexts'
+        string:
+          type: string
+          description: String rollup property values contain an optional string within the string property.
+        number:
+          type: number
+          description: Number rollup property values contain a number within the number property.
+        date:
+          $ref: '#/components/schemas/Date'
+      required:
+        - type
     FormulaConfig:
       type: object
       description: Formula database property objects contain this configuration within the `formula` property.
