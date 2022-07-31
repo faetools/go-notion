@@ -577,7 +577,7 @@ components:
         image:
           $ref: '#/components/schemas/FileWithCaption'
         video:
-          $ref: '#/components/schemas/Video'
+          $ref: '#/components/schemas/FileWithCaption'
         audio:
           $ref: '#/components/schemas/FileWithCaption'
         file:
@@ -1815,26 +1815,6 @@ components:
           format: uri
       required:
         - url
-    Video:
-      type: object
-      description: File objects contain data about files uploaded to Notion as well as external files linked in Notion.
-      properties:
-        type:
-          type: string
-          enum:
-            - file
-            - external
-          example: file
-          description: Type of this file object.
-        file:
-          $ref: '#/components/schemas/NotionFile'
-        external:
-          $ref: '#/components/schemas/ExternalFile'
-        caption:
-          $ref: '#/components/schemas/RichTexts'
-      required:
-        - type
-        - caption
     SyncedBlock:
       type: object
       x-examples:

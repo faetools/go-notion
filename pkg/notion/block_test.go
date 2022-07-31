@@ -242,7 +242,7 @@ func validateBlock(b Block) error {
 			return errors.New("no unsupported object")
 		}
 	case BlockTypeVideo:
-		return validateVideo(b.Video)
+		return validateFileWithCaption(b.Video)
 	default:
 		return fmt.Errorf("unknown block type %q", b.Type)
 	}
@@ -460,21 +460,6 @@ func validateParent(p *Parent) error {
 		return nil
 	default:
 		return fmt.Errorf("unknown parent type %q", p.Type)
-	}
-}
-
-func validateVideo(v *Video) error {
-	if err := validateRichTexts(v.Caption); err != nil {
-		return err
-	}
-
-	switch v.Type {
-	case VideoTypeExternal:
-		return validateURL(v.External.Url)
-	case VideoTypeFile:
-		return validateURL(v.File.Url)
-	default:
-		return fmt.Errorf("unknown video type %q", v.Type)
 	}
 }
 

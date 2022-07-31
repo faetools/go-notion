@@ -317,12 +317,6 @@ const (
 	UserTypePerson UserType = "person"
 )
 
-// Defines values for VideoType.
-const (
-	VideoTypeExternal VideoType = "external"
-	VideoTypeFile     VideoType = "file"
-)
-
 // Style information which applies to the whole rich text object.
 type Annotations struct {
 	// Whether the text is **bolded**.
@@ -466,8 +460,8 @@ type Block struct {
 	// Some block types aren't available yet
 	Unsupported *map[string]interface{} `json:"unsupported,omitempty"`
 
-	// File objects contain data about files uploaded to Notion as well as external files linked in Notion.
-	Video *Video `json:"video,omitempty"`
+	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
+	Video *FileWithCaption `json:"video,omitempty"`
 }
 
 // Type of block.
@@ -1307,23 +1301,6 @@ type UsersList struct {
 	Type       string                 `json:"type"`
 	User       map[string]interface{} `json:"user"`
 }
-
-// File objects contain data about files uploaded to Notion as well as external files linked in Notion.
-type Video struct {
-	Caption RichTexts `json:"caption"`
-
-	// An external file is any URL that isn't hosted by Notion.
-	External *ExternalFile `json:"external,omitempty"`
-
-	// File objects contain this information within the `file` property.
-	File *NotionFile `json:"file,omitempty"`
-
-	// Type of this file object.
-	Type VideoType `json:"type"`
-}
-
-// Type of this file object.
-type VideoType string
 
 // A unique identifier for a page, block, database, user, or option.
 type Id UUID
