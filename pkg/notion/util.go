@@ -46,30 +46,6 @@ func (refs References) GetIDs() []UUID {
 	return mapSlice(refs, func(ref Reference) UUID { return ref.Id })
 }
 
-// URL return the URL of the file.
-func (f File) URL() string {
-	switch f.Type {
-	case FileTypeExternal:
-		return f.External.Url
-	case FileTypeFile:
-		return f.File.Url
-	default:
-		panic(fmt.Errorf("invalid File of type %q", f.Type))
-	}
-}
-
-// URL return the URL of the file.
-func (f FileWithCaption) URL() string {
-	switch f.Type {
-	case FileWithCaptionTypeExternal:
-		return f.External.Url
-	case FileWithCaptionTypeFile:
-		return f.File.Url
-	default:
-		panic(fmt.Errorf("invalid FileWithCaption of type %q", f.Type))
-	}
-}
-
 // URL return the URL of the file for the icon.
 func (ic Icon) URL() string {
 	switch ic.Type {
