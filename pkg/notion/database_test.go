@@ -3,6 +3,8 @@ package notion_test
 import (
 	"errors"
 	"fmt"
+	"net/url"
+	"path/filepath"
 
 	. "github.com/faetools/go-notion/pkg/notion"
 	"github.com/google/uuid"
@@ -98,6 +100,19 @@ func validateFile(f *File) error {
 	case FileTypeExternal:
 		return validateURL(f.External.Url)
 	case FileTypeFile:
+		if f.Name == nil {
+			return fmt.Errorf("file name is empty for internal file %q", f.File.Url)
+		}
+
+		u, err := url.Parse(f.File.Url)
+		if err != nil {
+			return err
+		}
+
+		if filename := filepath.Base(u.Path); *f.Name != filename {
+			return fmt.Errorf("%q vs. %q", *f.Name, filename)
+		}
+
 		return validateURL(f.File.Url)
 	default:
 		return fmt.Errorf("unknown file type %q", f.Type)
