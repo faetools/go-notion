@@ -76,3 +76,25 @@ func (f FileWithCaption) GetFile() File {
 		Type:     FileType(f.Type),
 	}
 }
+
+// URL return the URL of the file for the icon.
+func (ic Icon) URL() string {
+	switch ic.Type {
+	case IconTypeExternal:
+		return ic.External.Url
+	case IconTypeFile:
+		return ic.File.Url
+	case IconTypeEmoji:
+		panic(fmt.Errorf("Icon of type %q does not have a URL", ic.Type))
+	default:
+		panic(fmt.Errorf("invalid Icon of type %q", ic.Type))
+	}
+}
+
+func (ic Icon) ExpiryTime() *time.Time {
+	if ic.File != nil {
+		return &f.File.ExpiryTime
+	}
+
+	return nil
+}
