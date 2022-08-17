@@ -93,7 +93,7 @@ func (ic Icon) URL() string {
 
 func (ic Icon) ExpiryTime() *time.Time {
 	if ic.File != nil {
-		return &f.File.ExpiryTime
+		return &ic.File.ExpiryTime
 	}
 
 	return nil
