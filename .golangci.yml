@@ -9,6 +9,7 @@ linters:
     - gofumpt
     - goimports
   enable:
+    - asasalint
     - asciicheck
     - bidichk
     - bodyclose
@@ -76,6 +77,8 @@ linters:
     - whitespace
     - wsl
 linters-settings:
+  asasalint:
+    use-builtin-exclusions: true
   cyclop:
     max-complexity: 10
   decorder:
@@ -124,6 +127,8 @@ linters-settings:
       - FIXME
       - OPTIMIZE
       - HACK
+  gosec:
+    concurrency: 8
   gosimple:
     checks:
       - all
@@ -181,7 +186,6 @@ linters-settings:
   nestif:
     min-complexity: 4
   nolintlint:
-    allow-leading-space: true
     require-explanation: true
     require-specific: true
   prealloc:

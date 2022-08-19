@@ -18,7 +18,7 @@ jobs:
     environment:
       CONFIG_APP_ENVIRONMENT: testing
       GOFLAGS: -mod=vendor
-      GOLANGCI_LINT_VERSION: 1.44.2
+      GOLANGCI_LINT_VERSION: 1.48.0
       GOPRIVATE: github.com/faetools/*
       GOTESTSUM_VERSION: 1.8.1
       SONAR_SCANNER_VERSION: 4.7.0.2747
