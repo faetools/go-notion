@@ -77,6 +77,27 @@ func (c Client) UpdateNotionPage(ctx context.Context, p Page) (*Page, error) {
 	}
 }
 
+// GetNotionBlock returns the notion block or an error.
+func (c Client) GetNotionBlock(ctx context.Context, id Id) (*Block, error) {
+	resp, err := c.GetBlock(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	switch resp.StatusCode() {
+	case http.StatusOK: // ok
+		return resp.JSON200, nil
+	case http.StatusBadRequest:
+		return nil, resp.JSON400
+	case http.StatusNotFound:
+		return nil, resp.JSON404
+	case http.StatusTooManyRequests:
+		return nil, resp.JSON429
+	default:
+		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+	}
+}
+
 // GetNotionDatabase returns the notion database or an error.
 func (c Client) GetNotionDatabase(ctx context.Context, id Id) (*Database, error) {
 	resp, err := c.GetDatabase(ctx, id)
@@ -256,34 +277,160 @@ func (c Client) ListAllUsers(ctx context.Context) (Users, error) {
 
 // GetAllBlocks returns all blocks of a given page or block.
 func (c Client) GetAllBlocks(ctx context.Context, id Id) (Blocks, error) {
-	blocks := Blocks{}
+	var (
+		all    Blocks
+		blocks Blocks
+		next   *StartCursor
+		err    error
+	)
 
-	var cursor *StartCursor
 	for {
-		resp, err := c.GetBlocks(ctx, id, &GetBlocksParams{
-			PageSize:    &maxPageSize,
-			StartCursor: cursor,
-		})
+		blocks, next, err = c.GetNextBlocks(ctx, id, next)
 		if err != nil {
 			return nil, fmt.Errorf("getting blocks for %s: %w", id, err)
 		}
 
-		switch resp.StatusCode() {
-		case http.StatusOK: // ok
-		case http.StatusBadRequest:
-			return nil, resp.JSON400
-		case http.StatusNotFound:
-			return nil, resp.JSON404
-		default:
-			return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+		all = append(all, blocks...)
+
+		if next == nil {
+			return all, nil
 		}
-
-		blocks = append(blocks, resp.JSON200.Results...)
-
-		if !resp.JSON200.HasMore {
-			return blocks, nil
-		}
-
-		cursor = (*StartCursor)(resp.JSON200.NextCursor)
 	}
 }
+
+// GetNextBlocks gets the next blocks, starting at the cursor.
+func (c Client) GetNextBlocks(ctx context.Context, id Id, cursor *StartCursor) (
+	Blocks, *StartCursor, error,
+) {
+	resp, err := c.GetBlocks(ctx, id, &GetBlocksParams{
+		PageSize:    &maxPageSize,
+		StartCursor: cursor,
+	})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	switch resp.StatusCode() {
+	case http.StatusOK: // ok
+		var next *StartCursor
+		if resp.JSON200.HasMore {
+			next = (*StartCursor)(resp.JSON200.NextCursor)
+		}
+
+		return resp.JSON200.Results, next, nil
+	case http.StatusBadRequest:
+		return nil, nil, resp.JSON400
+	case http.StatusNotFound:
+		return nil, nil, resp.JSON404
+	default:
+		return nil, nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+	}
+}
+
+// PageWithinScope checks if an ancestor of the page has the stated UUID.
+func (c Client) PageWithinScope(ctx context.Context, scope UUID, p *Page) (bool, error) {
+	return c.parentWithinScope(ctx, scope, p.Parent)
+}
+
+// PageWithinScope checks if an ancestor of the database has the stated UUID.
+func (c Client) DatabaseWithinScope(ctx context.Context, scope UUID, db *Database) (bool, error) {
+	return c.parentWithinScope(ctx, scope, db.Parent)
+}
+
+// PageWithinScope checks if an ancestor of the block has the stated UUID.
+func (c Client) BlockWithinScope(ctx context.Context, scope UUID, block *Block) (bool, error) {
+	return c.parentWithinScope(ctx, scope, &block.Parent)
+}
+
+func (c Client) parentWithinScope(ctx context.Context, scope UUID, p *Parent) (bool, error) {
+	switch {
+	case p == nil:
+		return false, nil
+	case p.ID() == scope:
+		return true, nil
+	default:
+		switch p.Type {
+		case ParentTypeBlockId:
+			parent, err := c.GetNotionBlock(ctx, Id(*p.BlockId))
+			if err != nil {
+				return false, err
+			}
+
+			return c.BlockWithinScope(ctx, scope, parent)
+		case ParentTypeDatabaseId:
+			parent, err := c.GetNotionDatabase(ctx, Id(*p.DatabaseId))
+			if err != nil {
+				return false, err
+			}
+
+			return c.DatabaseWithinScope(ctx, scope, parent)
+		case ParentTypePageId:
+			parent, err := c.GetNotionPage(ctx, Id(*p.PageId))
+			if err != nil {
+				return false, err
+			}
+
+			return c.PageWithinScope(ctx, scope, parent)
+		case ParentTypeWorkspace:
+			return false, nil
+		default:
+			return false, fmt.Errorf("invalid parent type %s", p.Type)
+		}
+	}
+
+	return false, nil
+}
+
+func (c Client) GetNotionPagesByTitle(
+	ctx context.Context, title string,
+) (Pages, error) {
+	resp, err := c.Search(ctx, SearchJSONRequestBody{
+		"query": title,
+		"filter": map[string]string{
+			"value":    "object",
+			"property": "page",
+		},
+		"page_size": maxPageSize,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("getting page by title for %s: %w", title, err)
+	}
+
+	switch resp.StatusCode() {
+	case http.StatusOK: // ok
+		return resp.JSON200.Results, nil
+	case http.StatusBadRequest:
+		return nil, resp.JSON400
+	case http.StatusNotFound:
+		return nil, resp.JSON404
+	default:
+		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+	}
+}
+
+// func (c Client) GetNotionDatabasesByTitle(
+// 	ctx context.Context, title string,
+// ) (*Database, error) {
+// 	resp, err := c.Search(ctx, SearchJSONRequestBody{
+// 		"query": title,
+// 		"filter": map[string]string{
+// 			"value":    "object",
+// 			"property": "database",
+// 		},
+// 		"page_size": maxPageSize,
+// 	})
+// 	if err != nil {
+// 		return nil, fmt.Errorf("page by title for %s: %w", title, err)
+// 	}
+
+// 	switch resp.StatusCode() {
+// 	case http.StatusOK: // ok
+// 		return resp.JSON200.Results, nil
+// 	case http.StatusBadRequest:
+// 		return nil, resp.JSON400
+// 	case http.StatusNotFound:
+// 		return nil, resp.JSON404
+// 	default:
+// 		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+// 	}
+// }
