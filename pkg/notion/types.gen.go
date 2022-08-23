@@ -300,6 +300,22 @@ const (
 	RollupConfigFunctionSum               RollupConfigFunction = "sum"
 )
 
+// Defines values for SearchFilterProperty.
+const (
+	SearchFilterPropertyObject SearchFilterProperty = "object"
+)
+
+// Defines values for SearchFilterValue.
+const (
+	SearchFilterValueDatabase SearchFilterValue = "database"
+	SearchFilterValuePage     SearchFilterValue = "page"
+)
+
+// Defines values for SearchResultObject.
+const (
+	SearchResultObjectList SearchResultObject = "list"
+)
+
 // Defines values for SortDirection.
 const (
 	SortDirectionAscending  SortDirection = "ascending"
@@ -850,6 +866,12 @@ type Page struct {
 	Url string `json:"url"`
 }
 
+// PageOrDatabase defines model for PageOrDatabase.
+type PageOrDatabase struct {
+	Page     *Page
+	Database *Database
+}
+
 // Pages defines model for Pages.
 type Pages []Page
 
@@ -1142,6 +1164,49 @@ type RollupConfig struct {
 // The function that is evaluated for every page in the relation of the rollup.
 type RollupConfigFunction string
 
+// This body determines what you search for.
+//
+// The `query` parameter matches against the page titles. If the `query` parameter is not provided, the response will contain all pages (and child pages) in the results.
+//
+// The `filter` parameter can be used to query specifically for only pages or only databases.
+//
+// The response may contain fewer than `page_size` of results.
+type Search struct {
+	Filter   *SearchFilter `json:"filter,omitempty"`
+	PageSize *int          `json:"page_size,omitempty"`
+	Query    *string       `json:"query,omitempty"`
+
+	// A unique identifier for a page, block, database, or user.
+	StartCursor *NextCursor `json:"start_cursor"`
+}
+
+// SearchFilter defines model for SearchFilter.
+type SearchFilter struct {
+	Property SearchFilterProperty `json:"property"`
+	Value    SearchFilterValue    `json:"value"`
+}
+
+// SearchFilterProperty defines model for SearchFilter.Property.
+type SearchFilterProperty string
+
+// SearchFilterValue defines model for SearchFilter.Value.
+type SearchFilterValue string
+
+// SearchResult defines model for SearchResult.
+type SearchResult struct {
+	HasMore bool `json:"has_more"`
+
+	// A unique identifier for a page, block, database, or user.
+	NextCursor     *NextCursor             `json:"next_cursor"`
+	Object         SearchResultObject      `json:"object"`
+	PageOrDatabase *map[string]interface{} `json:"page_or_database,omitempty"`
+	Results        []PageOrDatabase        `json:"results"`
+	Type           *string                 `json:"type,omitempty"`
+}
+
+// SearchResultObject defines model for SearchResult.Object.
+type SearchResultObject string
+
 // Multi-select or select option values.
 type SelectValue struct {
 	// The color of the block.
@@ -1362,7 +1427,7 @@ type CreatePageJSONBody Page
 type UpdatePageJSONBody Page
 
 // SearchJSONBody defines parameters for Search.
-type SearchJSONBody map[string]interface{}
+type SearchJSONBody Search
 
 // ListUsersParams defines parameters for ListUsers.
 type ListUsersParams struct {

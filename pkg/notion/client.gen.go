@@ -1866,7 +1866,7 @@ func parseUpdatePageResponse(rsp *http.Response) (*UpdatePageResponse, error) {
 type SearchResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *PagesList
+	JSON200      *SearchResult
 	JSON400      *Error
 	JSON404      *Error
 	JSON429      *Error
@@ -1974,7 +1974,7 @@ func parseSearchResponse(rsp *http.Response) (*SearchResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest PagesList
+		var dest SearchResult
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

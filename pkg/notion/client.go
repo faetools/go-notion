@@ -10,12 +10,14 @@ import (
 )
 
 const (
-	versionHeader  = "Notion-Version"
-	version        = "2022-02-22"
-	maxPageSizeInt = 100
+	versionHeader = "Notion-Version"
+	version       = "2022-02-22"
 )
 
-var maxPageSize PageSize = maxPageSizeInt
+var (
+	maxPageSizeInt          = 100
+	maxPageSize    PageSize = PageSize(maxPageSizeInt)
+)
 
 // NewDefaultClient returns a new client with the default options.
 func NewDefaultClient(bearer string, opts ...client.Option) (*Client, error) {
@@ -385,12 +387,13 @@ func (c Client) GetNotionPagesByTitle(
 	ctx context.Context, title string,
 ) (Pages, error) {
 	resp, err := c.Search(ctx, SearchJSONRequestBody{
-		"query": title,
-		"filter": map[string]string{
-			"value":    "object",
-			"property": "page",
+		Query: &title,
+		Filter: &SearchFilter{
+			Value:    SearchFilterValuePage,
+			Property: SearchFilterPropertyObject,
 		},
-		"page_size": maxPageSize,
+		// StartCursor: &"", // TODO pagination
+		PageSize: &maxPageSizeInt,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("getting page by title for %s: %w", title, err)
@@ -398,7 +401,12 @@ func (c Client) GetNotionPagesByTitle(
 
 	switch resp.StatusCode() {
 	case http.StatusOK: // ok
-		return resp.JSON200.Results, nil
+		pages := make(Pages, len(resp.JSON200.Results))
+		for i, res := range resp.JSON200.Results {
+			pages[i] = *res.Page
+		}
+
+		return pages, nil
 	case http.StatusBadRequest:
 		return nil, resp.JSON400
 	case http.StatusNotFound:
@@ -408,29 +416,35 @@ func (c Client) GetNotionPagesByTitle(
 	}
 }
 
-// func (c Client) GetNotionDatabasesByTitle(
-// 	ctx context.Context, title string,
-// ) (*Database, error) {
-// 	resp, err := c.Search(ctx, SearchJSONRequestBody{
-// 		"query": title,
-// 		"filter": map[string]string{
-// 			"value":    "object",
-// 			"property": "database",
-// 		},
-// 		"page_size": maxPageSize,
-// 	})
-// 	if err != nil {
-// 		return nil, fmt.Errorf("page by title for %s: %w", title, err)
-// 	}
+func (c Client) GetNotionDatabasesByTitle(
+	ctx context.Context, title string,
+) (Databases, error) {
+	resp, err := c.Search(ctx, SearchJSONRequestBody{
+		Query: &title,
+		Filter: &SearchFilter{
+			Value:    SearchFilterValueDatabase,
+			Property: SearchFilterPropertyObject,
+		},
+		// StartCursor: &"", // TODO pagination
+		PageSize: &maxPageSizeInt,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("getting page by title for %s: %w", title, err)
+	}
 
-// 	switch resp.StatusCode() {
-// 	case http.StatusOK: // ok
-// 		return resp.JSON200.Results, nil
-// 	case http.StatusBadRequest:
-// 		return nil, resp.JSON400
-// 	case http.StatusNotFound:
-// 		return nil, resp.JSON404
-// 	default:
-// 		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
-// 	}
-// }
+	switch resp.StatusCode() {
+	case http.StatusOK: // ok
+		dbs := make(Databases, len(resp.JSON200.Results))
+		for i, res := range resp.JSON200.Results {
+			dbs[i] = *res.Database
+		}
+
+		return dbs, nil
+	case http.StatusBadRequest:
+		return nil, resp.JSON400
+	case http.StatusNotFound:
+		return nil, resp.JSON404
+	default:
+		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+	}
+}
