@@ -1172,12 +1172,10 @@ type RollupConfigFunction string
 //
 // The response may contain fewer than `page_size` of results.
 type Search struct {
-	Filter   *SearchFilter `json:"filter,omitempty"`
-	PageSize *int          `json:"page_size,omitempty"`
-	Query    *string       `json:"query,omitempty"`
-
-	// A unique identifier for a page, block, database, or user.
-	StartCursor *NextCursor `json:"start_cursor"`
+	Filter      *SearchFilter `json:"filter,omitempty"`
+	PageSize    *int          `json:"page_size,omitempty"`
+	Query       *string       `json:"query,omitempty"`
+	StartCursor *string       `json:"start_cursor,omitempty"`
 }
 
 // SearchFilter defines model for SearchFilter.
