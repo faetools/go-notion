@@ -386,6 +386,10 @@ func (c Client) parentWithinScope(ctx context.Context, scope UUID, p *Parent) (b
 func (c Client) GetNotionPagesByTitle(
 	ctx context.Context, title string,
 ) (Pages, error) {
+	if title == "" {
+		return Pages{}, nil
+	}
+
 	resp, err := c.Search(ctx, SearchJSONRequestBody{
 		Query: &title,
 		Filter: &SearchFilter{
@@ -419,6 +423,10 @@ func (c Client) GetNotionPagesByTitle(
 func (c Client) GetNotionDatabasesByTitle(
 	ctx context.Context, title string,
 ) (Databases, error) {
+	if title == "" {
+		return Databases{}, nil
+	}
+
 	resp, err := c.Search(ctx, SearchJSONRequestBody{
 		Query: &title,
 		Filter: &SearchFilter{
