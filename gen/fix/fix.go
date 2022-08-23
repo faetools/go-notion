@@ -23,10 +23,15 @@ func main() {
 	types = bytes.Replace(types,
 		[]byte("Properties PropertyMetas"),
 		[]byte("Properties PropertyMetaMap"), 1)
-
 	types = bytes.Replace(types,
 		[]byte("Properties PropertyValues"),
 		[]byte("Properties PropertyValueMap"), 1)
+	types = bytes.Replace(types,
+		[]byte("type PageOrDatabase interface{}"),
+		[]byte(`type PageOrDatabase struct {
+	Page     *Page
+	Database *Database
+}`), 1)
 
 	if err := g.WriteBytes(typesPath, types); err != nil {
 		log.Fatal(err)
