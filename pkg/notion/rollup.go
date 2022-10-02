@@ -9,7 +9,7 @@ type (
 
 	rollupNumber struct {
 		Type     RollupType `json:"type"`
-		Number   *float32   `json:"number"`
+		Number   *float64   `json:"number"`
 		Function string     `json:"function"`
 	}
 

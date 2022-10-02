@@ -16,7 +16,7 @@ type (
 	number struct {
 		ID     string   `json:"id,omitempty"`
 		Type   string   `json:"type"`
-		Number *float32 `json:"number"`
+		Number *float64 `json:"number"`
 	}
 
 	propertyValueSelect struct {
@@ -133,7 +133,7 @@ func (v PropertyValue) GetFiles() Files {
 }
 
 // GetNumber returns the number value.
-func (v PropertyValue) GetNumber() float32 {
+func (v PropertyValue) GetNumber() float64 {
 	if v.Number == nil {
 		return 0
 	}

@@ -712,7 +712,7 @@ type Formula struct {
 	Date    *Date `json:"date,omitempty"`
 
 	// Number formula property values contain an optional number within the number property.
-	Number *float32 `json:"number,omitempty"`
+	Number *float64 `json:"number,omitempty"`
 
 	// String formula property values contain an optional string within the string property.
 	String *string     `json:"string,omitempty"`
@@ -1023,7 +1023,7 @@ type PropertyValue struct {
 	MultiSelect *SelectValues `json:"multi_select,omitempty"`
 
 	// Number property value objects contain a number within the `number` property.
-	Number      *float32    `json:"number,omitempty"`
+	Number      *float64    `json:"number,omitempty"`
 	People      *[]User     `json:"people,omitempty"`
 	PhoneNumber *string     `json:"phone_number,omitempty"`
 	Relation    *References `json:"relation,omitempty"`
@@ -1114,7 +1114,7 @@ type Rollup struct {
 	Function string       `json:"function"`
 
 	// Number rollup property values contain a number within the number property.
-	Number *float32 `json:"number,omitempty"`
+	Number *float64 `json:"number,omitempty"`
 
 	// String rollup property values contain an optional string within the string property.
 	String *string    `json:"string,omitempty"`
@@ -1132,7 +1132,7 @@ type RollupArrayItem struct {
 	Date *Date `json:"date,omitempty"`
 
 	// Number rollup property values contain a number within the number property.
-	Number *float32 `json:"number,omitempty"`
+	Number *float64 `json:"number,omitempty"`
 
 	// String rollup property values contain an optional string within the string property.
 	String *string             `json:"string,omitempty"`
@@ -1365,7 +1365,7 @@ type UsersList struct {
 type Id UUID
 
 // The number of items from the full list desired in the response.
-type PageSize float32
+type PageSize int
 
 // If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results.
 type StartCursor string

@@ -446,7 +446,7 @@ components:
       in: query
       style: form
       schema:
-        type: number
+        type: integer
         maximum: 100
       description: The number of items from the full list desired in the response.
     id:
@@ -1508,6 +1508,7 @@ components:
           $ref: '#/components/schemas/Date'
         number:
           type: number
+          format: double
           description: Number property value objects contain a number within the `number` property.
         files:
           $ref: '#/components/schemas/Files'
@@ -1958,6 +1959,7 @@ components:
           description: String rollup property values contain an optional string within the string property.
         number:
           type: number
+          format: double
           description: Number rollup property values contain a number within the number property.
         date:
           $ref: '#/components/schemas/Date'
@@ -1990,6 +1992,7 @@ components:
           description: String rollup property values contain an optional string within the string property.
         number:
           type: number
+          format: double
           description: Number rollup property values contain a number within the number property.
         date:
           $ref: '#/components/schemas/Date'
@@ -2025,6 +2028,7 @@ components:
           description: String formula property values contain an optional string within the string property.
         number:
           type: number
+          format: double
           description: Number formula property values contain an optional number within the number property.
         boolean:
           type: boolean
