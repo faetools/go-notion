@@ -11,9 +11,28 @@ var TitleProperty = PropertyMeta{
 	Title: &map[string]interface{}{},
 }
 
+func NewPage(title string, parent *Parent) Page {
+	return Page{
+		Object: "page",
+		Properties: PropertyValueMap{
+			"title": PropertyValue{
+				Type:  PropertyTypeTitle,
+				Title: NewRichTextsP(title),
+			},
+		},
+		Parent: parent,
+	}
+}
+
 // NewRichTexts creates a RichTexts object with the desired content.
 func NewRichTexts(content string) RichTexts {
 	return RichTexts{NewRichText(content)}
+}
+
+// NewRichTextsP creates a pointer to a RichTexts object with the desired content.
+func NewRichTextsP(content string) *RichTexts {
+	rt := NewRichTexts(content)
+	return &rt
 }
 
 // NewRichText creates a RichText object with the desired content.
