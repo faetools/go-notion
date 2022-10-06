@@ -24,6 +24,13 @@ func NewPage(title string, parent *Parent) Page {
 	}
 }
 
+func NewParagraph(txt string) *Paragraph {
+	return &Paragraph{
+		Color:    ColorDefault,
+		RichText: NewRichTexts(txt),
+	}
+}
+
 // NewRichTexts creates a RichTexts object with the desired content.
 func NewRichTexts(content string) RichTexts {
 	return RichTexts{NewRichText(content)}
@@ -58,6 +65,17 @@ func mapSlice[T, R any](collection []T, iteratee func(T) R) []R {
 // GetNames returns names of all selected options.
 func (vals SelectValues) GetNames() []string {
 	return mapSlice(vals, func(val SelectValue) string { return val.Name })
+}
+
+// GetByName returns the select value with the respective name.
+func (vals SelectValues) GetByName(name string) (SelectValue, bool) {
+	for _, val := range vals {
+		if val.Name == name {
+			return val, true
+		}
+	}
+
+	return SelectValue{}, false
 }
 
 // GetIDs returns the UUIDs of all references.
@@ -105,4 +123,12 @@ func (p Parent) ID() UUID {
 	default:
 		return UUID(fmt.Sprintf("<invalid parent type %s>", p.Type))
 	}
+}
+
+func (wr *SelectValuesWrapper) GetOptions() notion.SelectValues {
+	if wr == nil {
+		return notion.SelectValues{}
+	}
+
+	return wr.Options
 }
