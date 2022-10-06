@@ -98,6 +98,9 @@ func (c Client) GetNotionPage(ctx context.Context, id Id) (*Page, error) {
 
 // UpdateNotionPage updates the notion page or returns an error.
 func (c Client) UpdateNotionPage(ctx context.Context, p Page) (*Page, error) {
+	// can't be present when updating
+	p.CreatedTime = nil
+
 	resp, err := c.UpdatePage(ctx, Id(p.Id), UpdatePageJSONRequestBody(p))
 	if err != nil {
 		return nil, err
