@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/faetools/go-notion/pkg/notion"
 	. "github.com/faetools/go-notion/pkg/notion"
 )
 
@@ -187,7 +186,7 @@ func validateFormula(f *Formula) error {
 	return nil
 }
 
-func validateRollupArray(array *notion.RollupArray) error {
+func validateRollupArray(array *RollupArray) error {
 	if array == nil {
 		return errors.New("rollup array is empty")
 	}
@@ -204,10 +203,10 @@ func validateRollupArray(array *notion.RollupArray) error {
 		}
 
 		switch v.Type {
-		case notion.RollupArrayItemTypeDate,
-			notion.RollupArrayItemTypeNumber,
-			notion.RollupArrayItemTypeString: // Ok
-		case notion.RollupArrayItemTypeTitle:
+		case RollupArrayItemTypeDate,
+			RollupArrayItemTypeNumber,
+			RollupArrayItemTypeString: // Ok
+		case RollupArrayItemTypeTitle:
 			if v.Title == nil {
 				continue
 			}

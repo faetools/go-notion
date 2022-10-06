@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"io/fs"
 	"log"
 	"net/http"
@@ -42,10 +43,10 @@ func main() {
 		// don't do anything after having fetched the document, just continue
 		func(p *notion.Page) error { return nil },
 		func(blocks notion.Blocks) error {
-			for _, b := range blocks {
+			for i, b := range blocks {
 				_, err := cli.GetBlock(ctx, notion.Id(b.Id))
 				if err != nil {
-					return err
+					return fmt.Errorf("getting block %d: %w", i, err)
 				}
 			}
 

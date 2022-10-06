@@ -131,6 +131,17 @@ func validateBlock(b Block) error {
 		return fmt.Errorf("block object field is %q", b.Object)
 	}
 
+	tp := b.Type
+	b.Type = ""
+
+	if err := b.Validate(); err != nil {
+		return err
+	}
+
+	if b.Type != tp {
+		return fmt.Errorf("could not recover type %q", tp)
+	}
+
 	if err := validateUser(b.CreatedBy); err != nil {
 		return err
 	}
@@ -324,9 +335,9 @@ func validateAnnotations(a Annotations) error {
 }
 
 func firstError[T any](collection []T, validate func(T) error) error {
-	for _, item := range collection {
+	for i, item := range collection {
 		if err := validate(item); err != nil {
-			return err
+			return fmt.Errorf("@%d: %w", i, err)
 		}
 	}
 
