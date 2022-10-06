@@ -497,3 +497,42 @@ func (c Client) GetNotionDatabasesByTitle(
 		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
 	}
 }
+
+func (c Client) AppendBlocksToPage(ctx context.Context, pageID Id, blocks ...Block) (Blocks, error) {
+	pageUUID := UUID(pageID)
+
+	for i, b := range blocks {
+		b.Parent = Parent{
+			Type:   ParentTypePageId,
+			PageId: &pageUUID,
+		}
+
+		if b.Id == "" {
+			b.Id = UUID(uuid.NewString())
+		}
+
+		if err := b.Validate(); err != nil {
+			return nil, fmt.Errorf("validating block %d to be appended: %w", i, err)
+		}
+
+		blocks[i] = b
+	}
+
+	resp, err := c.AppendBlocks(ctx, pageID, AppendBlocksJSONRequestBody{Children: blocks})
+	if err != nil {
+		return nil, fmt.Errorf("appending blocks to page %s: %w", pageID, err)
+	}
+
+	switch resp.StatusCode() {
+	case http.StatusOK: // ok
+		return resp.JSON200.Results, nil
+	case http.StatusBadRequest:
+		return nil, resp.JSON400
+	case http.StatusNotFound:
+		return nil, resp.JSON404
+	case http.StatusTooManyRequests:
+		return nil, resp.JSON429
+	default:
+		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+	}
+}
