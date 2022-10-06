@@ -125,9 +125,9 @@ func (p Parent) ID() UUID {
 	}
 }
 
-func (wr *SelectValuesWrapper) GetOptions() notion.SelectValues {
+func (wr *SelectValuesWrapper) GetOptions() SelectValues {
 	if wr == nil {
-		return notion.SelectValues{}
+		return SelectValues{}
 	}
 
 	return wr.Options
