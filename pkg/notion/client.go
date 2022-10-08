@@ -219,6 +219,10 @@ func ensureDatabaseIsValid(db *Database) {
 		return
 	}
 
+	if db.Description == nil {
+		db.Description = RichTexts{}
+	}
+
 	// make sure a title property is present
 	for _, prop := range db.Properties {
 		if prop.Title != nil {
