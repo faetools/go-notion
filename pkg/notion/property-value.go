@@ -2,6 +2,7 @@ package notion
 
 import (
 	"encoding/json"
+	"time"
 )
 
 type (
@@ -100,79 +101,169 @@ func (v PropertyValue) MarshalJSON() ([]byte, error) {
 	}
 }
 
-// GetMultiSelect returns the multiselect value.
-func (v PropertyValue) GetMultiSelect() SelectValues {
-	if v.MultiSelect == nil {
-		return SelectValues{}
-	}
-
-	return *v.MultiSelect
+// GetCheckbox returns the checkbox value.
+func (v *PropertyValue) GetCheckbox() bool {
+	return v != nil && v.Checkbox != nil && *v.Checkbox
 }
 
-// GetCheckbox returns the checkbox value.
-func (v PropertyValue) GetCheckbox() bool {
-	return v.Checkbox != nil && *v.Checkbox
+// GetCreatedBy returns the user that created the object.
+func (v *PropertyValue) GetCreatedBy() User {
+	if v == nil || v.CreatedBy == nil {
+		return User{}
+	}
+
+	return *v.CreatedBy
+}
+
+// GetCreatedTime returns the time the object was created.
+func (v *PropertyValue) GetCreatedTime() time.Time {
+	if v == nil || v.CreatedTime == nil {
+		return time.Time{}
+	}
+
+	return *v.CreatedTime
 }
 
 // GetDate returns the date value.
-func (v PropertyValue) GetDate() Date {
-	if v.Date == nil {
+func (v *PropertyValue) GetDate() Date {
+	if v == nil || v.Date == nil {
 		return Date{}
 	}
 
 	return *v.Date
 }
 
+// GetEmail returns the email value.
+func (v *PropertyValue) GetEmail() string {
+	if v == nil || v.Email == nil {
+		return ""
+	}
+
+	return *v.Email
+}
+
 // GetFiles returns the files value.
-func (v PropertyValue) GetFiles() Files {
-	if v.Files == nil {
+func (v *PropertyValue) GetFiles() Files {
+	if v == nil || v.Files == nil {
 		return nil
 	}
 
 	return *v.Files
 }
 
+// GetFormula returns the formula.
+func (v *PropertyValue) GetFormula() Formula {
+	if v == nil || v.Formula == nil {
+		return Formula{}
+	}
+
+	return *v.Formula
+}
+
+// GetLastEditedBy returns the user that last edited the object.
+func (v *PropertyValue) GetLastEditedBy() User {
+	if v == nil || v.LastEditedBy == nil {
+		return User{}
+	}
+
+	return *v.LastEditedBy
+}
+
+// GetMultiSelect returns the multiselect value.
+func (v *PropertyValue) GetMultiSelect() SelectValues {
+	if v == nil || v.MultiSelect == nil {
+		return SelectValues{}
+	}
+
+	return *v.MultiSelect
+}
+
 // GetNumber returns the number value.
-func (v PropertyValue) GetNumber() float64 {
-	if v.Number == nil {
+func (v *PropertyValue) GetNumber() float64 {
+	if v == nil || v.Number == nil {
 		return 0
 	}
 
 	return *v.Number
 }
 
-// GetRichText returns the rich text value.
-func (v PropertyValue) GetRichText() RichTexts {
-	if v.RichText == nil {
+// GetPeople returns the people value.
+func (v *PropertyValue) GetPeople() Users {
+	if v == nil || v.People == nil {
 		return nil
 	}
 
-	return *v.RichText
+	return *v.People
 }
 
-// GetSelect returns the value that was selected.
-func (v PropertyValue) GetSelect() SelectValue {
-	if v.Select == nil {
-		return SelectValue{}
+// GetPhoneNumber returns the phone number.
+func (v *PropertyValue) GetPhoneNumber() string {
+	if v == nil || v.PhoneNumber == nil {
+		return ""
 	}
 
-	return *v.Select
+	return *v.PhoneNumber
 }
 
 // GetRelation returns the relation value.
-func (v PropertyValue) GetRelation() References {
-	if v.Relation == nil {
+func (v *PropertyValue) GetRelation() References {
+	if v == nil || v.Relation == nil {
 		return nil
 	}
 
 	return *v.Relation
 }
 
+// GetRichText returns the rich text value.
+func (v *PropertyValue) GetRichText() RichTexts {
+	if v == nil || v.RichText == nil {
+		return nil
+	}
+
+	return *v.RichText
+}
+
+// GetRollup returns the rollup value.
+func (v *PropertyValue) GetRollup() Rollup {
+	if v == nil || v.Rollup == nil {
+		return Rollup{}
+	}
+
+	return *v.Rollup
+}
+
+// GetSelect returns the value that was selected.
+func (v *PropertyValue) GetSelect() SelectValue {
+	if v == nil || v.Select == nil {
+		return SelectValue{}
+	}
+
+	return *v.Select
+}
+
+// GetStatus returns the status that was selected.
+func (v *PropertyValue) GetStatus() SelectValue {
+	if v == nil || v.Status == nil {
+		return SelectValue{}
+	}
+
+	return *v.Status
+}
+
 // GetTitle returns the title value.
-func (v PropertyValue) GetTitle() RichTexts {
-	if v.Title == nil {
+func (v *PropertyValue) GetTitle() RichTexts {
+	if v == nil || v.Title == nil {
 		return nil
 	}
 
 	return *v.Title
+}
+
+// GetURL returns the URL of the object.
+func (v *PropertyValue) GetURL() string {
+	if v == nil || v.Url == nil {
+		return ""
+	}
+
+	return *v.Url
 }
