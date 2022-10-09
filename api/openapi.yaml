@@ -554,11 +554,11 @@ components:
         paragraph:
           $ref: '#/components/schemas/Paragraph'
         heading_1:
-          $ref: '#/components/schemas/Paragraph'
+          $ref: '#/components/schemas/Heading'
         heading_2:
-          $ref: '#/components/schemas/Paragraph'
+          $ref: '#/components/schemas/Heading'
         heading_3:
-          $ref: '#/components/schemas/Paragraph'
+          $ref: '#/components/schemas/Heading'
         bulleted_list_item:
           $ref: '#/components/schemas/Paragraph'
         numbered_list_item:
@@ -1027,7 +1027,7 @@ components:
         - color
     Paragraph:
       type: object
-      description: Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
+      description: Paragraph, quote, toggle and list item block objects contain this information within their respective property.
       properties:
         rich_text:
           $ref: '#/components/schemas/RichTexts'
@@ -1035,6 +1035,20 @@ components:
           $ref: '#/components/schemas/Color'
       required:
         - rich_text
+        - color
+    Heading:
+      type: object
+      description: Heading block objects contain this information within their respective property.
+      properties:
+        rich_text:
+          $ref: '#/components/schemas/RichTexts'
+        is_toggleable:
+          type: boolean
+        color:
+          $ref: '#/components/schemas/Color'
+      required:
+        - rich_text
+        - is_toggleable
         - color
     Color:
       type: string
@@ -1538,9 +1552,12 @@ components:
           type: string
         status:
           $ref: '#/components/schemas/SelectValue'
+        has_more:
+          type: boolean
       required:
         - id
         - type
+        - has_more
     Reference:
       type: object
       properties:

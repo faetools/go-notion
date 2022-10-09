@@ -370,7 +370,7 @@ type Block struct {
 	// Breadcrumb block objects do not contain any information within the breadcrumb property
 	Breadcrumb *map[string]interface{} `json:"breadcrumb,omitempty"`
 
-	// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
+	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
 	BulletedListItem *Paragraph `json:"bulleted_list_item,omitempty"`
 
 	// Callout block objects contain the following information within the callout field.
@@ -412,14 +412,14 @@ type Block struct {
 	// Whether or not the block has children blocks nested within it.
 	HasChildren bool `json:"has_children"`
 
-	// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
-	Heading1 *Paragraph `json:"heading_1,omitempty"`
+	// Heading block objects contain this information within their respective property.
+	Heading1 *Heading `json:"heading_1,omitempty"`
 
-	// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
-	Heading2 *Paragraph `json:"heading_2,omitempty"`
+	// Heading block objects contain this information within their respective property.
+	Heading2 *Heading `json:"heading_2,omitempty"`
 
-	// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
-	Heading3 *Paragraph `json:"heading_3,omitempty"`
+	// Heading block objects contain this information within their respective property.
+	Heading3 *Heading `json:"heading_3,omitempty"`
 
 	// A unique identifier for a page, block, database, user, or option.
 	Id UUID `json:"id"`
@@ -439,13 +439,13 @@ type Block struct {
 	LinkPreview *LinkPreview `json:"link_preview,omitempty"`
 	LinkToPage  *LinkToPage  `json:"link_to_page,omitempty"`
 
-	// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
+	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
 	NumberedListItem *Paragraph `json:"numbered_list_item,omitempty"`
 
 	// Always "block".
 	Object string `json:"object"`
 
-	// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
+	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
 	Paragraph *Paragraph `json:"paragraph,omitempty"`
 
 	// The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
@@ -454,7 +454,7 @@ type Block struct {
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
 	Pdf *FileWithCaption `json:"pdf,omitempty"`
 
-	// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
+	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
 	Quote       *Paragraph   `json:"quote,omitempty"`
 	SyncedBlock *SyncedBlock `json:"synced_block,omitempty"`
 	Table       *Table       `json:"table,omitempty"`
@@ -469,7 +469,7 @@ type Block struct {
 	// To do block objects contain this information within the `to_do` property.
 	ToDo *ToDo `json:"to_do,omitempty"`
 
-	// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
+	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
 	Toggle *Paragraph `json:"toggle,omitempty"`
 
 	// Type of block.
@@ -728,6 +728,14 @@ type FormulaConfig struct {
 	Expression string `json:"expression"`
 }
 
+// Heading block objects contain this information within their respective property.
+type Heading struct {
+	// The color of the block.
+	Color        Color     `json:"color"`
+	IsToggleable bool      `json:"is_toggleable"`
+	RichText     RichTexts `json:"rich_text"`
+}
+
 // Page or database icon. It is either an emoji or a file.
 type Icon struct {
 	// Emoji character.
@@ -887,7 +895,7 @@ type PagesList struct {
 	Type       string                 `json:"type"`
 }
 
-// Paragraph, heading, quote, toggle and list item block objects contain this information within their respective property.
+// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
 type Paragraph struct {
 	// The color of the block.
 	Color    Color     `json:"color"`
@@ -1010,6 +1018,7 @@ type PropertyValue struct {
 	//
 	// Formulas returned in page objects are subject to a 25 page reference limitation. The Retrieve a page property endpoint should be used to get an accurate formula value.
 	Formula *Formula `json:"formula,omitempty"`
+	HasMore bool     `json:"has_more"`
 
 	// Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.
 	//
