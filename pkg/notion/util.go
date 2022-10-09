@@ -124,11 +124,3 @@ func (p Parent) ID() UUID {
 		return UUID(fmt.Sprintf("<invalid parent type %s>", p.Type))
 	}
 }
-
-func (wr *SelectValuesWrapper) GetOptions() SelectValues {
-	if wr == nil {
-		return SelectValues{}
-	}
-
-	return wr.Options
-}
