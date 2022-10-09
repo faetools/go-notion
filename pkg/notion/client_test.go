@@ -80,16 +80,13 @@ func (rt *responseTester) GetAllBlocks(ctx context.Context, id Id) (Blocks, erro
 // GetNotionDatabase implements Getter
 func (rt *responseTester) GetNotionDatabase(ctx context.Context, id Id) (*Database, error) {
 	if id == "d105edb4-586a-4dcc-aaa6-ea944eb8d864" {
+		// not the ID of the actual database
 		return nil, &notion.Error{Status: http.StatusNotFound}
 	}
 
 	resp, err := rt.cli.GetDatabase(ctx, id)
-	switch {
-	case err != nil:
+	if err != nil {
 		return nil, err
-	case resp.StatusCode() == http.StatusNotFound:
-		// not the ID of the actual database
-		return nil, resp.JSON404
 	}
 
 	db := resp.JSON200
