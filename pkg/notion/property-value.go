@@ -234,13 +234,13 @@ func (v PropertyValue) MarshalJSON() ([]byte, error) {
 }
 
 // GetCheckbox returns the checkbox value.
-func (v *PropertyValue) GetCheckbox() bool {
-	return v != nil && v.Checkbox != nil && *v.Checkbox
+func (v PropertyValue) GetCheckbox() bool {
+	return v.Checkbox != nil && *v.Checkbox
 }
 
 // GetCreatedBy returns the user that created the object.
-func (v *PropertyValue) GetCreatedBy() User {
-	if v == nil || v.CreatedBy == nil {
+func (v PropertyValue) GetCreatedBy() User {
+	if v.CreatedBy == nil {
 		return User{}
 	}
 
@@ -248,8 +248,8 @@ func (v *PropertyValue) GetCreatedBy() User {
 }
 
 // GetCreatedTime returns the time the object was created.
-func (v *PropertyValue) GetCreatedTime() time.Time {
-	if v == nil || v.CreatedTime == nil {
+func (v PropertyValue) GetCreatedTime() time.Time {
+	if v.CreatedTime == nil {
 		return time.Time{}
 	}
 
@@ -257,8 +257,8 @@ func (v *PropertyValue) GetCreatedTime() time.Time {
 }
 
 // GetDate returns the date value.
-func (v *PropertyValue) GetDate() Date {
-	if v == nil || v.Date == nil {
+func (v PropertyValue) GetDate() Date {
+	if v.Date == nil {
 		return Date{}
 	}
 
@@ -266,8 +266,8 @@ func (v *PropertyValue) GetDate() Date {
 }
 
 // GetEmail returns the email value.
-func (v *PropertyValue) GetEmail() string {
-	if v == nil || v.Email == nil {
+func (v PropertyValue) GetEmail() string {
+	if v.Email == nil {
 		return ""
 	}
 
@@ -275,8 +275,8 @@ func (v *PropertyValue) GetEmail() string {
 }
 
 // GetFiles returns the files value.
-func (v *PropertyValue) GetFiles() Files {
-	if v == nil || v.Files == nil {
+func (v PropertyValue) GetFiles() Files {
+	if v.Files == nil {
 		return nil
 	}
 
@@ -284,8 +284,8 @@ func (v *PropertyValue) GetFiles() Files {
 }
 
 // GetFormula returns the formula.
-func (v *PropertyValue) GetFormula() Formula {
-	if v == nil || v.Formula == nil {
+func (v PropertyValue) GetFormula() Formula {
+	if v.Formula == nil {
 		return Formula{}
 	}
 
@@ -293,8 +293,8 @@ func (v *PropertyValue) GetFormula() Formula {
 }
 
 // GetLastEditedBy returns the user that last edited the object.
-func (v *PropertyValue) GetLastEditedBy() User {
-	if v == nil || v.LastEditedBy == nil {
+func (v PropertyValue) GetLastEditedBy() User {
+	if v.LastEditedBy == nil {
 		return User{}
 	}
 
@@ -302,8 +302,8 @@ func (v *PropertyValue) GetLastEditedBy() User {
 }
 
 // GetMultiSelect returns the multiselect value.
-func (v *PropertyValue) GetMultiSelect() SelectValues {
-	if v == nil || v.MultiSelect == nil {
+func (v PropertyValue) GetMultiSelect() SelectValues {
+	if v.MultiSelect == nil {
 		return SelectValues{}
 	}
 
@@ -311,8 +311,8 @@ func (v *PropertyValue) GetMultiSelect() SelectValues {
 }
 
 // GetNumber returns the number value.
-func (v *PropertyValue) GetNumber() float64 {
-	if v == nil || v.Number == nil {
+func (v PropertyValue) GetNumber() float64 {
+	if v.Number == nil {
 		return 0
 	}
 
@@ -320,8 +320,8 @@ func (v *PropertyValue) GetNumber() float64 {
 }
 
 // GetPeople returns the people value.
-func (v *PropertyValue) GetPeople() Users {
-	if v == nil || v.People == nil {
+func (v PropertyValue) GetPeople() Users {
+	if v.People == nil {
 		return nil
 	}
 
@@ -329,8 +329,8 @@ func (v *PropertyValue) GetPeople() Users {
 }
 
 // GetPhoneNumber returns the phone number.
-func (v *PropertyValue) GetPhoneNumber() string {
-	if v == nil || v.PhoneNumber == nil {
+func (v PropertyValue) GetPhoneNumber() string {
+	if v.PhoneNumber == nil {
 		return ""
 	}
 
@@ -338,8 +338,8 @@ func (v *PropertyValue) GetPhoneNumber() string {
 }
 
 // GetRelation returns the relation value.
-func (v *PropertyValue) GetRelation() References {
-	if v == nil || v.Relation == nil {
+func (v PropertyValue) GetRelation() References {
+	if v.Relation == nil {
 		return nil
 	}
 
@@ -347,8 +347,8 @@ func (v *PropertyValue) GetRelation() References {
 }
 
 // GetRichText returns the rich text value.
-func (v *PropertyValue) GetRichText() RichTexts {
-	if v == nil || v.RichText == nil {
+func (v PropertyValue) GetRichText() RichTexts {
+	if v.RichText == nil {
 		return nil
 	}
 
@@ -356,8 +356,8 @@ func (v *PropertyValue) GetRichText() RichTexts {
 }
 
 // GetRollup returns the rollup value.
-func (v *PropertyValue) GetRollup() Rollup {
-	if v == nil || v.Rollup == nil {
+func (v PropertyValue) GetRollup() Rollup {
+	if v.Rollup == nil {
 		return Rollup{}
 	}
 
@@ -365,8 +365,8 @@ func (v *PropertyValue) GetRollup() Rollup {
 }
 
 // GetSelect returns the value that was selected.
-func (v *PropertyValue) GetSelect() SelectValue {
-	if v == nil || v.Select == nil {
+func (v PropertyValue) GetSelect() SelectValue {
+	if v.Select == nil {
 		return SelectValue{}
 	}
 
@@ -374,8 +374,8 @@ func (v *PropertyValue) GetSelect() SelectValue {
 }
 
 // GetStatus returns the status that was selected.
-func (v *PropertyValue) GetStatus() SelectValue {
-	if v == nil || v.Status == nil {
+func (v PropertyValue) GetStatus() SelectValue {
+	if v.Status == nil {
 		return SelectValue{}
 	}
 
@@ -383,8 +383,8 @@ func (v *PropertyValue) GetStatus() SelectValue {
 }
 
 // GetTitle returns the title value.
-func (v *PropertyValue) GetTitle() RichTexts {
-	if v == nil || v.Title == nil {
+func (v PropertyValue) GetTitle() RichTexts {
+	if v.Title == nil {
 		return nil
 	}
 
@@ -392,8 +392,8 @@ func (v *PropertyValue) GetTitle() RichTexts {
 }
 
 // GetURL returns the URL of the object.
-func (v *PropertyValue) GetURL() string {
-	if v == nil || v.Url == nil {
+func (v PropertyValue) GetURL() string {
+	if v.Url == nil {
 		return ""
 	}
 

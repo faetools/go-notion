@@ -1,8 +1,8 @@
 package notion
 
 // GetFormula returns the formula configuration.
-func (v *PropertyMeta) GetFormula() FormulaConfig {
-	if v == nil || v.Formula == nil {
+func (v PropertyMeta) GetFormula() FormulaConfig {
+	if v.Formula == nil {
 		return FormulaConfig{}
 	}
 
@@ -10,8 +10,8 @@ func (v *PropertyMeta) GetFormula() FormulaConfig {
 }
 
 // GetMultiSelect returns the multiselect configuration.
-func (v *PropertyMeta) GetMultiSelect() SelectValuesWrapper {
-	if v == nil || v.MultiSelect == nil {
+func (v PropertyMeta) GetMultiSelect() SelectValuesWrapper {
+	if v.MultiSelect == nil {
 		return SelectValuesWrapper{}
 	}
 
@@ -19,8 +19,8 @@ func (v *PropertyMeta) GetMultiSelect() SelectValuesWrapper {
 }
 
 // GetNumber returns the number configuration.
-func (v *PropertyMeta) GetNumber() NumberConfig {
-	if v == nil || v.Number == nil {
+func (v PropertyMeta) GetNumber() NumberConfig {
+	if v.Number == nil {
 		return NumberConfig{}
 	}
 
@@ -28,8 +28,8 @@ func (v *PropertyMeta) GetNumber() NumberConfig {
 }
 
 // GetRelation returns the relation configuration.
-func (v *PropertyMeta) GetRelation() RelationConfiguration {
-	if v == nil || v.Relation == nil {
+func (v PropertyMeta) GetRelation() RelationConfiguration {
+	if v.Relation == nil {
 		return RelationConfiguration{}
 	}
 
@@ -37,8 +37,8 @@ func (v *PropertyMeta) GetRelation() RelationConfiguration {
 }
 
 // GetRollup returns the rollup configuration.
-func (v *PropertyMeta) GetRollup() RollupConfig {
-	if v == nil || v.Rollup == nil {
+func (v PropertyMeta) GetRollup() RollupConfig {
+	if v.Rollup == nil {
 		return RollupConfig{}
 	}
 
@@ -46,8 +46,8 @@ func (v *PropertyMeta) GetRollup() RollupConfig {
 }
 
 // GetSelect returns the select configuration.
-func (v *PropertyMeta) GetSelect() SelectValuesWrapper {
-	if v == nil || v.Select == nil {
+func (v PropertyMeta) GetSelect() SelectValuesWrapper {
+	if v.Select == nil {
 		return SelectValuesWrapper{}
 	}
 
