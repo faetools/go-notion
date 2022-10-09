@@ -199,11 +199,11 @@ func validateBlock(b Block) error {
 	case BlockTypeFile:
 		return validateFileWithCaption(b.File)
 	case BlockTypeHeading1:
-		return validateParagraph(b.Heading1)
+		return validateHeading(b.Heading1)
 	case BlockTypeHeading2:
-		return validateParagraph(b.Heading2)
+		return validateHeading(b.Heading2)
 	case BlockTypeHeading3:
-		return validateParagraph(b.Heading3)
+		return validateHeading(b.Heading3)
 	case BlockTypeImage:
 		return validateFileWithCaption(b.Image)
 	case BlockTypeLinkPreview:
@@ -362,6 +362,14 @@ func validateFileWithCaption(f *FileWithCaption) error {
 }
 
 func validateParagraph(p *Paragraph) error {
+	if err := validateColor(p.Color); err != nil {
+		return err
+	}
+
+	return validateRichTexts(p.RichText)
+}
+
+func validateHeading(p *Heading) error {
 	if err := validateColor(p.Color); err != nil {
 		return err
 	}

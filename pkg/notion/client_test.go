@@ -11,8 +11,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/faetools/go-notion-example/fake"
 	"github.com/faetools/go-notion/pkg/docs"
-	"github.com/faetools/go-notion/pkg/fake"
+	"github.com/faetools/go-notion/pkg/notion"
 	. "github.com/faetools/go-notion/pkg/notion"
 	"github.com/stretchr/testify/assert"
 )
@@ -24,12 +25,9 @@ func TestClient(t *testing.T) {
 
 	ctx := context.Background()
 
-	cli, fsClient, err := fake.NewClient()
-	assert.NoError(t, err)
-
 	v := docs.NewVisitor(
 		// get the document and at the same time check if the response has been parsed correctly
-		&responseTester{cli: cli},
+		&responseTester{cli: fake.NotionClient},
 
 		// don't do anything after having fetched the document, just continue
 		func(p *Page) error { return nil },
@@ -37,16 +35,8 @@ func TestClient(t *testing.T) {
 		func(db *Database) error { return nil },
 		func(entries Pages) error { return nil })
 
-	if err := docs.Walk(ctx, v, docs.TypePage, fake.PageID); err != nil {
+	if err := docs.Walk(ctx, v, docs.TypePage, fake.ExamplePageID); err != nil {
 		t.Fatal(err)
-	}
-
-	for _, unseen := range fsClient.Unseen() {
-		if reBlock.MatchString(unseen) {
-			continue
-		}
-
-		t.Fatalf("did not test file %q", unseen)
 	}
 }
 
@@ -66,9 +56,16 @@ func (rt *responseTester) GetNotionPage(ctx context.Context, id Id) (*Page, erro
 	return resp.JSON200, validateResponseParsing(resp.HTTPResponse, resp.Body, resp.JSON200)
 }
 
+var (
+	maxPageSizeInt          = 100
+	maxPageSize    PageSize = PageSize(maxPageSizeInt)
+)
+
 // GetAllBlocks implements Getter
 func (rt *responseTester) GetAllBlocks(ctx context.Context, id Id) (Blocks, error) {
-	resp, err := rt.cli.GetBlocks(ctx, id, &GetBlocksParams{})
+	resp, err := rt.cli.GetBlocks(ctx, id, &GetBlocksParams{
+		PageSize: &maxPageSize,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -82,6 +79,10 @@ func (rt *responseTester) GetAllBlocks(ctx context.Context, id Id) (Blocks, erro
 
 // GetNotionDatabase implements Getter
 func (rt *responseTester) GetNotionDatabase(ctx context.Context, id Id) (*Database, error) {
+	if id == "d105edb4-586a-4dcc-aaa6-ea944eb8d864" {
+		return nil, &notion.Error{Status: http.StatusNotFound}
+	}
+
 	resp, err := rt.cli.GetDatabase(ctx, id)
 	switch {
 	case err != nil:
@@ -102,7 +103,9 @@ func (rt *responseTester) GetNotionDatabase(ctx context.Context, id Id) (*Databa
 
 // GetAllDatabaseEntries implements Getter
 func (rt *responseTester) GetAllDatabaseEntries(ctx context.Context, id Id) (Pages, error) {
-	resp, err := rt.cli.QueryDatabase(ctx, id, QueryDatabaseJSONRequestBody{})
+	resp, err := rt.cli.QueryDatabase(ctx, id, QueryDatabaseJSONRequestBody{
+		PageSize: maxPageSizeInt,
+	})
 	if err != nil {
 		return nil, err
 	}

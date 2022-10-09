@@ -49,6 +49,72 @@ type (
 		Type  PropertyType `json:"type"`
 		Email *string      `json:"email"`
 	}
+
+	propertyValueTitle struct {
+		ID    string       `json:"id"`
+		Type  PropertyType `json:"type"`
+		Title *RichTexts   `json:"title"`
+	}
+
+	propertyValueCheckbox struct {
+		ID       string       `json:"id"`
+		Type     PropertyType `json:"type"`
+		Checkbox *bool        `json:"checkbox"`
+	}
+
+	propertyValueLastEditedBy struct {
+		ID           string       `json:"id"`
+		Type         PropertyType `json:"type"`
+		LastEditedBy *User        `json:"last_edited_by,omitempty"`
+	}
+
+	propertyValueCreatedBy struct {
+		ID        string       `json:"id"`
+		Type      PropertyType `json:"type"`
+		CreatedBy *User        `json:"created_by,omitempty"`
+	}
+
+	propertyValueCreatedTime struct {
+		ID          string       `json:"id"`
+		Type        PropertyType `json:"type"`
+		CreatedTime *time.Time   `json:"created_time,omitempty"`
+	}
+
+	propertyValueRichText struct {
+		ID       string       `json:"id"`
+		Type     PropertyType `json:"type"`
+		RichText *RichTexts   `json:"rich_text,omitempty"`
+	}
+
+	propertyValueRollup struct {
+		ID     string       `json:"id"`
+		Type   PropertyType `json:"type"`
+		Rollup *Rollup      `json:"rollup,omitempty"`
+	}
+
+	propertyValueMultiSelect struct {
+		ID          string        `json:"id"`
+		Type        PropertyType  `json:"type"`
+		MultiSelect *SelectValues `json:"multi_select,omitempty"`
+	}
+
+	propertyValuePeople struct {
+		ID     string       `json:"id"`
+		Type   PropertyType `json:"type"`
+		People *[]User      `json:"people,omitempty"`
+	}
+
+	propertyValueFormula struct {
+		ID      string       `json:"id"`
+		Type    PropertyType `json:"type"`
+		Formula *Formula     `json:"formula,omitempty"`
+	}
+
+	propertyValueFiles struct {
+		ID    string       `json:"id"`
+		Type  PropertyType `json:"type"`
+		Files *Files       `json:"files,omitempty"`
+	}
 )
 
 // MarshalJSON fulfils json.Marshaler.
@@ -95,6 +161,72 @@ func (v PropertyValue) MarshalJSON() ([]byte, error) {
 			ID:    v.Id,
 			Type:  v.Type,
 			Email: v.Email,
+		})
+	case PropertyTypeTitle:
+		return json.Marshal(propertyValueTitle{
+			ID:    v.Id,
+			Type:  v.Type,
+			Title: v.Title,
+		})
+	case PropertyTypeCheckbox:
+		return json.Marshal(propertyValueCheckbox{
+			ID:       v.Id,
+			Type:     v.Type,
+			Checkbox: v.Checkbox,
+		})
+	case PropertyTypeLastEditedBy:
+		return json.Marshal(propertyValueLastEditedBy{
+			ID:           v.Id,
+			Type:         v.Type,
+			LastEditedBy: v.LastEditedBy,
+		})
+	case PropertyTypeCreatedBy:
+		return json.Marshal(propertyValueCreatedBy{
+			ID:        v.Id,
+			Type:      v.Type,
+			CreatedBy: v.CreatedBy,
+		})
+	case PropertyTypeCreatedTime:
+		return json.Marshal(propertyValueCreatedTime{
+			ID:          v.Id,
+			Type:        v.Type,
+			CreatedTime: v.CreatedTime,
+		})
+	case PropertyTypeRichText:
+		return json.Marshal(propertyValueRichText{
+			ID:       v.Id,
+			Type:     v.Type,
+			RichText: v.RichText,
+		})
+	case PropertyTypeRollup:
+		return json.Marshal(propertyValueRollup{
+			ID:     v.Id,
+			Type:   v.Type,
+			Rollup: v.Rollup,
+		})
+	case PropertyTypeMultiSelect:
+		return json.Marshal(propertyValueMultiSelect{
+			ID:          v.Id,
+			Type:        v.Type,
+			MultiSelect: v.MultiSelect,
+		})
+	case PropertyTypePeople:
+		return json.Marshal(propertyValuePeople{
+			ID:     v.Id,
+			Type:   v.Type,
+			People: v.People,
+		})
+	case PropertyTypeFormula:
+		return json.Marshal(propertyValueFormula{
+			ID:      v.Id,
+			Type:    v.Type,
+			Formula: v.Formula,
+		})
+	case PropertyTypeFiles:
+		return json.Marshal(propertyValueFiles{
+			ID:    v.Id,
+			Type:  v.Type,
+			Files: v.Files,
 		})
 	default:
 		return json.Marshal(propertyValue(v))
