@@ -198,10 +198,6 @@ func validatePropertyMeta(p PropertyMeta) error {
 	case PropertyTypePhoneNumber:
 		return errIfNil(p.Type, p.PhoneNumber)
 	case PropertyTypeRelation:
-		if p.Relation.SyncedPropertyName == "" {
-			return fmt.Errorf("SyncedPropertyName is empty in %#v", p)
-		}
-
 		if err := validateShortID("synced_property_id", *p.Relation.SyncedPropertyId); err != nil {
 			return err
 		}

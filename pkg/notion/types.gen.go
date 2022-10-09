@@ -259,6 +259,12 @@ const (
 	PropertyTypeUrl            PropertyType = "url"
 )
 
+// Defines values for RelationConfigurationType.
+const (
+	RelationConfigurationTypeDualProperty   RelationConfigurationType = "dual_property"
+	RelationConfigurationTypeSingleProperty RelationConfigurationType = "single_property"
+)
+
 // Defines values for RichTextType.
 const (
 	RichTextTypeEquation RichTextType = "equation"
@@ -1080,8 +1086,14 @@ type RelationConfiguration struct {
 	SyncedPropertyId *string `json:"synced_property_id,omitempty"`
 
 	// By default, relations are formed as two synced properties across databases: if you make a change to one property, it updates the synced property at the same time. `synced_property_name` refers to the `name` of the property in the related database.
-	SyncedPropertyName string `json:"synced_property_name"`
+	SyncedPropertyName *string `json:"synced_property_name,omitempty"`
+
+	// The type of the relation.
+	Type RelationConfigurationType `json:"type"`
 }
+
+// The type of the relation.
+type RelationConfigurationType string
 
 // Rich text objects contain data for displaying formatted text, mentions, and equations. A rich text object also contains annotations for style information. Arrays of rich text objects are used [within property objects](https://developers.notion.com/reference/database-property) and [property value objects](https://developers.notion.com/reference/page-property-value) to create what a user sees as a single text value in Notion.
 type RichText struct {

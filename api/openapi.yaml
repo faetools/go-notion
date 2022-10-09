@@ -1629,6 +1629,12 @@ components:
       properties:
         database_id:
           $ref: '#/components/schemas/UUID'
+        type:
+          type: string
+          description: The type of the relation.
+          enum:
+            - single_property
+            - dual_property
         synced_property_name:
           type: string
           description: 'By default, relations are formed as two synced properties across databases: if you make a change to one property, it updates the synced property at the same time. `synced_property_name` refers to the `name` of the property in the related database.'
@@ -1639,7 +1645,7 @@ components:
           description: 'By default, relations are formed as two synced properties across databases: if you make a change to one property, it updates the synced property at the same time. `synced_property_id` refers to the `id` of the property in the related database. This is usually a short string of random letters and symbols.'
       required:
         - database_id
-        - synced_property_name
+        - type
     SelectValue:
       description: Multi-select or select option values.
       type: object
