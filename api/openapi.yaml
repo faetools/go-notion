@@ -1637,15 +1637,19 @@ components:
             - dual_property
         synced_property_name:
           type: string
+          x-omitempty: true
           description: 'By default, relations are formed as two synced properties across databases: if you make a change to one property, it updates the synced property at the same time. `synced_property_name` refers to the `name` of the property in the related database.'
           example: Ingredients
         synced_property_id:
           type: string
+          x-omitempty: true
           example: fy:{
           description: 'By default, relations are formed as two synced properties across databases: if you make a change to one property, it updates the synced property at the same time. `synced_property_id` refers to the `id` of the property in the related database. This is usually a short string of random letters and symbols.'
       required:
         - database_id
         - type
+        - synced_property_name
+        - synced_property_id
     SelectValue:
       description: Multi-select or select option values.
       type: object

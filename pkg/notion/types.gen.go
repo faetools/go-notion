@@ -1083,10 +1083,10 @@ type RelationConfiguration struct {
 	DatabaseId UUID `json:"database_id"`
 
 	// By default, relations are formed as two synced properties across databases: if you make a change to one property, it updates the synced property at the same time. `synced_property_id` refers to the `id` of the property in the related database. This is usually a short string of random letters and symbols.
-	SyncedPropertyId *string `json:"synced_property_id,omitempty"`
+	SyncedPropertyId string `json:"synced_property_id"`
 
 	// By default, relations are formed as two synced properties across databases: if you make a change to one property, it updates the synced property at the same time. `synced_property_name` refers to the `name` of the property in the related database.
-	SyncedPropertyName *string `json:"synced_property_name,omitempty"`
+	SyncedPropertyName string `json:"synced_property_name"`
 
 	// The type of the relation.
 	Type RelationConfigurationType `json:"type"`
