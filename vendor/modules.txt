@@ -28,7 +28,7 @@ github.com/faetools/format/golang
 github.com/faetools/format/markdown
 github.com/faetools/format/writers
 github.com/faetools/format/yaml
-# github.com/faetools/go-notion-example v0.0.4
+# github.com/faetools/go-notion-example v0.1.1
 ## explicit; go 1.18
 github.com/faetools/go-notion-example/fake
 github.com/faetools/go-notion-example/fake/export

@@ -77,8 +77,8 @@ github.com/faetools/clueo v0.0.0-20220823114144-2ef05c260dbc h1:d4lU3H+KgX5cmI+O
 github.com/faetools/clueo v0.0.0-20220823114144-2ef05c260dbc/go.mod h1:EYwJsDccLNIEZR1S7o9uNgEVjqJn1Igbd1F71hj4eJ8=
 github.com/faetools/format v0.0.10 h1:dDg1CMSh3LOlSG7zV/4TRHDQPfWKFFdc/wMnX++RkjE=
 github.com/faetools/format v0.0.10/go.mod h1:D0ISRAwwtkGLOxgGrYtKAOsB8PxoM2DFTRhCXYRqcA0=
-github.com/faetools/go-notion-example v0.0.4 h1:GIFGCYtCPbtM/vvedThgMa0AcGA1E0roVWAJ6VaGY4c=
-github.com/faetools/go-notion-example v0.0.4/go.mod h1:Sv+d/i75pWplUdDVR2NeTKquU6GiBYWmravo4rZbucc=
+github.com/faetools/go-notion-example v0.1.1 h1:tsoiRqjjg+pkYesMALBDEfpqr6mH/XYxegTZwljXLC0=
+github.com/faetools/go-notion-example v0.1.1/go.mod h1:3746kf13H8FQN+7qejXNCyTNNPeJWMjiE7wKeqXOYcQ=
 github.com/faetools/kit v0.0.9 h1:mIrUt+mKX122ajUO6e4kdEvSylf3yd1LtmSwU7hCuq4=
 github.com/faetools/kit v0.0.9/go.mod h1:wKmItJieb0Lvl9sjQZty7RfHCJ5Kb3+dJPD7ETqPCp4=
 github.com/fatih/color v1.10.0/go.mod h1:ELkj/draVOlAH/xkhN6mQ50Qd0MPOk5AAr3maGEBuJM=

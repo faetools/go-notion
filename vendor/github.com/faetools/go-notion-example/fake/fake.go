@@ -19,7 +19,7 @@ var responses []byte
 // It can be viewed here: https://ancient-gibbon-2cd.notion.site/Example-Page-96245c8f178444a482ad1941127c3ec3
 const ExamplePageID notion.Id = "96245c8f-1784-44a4-82ad-1941127c3ec3"
 
-// ExamplePageID is the ID of our example page that has unsupported elements.
+// ExamplePageIDWithUnsupported is the ID of our example page that has unsupported elements.
 // It can be viewed here: https://ancient-gibbon-2cd.notion.site/Example-Page-with-unsupported-elements-5de9f82ff2284386937fb3490c62f6e5
 const ExamplePageIDWithUnsupported notion.Id = "5de9f82f-f228-4386-937f-b3490c62f6e5"
 

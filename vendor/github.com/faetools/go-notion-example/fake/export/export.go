@@ -11,10 +11,10 @@ import (
 	"github.com/spf13/afero"
 )
 
-//go:embed html/Export-3fbb8c51-e3ba-4c03-9e1c-27cdbea3e77c.zip
+//go:embed html/Export-38cc96f0-cf48-4d26-ba29-a33d94cd6b66.zip
 var HTMLZipped []byte
 
-//go:embed md/Export-19a01a72-e86c-4b0b-909d-1accaa8397e7.zip
+//go:embed md/Export-3795d6a1-6152-4a4d-90e3-de5272593bf3.zip
 var MarkdownCSVZipped []byte
 
 func UnzipInto(zipped []byte, fs afero.Fs) error {
