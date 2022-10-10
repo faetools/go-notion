@@ -2,7 +2,7 @@ openapi: 3.0.0
 servers:
   - url: https://api.notion.com
 info:
-  version: "2022-02-22"
+  version: "2022-06-28"
   title: Notion API
   description: |-
     Hello and welcome!

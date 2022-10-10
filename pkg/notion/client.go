@@ -11,7 +11,7 @@ import (
 
 const (
 	versionHeader = "Notion-Version"
-	version       = "2022-02-22"
+	version       = "2022-06-28"
 )
 
 var (
