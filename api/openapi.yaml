@@ -1315,8 +1315,7 @@ components:
         number:
           $ref: '#/components/schemas/NumberConfig'
         status:
-          type: object
-          description: Status database properties cannot currently be configured via the API and so have no additional configuration within the `status` property.
+          $ref: '#/components/schemas/StatusConfig'
         rollup:
           $ref: '#/components/schemas/RollupConfig'
         formula:
@@ -2449,6 +2448,124 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Database'
+    StatusConfig:
+      type: object
+      x-examples:
+        example:
+          groups:
+            - color: gray
+              id: 3872a41e-0e9a-4684-8a93-83e310e627da
+              name: To-do
+              option_ids:
+                - t|{j
+                - cc97d59f-488d-4290-adb3-f174ec5da0f3
+            - color: blue
+              id: 9246f0ba-1efa-44fa-8ecb-b66e2a16e3d3
+              name: In progress
+              option_ids:
+                - ketX
+                - 1b58b969-49fa-4973-b868-f0de3388f051
+            - color: green
+              id: e39d6f59-ed5f-4d4f-a3db-797b6efb512c
+              name: Complete
+              option_ids:
+                - XQLM
+                - 8ccf4d06-8d53-471a-b51a-fe5a664c6160
+          options:
+            - color: gray
+              id: t|{j
+              name: no idea
+            - color: blue
+              id: ketX
+              name: I've actually written some code
+            - color: green
+              id: XQLM
+              name: Almost done
+            - color: default
+              id: cc97d59f-488d-4290-adb3-f174ec5da0f3
+              name: Not started at all
+            - color: blue
+              id: 1b58b969-49fa-4973-b868-f0de3388f051
+              name: I've taken a look
+            - color: green
+              id: 8ccf4d06-8d53-471a-b51a-fe5a664c6160
+              name: Done
+      description: StatusConfig represents the status configuration for a database.
+      properties:
+        options:
+          $ref: '#/components/schemas/StatusOptions'
+        groups:
+          $ref: '#/components/schemas/StatusGroups'
+      required:
+        - options
+        - groups
+    StatusOptions:
+      type: array
+      items:
+        $ref: '#/components/schemas/StatusOption'
+      description: An array of status option objects. As part of a status configuration, it's a sorted list of options available for the property.
+    StatusOption:
+      type: object
+      x-examples:
+        example:
+          color: gray
+          id: t|{j
+          name: no idea
+      properties:
+        name:
+          type: string
+          description: |-
+            Name of the option as it appears in Notion.
+
+            Note: Commas (",") are not valid for select values.
+          example: Fruit
+        id:
+          type: string
+          description: Identifier of the option, which does not change if the name is changed. These are sometimes, but not always, UUIDs.
+          example: ff8e9269-9579-47f7-8f6e-83a84716863c
+        color:
+          $ref: '#/components/schemas/Color'
+      required:
+        - name
+        - id
+        - color
+    StatusGroups:
+      type: array
+      items:
+        $ref: '#/components/schemas/StatusGroup'
+    StatusGroup:
+      type: object
+      x-examples:
+        example:
+          color: gray
+          id: 3872a41e-0e9a-4684-8a93-83e310e627da
+          name: To-do
+          option_ids:
+            - t|{j
+            - cc97d59f-488d-4290-adb3-f174ec5da0f3
+      properties:
+        name:
+          type: string
+          description: |-
+            Name of the option as it appears in Notion.
+
+            Note: Commas (",") are not valid for select values.
+          example: Fruit
+        id:
+          type: string
+          description: Identifier of the option, which does not change if the name is changed. These are sometimes, but not always, UUIDs.
+        color:
+          $ref: '#/components/schemas/Color'
+        option_ids:
+          type: array
+          description: Sorted list of ids of all options that belong to a group.
+          items:
+            type: string
+      required:
+        - name
+        - id
+        - color
+        - option_ids
   responses:
     ErrorResponse:
       description: Something went wrong.

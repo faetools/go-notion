@@ -1,6 +1,7 @@
 package notion_test
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
@@ -138,10 +139,14 @@ func errIfNil(tp PropertyType, config *map[string]any) error {
 		return fmt.Errorf("%s is empty", tp)
 	}
 
-	// TODO
-	// if len(*config) > 0 {
-	// 	return fmt.Errorf("%s has entries: %#v", tp, *config)
-	// }
+	if len(*config) > 0 {
+		b, err := json.Marshal(*config)
+		if err != nil {
+			return fmt.Errorf("%s has entries but could not be marshalled: %w", tp, err)
+		}
+
+		return fmt.Errorf("%s has entries: %s", tp, string(b))
+	}
 
 	return nil
 }
@@ -169,7 +174,7 @@ func validatePropertyMeta(p PropertyMeta) error {
 	case PropertyTypePeople:
 		return errIfNil(p.Type, p.People)
 	case PropertyTypeStatus:
-		return errIfNil(p.Type, p.Status)
+		return validateStatusConfig(p.Status)
 	case PropertyTypeCreatedBy:
 		return errIfNil(p.Type, p.CreatedBy)
 	case PropertyTypeCreatedTime:
@@ -261,11 +266,6 @@ func validateRelationConfiguration(r *RelationConfiguration) error {
 		if err := errIfNil("single property", r.SingleProperty); err != nil {
 			return err
 		}
-
-		// TODO delete
-		if len(*r.SingleProperty) > 0 {
-			return fmt.Errorf("single property has entries")
-		}
 	case RelationConfigurationTypeDualProperty:
 		if r.SingleProperty != nil {
 			return fmt.Errorf("single property not empty")
@@ -284,6 +284,54 @@ func validateRelationConfiguration(r *RelationConfiguration) error {
 		}
 	default:
 		return fmt.Errorf("invalid relation config type %q", r.Type)
+	}
+
+	return nil
+}
+
+func validateStatusConfig(s *StatusConfig) error {
+	if s == nil {
+		return errors.New("status config is empty")
+	}
+
+	for _, g := range s.Groups {
+		if err := validateColor(g.Color); err != nil {
+			return err
+		}
+
+		if err := validateUUID(UUID(g.Id)); err != nil {
+			if err := validateShortID("id of group", g.Id); err != nil {
+				return err
+			}
+		}
+
+		if g.Name == "" {
+			return errors.New("group name is empty")
+		}
+
+		for _, id := range g.OptionIds {
+			if err := validateUUID(UUID(id)); err != nil {
+				if err := validateShortID("option id of group", id); err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	for _, o := range s.Options {
+		if err := validateColor(o.Color); err != nil {
+			return err
+		}
+
+		if o.Name == "" {
+			return errors.New("option name is empty")
+		}
+
+		if err := validateUUID(UUID(o.Id)); err != nil {
+			if err := validateShortID("id of option", o.Id); err != nil {
+				return err
+			}
+		}
 	}
 
 	return nil

@@ -997,8 +997,8 @@ type PropertyMeta struct {
 	Rollup *RollupConfig        `json:"rollup,omitempty"`
 	Select *SelectValuesWrapper `json:"select,omitempty"`
 
-	// Status database properties cannot currently be configured via the API and so have no additional configuration within the `status` property.
-	Status *map[string]interface{} `json:"status,omitempty"`
+	// StatusConfig represents the status configuration for a database.
+	Status *StatusConfig `json:"status,omitempty"`
 
 	// Title database property objects have no additional configuration within the `title` property.
 	Title *map[string]interface{} `json:"title,omitempty"`
@@ -1274,6 +1274,51 @@ type SortDirection string
 
 // Sorts defines model for Sorts.
 type Sorts []Sort
+
+// StatusConfig represents the status configuration for a database.
+type StatusConfig struct {
+	Groups StatusGroups `json:"groups"`
+
+	// An array of status option objects. As part of a status configuration, it's a sorted list of options available for the property.
+	Options StatusOptions `json:"options"`
+}
+
+// StatusGroup defines model for StatusGroup.
+type StatusGroup struct {
+	// The color of the block.
+	Color Color `json:"color"`
+
+	// Identifier of the option, which does not change if the name is changed. These are sometimes, but not always, UUIDs.
+	Id string `json:"id"`
+
+	// Name of the option as it appears in Notion.
+	//
+	// Note: Commas (",") are not valid for select values.
+	Name string `json:"name"`
+
+	// Sorted list of ids of all options that belong to a group.
+	OptionIds []string `json:"option_ids"`
+}
+
+// StatusGroups defines model for StatusGroups.
+type StatusGroups []StatusGroup
+
+// StatusOption defines model for StatusOption.
+type StatusOption struct {
+	// The color of the block.
+	Color Color `json:"color"`
+
+	// Identifier of the option, which does not change if the name is changed. These are sometimes, but not always, UUIDs.
+	Id string `json:"id"`
+
+	// Name of the option as it appears in Notion.
+	//
+	// Note: Commas (",") are not valid for select values.
+	Name string `json:"name"`
+}
+
+// An array of status option objects. As part of a status configuration, it's a sorted list of options available for the property.
+type StatusOptions []StatusOption
 
 // SyncedBlock defines model for SyncedBlock.
 type SyncedBlock struct {
