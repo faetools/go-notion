@@ -624,6 +624,15 @@ type Date struct {
 	TimeZone *string `json:"time_zone"`
 }
 
+// Dual property relation objects contain this configuration within the `dual_property` property. The relation is formed as two synced properties. If you make a change to one property, it updates the other property at the same time.
+type DualProperty struct {
+	// The id of the related property. This is usually a short string of random letters and symbols.
+	SyncedPropertyId string `json:"synced_property_id"`
+
+	// The `name` of the related property.
+	SyncedPropertyName string `json:"synced_property_name"`
+}
+
 // Embed blocks include block types that allow displaying another website within Notion.
 type Embed struct {
 	Caption RichTexts `json:"caption"`
@@ -1082,11 +1091,11 @@ type RelationConfiguration struct {
 	// A unique identifier for a page, block, database, user, or option.
 	DatabaseId UUID `json:"database_id"`
 
-	// By default, relations are formed as two synced properties across databases: if you make a change to one property, it updates the synced property at the same time. `synced_property_id` refers to the `id` of the property in the related database. This is usually a short string of random letters and symbols.
-	SyncedPropertyId string `json:"synced_property_id"`
+	// Dual property relation objects contain this configuration within the `dual_property` property. The relation is formed as two synced properties. If you make a change to one property, it updates the other property at the same time.
+	DualProperty *DualProperty `json:"dual_property,omitempty"`
 
-	// By default, relations are formed as two synced properties across databases: if you make a change to one property, it updates the synced property at the same time. `synced_property_name` refers to the `name` of the property in the related database.
-	SyncedPropertyName string `json:"synced_property_name"`
+	// Single property relation objects have no additional configuration within the `single_property` property.
+	SingleProperty *map[string]interface{} `json:"single_property,omitempty"`
 
 	// The type of the relation.
 	Type RelationConfigurationType `json:"type"`

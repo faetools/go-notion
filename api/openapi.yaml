@@ -1635,19 +1635,27 @@ components:
           enum:
             - single_property
             - dual_property
-        synced_property_name:
-          type: string
-          x-omitempty: true
-          description: 'By default, relations are formed as two synced properties across databases: if you make a change to one property, it updates the synced property at the same time. `synced_property_name` refers to the `name` of the property in the related database.'
-          example: Ingredients
-        synced_property_id:
-          type: string
-          x-omitempty: true
-          example: fy:{
-          description: 'By default, relations are formed as two synced properties across databases: if you make a change to one property, it updates the synced property at the same time. `synced_property_id` refers to the `id` of the property in the related database. This is usually a short string of random letters and symbols.'
+        single_property:
+          type: object
+          description: Single property relation objects have no additional configuration within the `single_property` property.
+        dual_property:
+          $ref: '#/components/schemas/DualProperty'
       required:
         - database_id
         - type
+    DualProperty:
+      type: object
+      description: Dual property relation objects contain this configuration within the `dual_property` property. The relation is formed as two synced properties. If you make a change to one property, it updates the other property at the same time.
+      properties:
+        synced_property_name:
+          type: string
+          description: The `name` of the related property.
+          example: Ingredients
+        synced_property_id:
+          type: string
+          example: fy:{
+          description: The id of the related property. This is usually a short string of random letters and symbols.
+      required:
         - synced_property_name
         - synced_property_id
     SelectValue:

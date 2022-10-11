@@ -138,6 +138,11 @@ func errIfNil(tp PropertyType, config *map[string]any) error {
 		return fmt.Errorf("%s is empty", tp)
 	}
 
+	// TODO
+	// if len(*config) > 0 {
+	// 	return fmt.Errorf("%s has entries: %#v", tp, *config)
+	// }
+
 	return nil
 }
 
@@ -198,12 +203,8 @@ func validatePropertyMeta(p PropertyMeta) error {
 	case PropertyTypePhoneNumber:
 		return errIfNil(p.Type, p.PhoneNumber)
 	case PropertyTypeRelation:
-		if err := validateShortID("synced_property_id", p.Relation.SyncedPropertyId); err != nil {
+		if err := validateRelationConfiguration(p.Relation); err != nil {
 			return err
-		}
-
-		if err := validateUUID(p.Relation.DatabaseId); err != nil {
-			return fmt.Errorf("database_id %q: %w", p.Relation.DatabaseId, err)
 		}
 	case PropertyTypeRichText:
 		return errIfNil(p.Type, p.RichText)
@@ -237,6 +238,52 @@ func validatePropertyMeta(p PropertyMeta) error {
 		return errIfNil(p.Type, p.Url)
 	default:
 		return fmt.Errorf("unknown property type %q", p.Type)
+	}
+
+	return nil
+}
+
+func validateRelationConfiguration(r *RelationConfiguration) error {
+	if r == nil {
+		return errors.New("no relation configuration")
+	}
+
+	if err := validateUUID(r.DatabaseId); err != nil {
+		return fmt.Errorf("database_id of relation config: %w", err)
+	}
+
+	switch r.Type {
+	case RelationConfigurationTypeSingleProperty:
+		if r.DualProperty != nil {
+			return fmt.Errorf("dual property not empty")
+		}
+
+		if err := errIfNil("single property", r.SingleProperty); err != nil {
+			return err
+		}
+
+		// TODO delete
+		if len(*r.SingleProperty) > 0 {
+			return fmt.Errorf("single property has entries")
+		}
+	case RelationConfigurationTypeDualProperty:
+		if r.SingleProperty != nil {
+			return fmt.Errorf("single property not empty")
+		}
+
+		if r.DualProperty == nil {
+			return fmt.Errorf("dual property empty")
+		}
+
+		if err := validateShortID("synced_property_id", r.DualProperty.SyncedPropertyId); err != nil {
+			return err
+		}
+
+		if r.DualProperty.SyncedPropertyName == "" {
+			return fmt.Errorf("synced property name is empty")
+		}
+	default:
+		return fmt.Errorf("invalid relation config type %q", r.Type)
 	}
 
 	return nil
