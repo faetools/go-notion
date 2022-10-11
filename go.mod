@@ -8,7 +8,7 @@ require (
 	github.com/MarkRosemaker/semver v1.5.1
 	github.com/deepmap/oapi-codegen v1.11.0
 	github.com/faetools/cgtools v0.0.4
-	github.com/faetools/go-notion-example v0.1.1
+	github.com/faetools/go-notion-example v0.1.2
 	github.com/google/gofuzz v1.2.0
 	github.com/google/uuid v1.3.0
 	github.com/spf13/afero v1.9.2
