@@ -627,7 +627,7 @@ type Date struct {
 // Dual property relation objects contain this configuration within the `dual_property` property. The relation is formed as two synced properties. If you make a change to one property, it updates the other property at the same time.
 type DualProperty struct {
 	// The id of the related property. This is usually a short string of random letters and symbols.
-	SyncedPropertyId string `json:"synced_property_id"`
+	SyncedPropertyId *string `json:"synced_property_id,omitempty"`
 
 	// The `name` of the related property.
 	SyncedPropertyName string `json:"synced_property_name"`

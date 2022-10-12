@@ -275,8 +275,10 @@ func validateRelationConfiguration(r *RelationConfiguration) error {
 			return fmt.Errorf("dual property empty")
 		}
 
-		if err := validateShortID("synced_property_id", r.DualProperty.SyncedPropertyId); err != nil {
-			return err
+		if r.DualProperty.SyncedPropertyId != nil {
+			if err := validateShortID("synced_property_id", *r.DualProperty.SyncedPropertyId); err != nil {
+				return err
+			}
 		}
 
 		if r.DualProperty.SyncedPropertyName == "" {
