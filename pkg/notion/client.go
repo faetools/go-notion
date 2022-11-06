@@ -49,13 +49,6 @@ func (c Client) CreateNotionPage(ctx context.Context, p Page) (*Page, error) {
 		p.Properties = PropertyValueMap{}
 	}
 
-	if _, ok := p.Properties["title"]; !ok {
-		p.Properties["title"] = PropertyValue{
-			Type:  PropertyTypeTitle,
-			Title: NewRichTextsP(""),
-		}
-	}
-
 	resp, err := c.CreatePage(ctx, CreatePageJSONRequestBody(p))
 	if err != nil {
 		return nil, err
