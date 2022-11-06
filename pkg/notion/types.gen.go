@@ -1238,10 +1238,10 @@ type SearchResultObject string
 // Multi-select or select option values.
 type SelectValue struct {
 	// The color of the block.
-	Color Color `json:"color"`
+	Color *Color `json:"color,omitempty"`
 
 	// ID of the option. Contrary to the documentation, this is usally not a UUID.
-	Id string `json:"id"`
+	Id *string `json:"id,omitempty"`
 
 	// Name of the option as it appears in Notion.
 	//

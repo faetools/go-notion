@@ -124,3 +124,19 @@ func (p Parent) ID() UUID {
 		return UUID(fmt.Sprintf("<invalid parent type %s>", p.Type))
 	}
 }
+
+func (s SelectValue) GetColor() Color {
+	if s.Color == nil {
+		return ColorDefault
+	}
+
+	return *s.Color
+}
+
+func (s SelectValue) GetID() string {
+	if s.Id == nil {
+		return ""
+	}
+
+	return *s.Id
+}

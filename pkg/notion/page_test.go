@@ -144,17 +144,19 @@ func validateSelect(s *SelectValue) error {
 	}
 
 	// ID is either UUID or short string
-	if err := validateUUID(UUID(s.Id)); err != nil {
-		if err := validateShortID("select value", s.Id); err != nil {
-			return err
+	if s.Id != nil {
+		if err := validateUUID(UUID(*s.Id)); err != nil {
+			if err := validateShortID("select value", *s.Id); err != nil {
+				return err
+			}
 		}
 	}
 
 	if s.Name == "" {
-		return fmt.Errorf("select value %q has no name", s.Id)
+		return fmt.Errorf("select value %q has no name", s.GetID())
 	}
 
-	return validateColor(s.Color)
+	return validateColor(s.GetColor())
 }
 
 func validateReferences(refs *References) error {

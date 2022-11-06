@@ -1681,9 +1681,7 @@ components:
         color:
           $ref: '#/components/schemas/Color'
       required:
-        - id
         - name
-        - color
     Equation:
       type: object
       properties:
