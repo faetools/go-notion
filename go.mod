@@ -5,7 +5,7 @@ go 1.20
 require github.com/faetools/client v0.0.0-20220318211513-a9b944e5b437
 
 require (
-	github.com/MarkRosemaker/semver v1.5.1
+	github.com/Masterminds/semver/v3 v3.2.0
 	github.com/deepmap/oapi-codegen v1.11.0
 	github.com/faetools/cgtools v0.0.4
 	github.com/faetools/go-notion-example v0.1.2
@@ -17,6 +17,7 @@ require (
 )
 
 require (
+	github.com/MarkRosemaker/semver v1.5.1 // indirect
 	github.com/containerd/typeurl v1.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/faetools/clueo v0.0.0-20220823114144-2ef05c260dbc // indirect
