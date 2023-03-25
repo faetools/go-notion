@@ -223,10 +223,16 @@ func (v PropertyValue) MarshalJSON() ([]byte, error) {
 			Formula: v.Formula,
 		})
 	case PropertyTypeFiles:
+		// otherwise we get the error: files should be an array, instead was `null`.
+		files := v.Files
+		if files == nil || len(*files) == 0 {
+			files = &Files{}
+		}
+
 		return json.Marshal(propertyValueFiles{
 			ID:    v.Id,
 			Type:  v.Type,
-			Files: v.Files,
+			Files: files,
 		})
 	default:
 		return json.Marshal(propertyValue(v))
