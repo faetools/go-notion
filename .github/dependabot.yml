@@ -9,8 +9,8 @@ updates:
       time: '11:24'
     reviewers:
       - firestarters
-    ignore:
-    # - dependency-name: "github.com/faetools/xxx"
+      # ignore:
+      # - dependency-name: "github.com/faetools/xxx"
   - package-ecosystem: github-actions
     directory: /
     schedule:

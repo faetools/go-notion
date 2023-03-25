@@ -1,6 +1,6 @@
 module github.com/faetools/go-notion
 
-go 1.18
+go 1.20
 
 require github.com/faetools/client v0.0.0-20220318211513-a9b944e5b437
 
