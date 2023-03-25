@@ -140,3 +140,8 @@ func (s SelectValue) GetID() string {
 
 	return *s.Id
 }
+
+func ColorP[T ~string](c T) *notion.Color {
+	color := notion.Color(c)
+	return &color
+}
