@@ -94,6 +94,18 @@ func (c Client) UpdateNotionPage(ctx context.Context, p Page) (*Page, error) {
 	// can't be present when updating
 	p.CreatedTime = nil
 
+	props := p.Properties
+	for key, prop := range props {
+		switch prop.Type {
+		case PropertyTypeCreatedTime,
+			PropertyTypeCreatedBy,
+			PropertyTypeLastEditedTime,
+			PropertyTypeLastEditedBy:
+			// we can't update these
+			delete(props, key)
+		}
+	}
+
 	resp, err := c.UpdatePage(ctx, Id(p.Id), UpdatePageJSONRequestBody(p))
 	if err != nil {
 		return nil, err
