@@ -2,6 +2,7 @@ package notion
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -17,6 +18,9 @@ const (
 var (
 	maxPageSizeInt          = 100
 	maxPageSize    PageSize = PageSize(maxPageSizeInt)
+
+	// ErrBadRequest is returned when we get a 502 response.
+	ErrBadGateway = errors.New("Bad Gateway")
 )
 
 // NewDefaultClient returns a new client with the default options.
@@ -64,7 +68,8 @@ func (c Client) CreateNotionPage(ctx context.Context, p Page) (*Page, error) {
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
 	default:
-		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+		return nil, fmt.Errorf("unknown %s response: %v",
+			resp.HTTPResponse.Status, string(resp.Body))
 	}
 }
 
@@ -85,7 +90,8 @@ func (c Client) GetNotionPage(ctx context.Context, id Id) (*Page, error) {
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
 	default:
-		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+		return nil, fmt.Errorf("unknown %s response: %v",
+			resp.HTTPResponse.Status, string(resp.Body))
 	}
 }
 
@@ -121,7 +127,8 @@ func (c Client) UpdateNotionPage(ctx context.Context, p Page) (*Page, error) {
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
 	default:
-		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+		return nil, fmt.Errorf("unknown %s response: %v",
+			resp.HTTPResponse.Status, string(resp.Body))
 	}
 }
 
@@ -142,7 +149,8 @@ func (c Client) GetNotionBlock(ctx context.Context, id Id) (*Block, error) {
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
 	default:
-		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+		return nil, fmt.Errorf("unknown %s response: %v",
+			resp.HTTPResponse.Status, string(resp.Body))
 	}
 }
 
@@ -163,7 +171,8 @@ func (c Client) GetNotionDatabase(ctx context.Context, id Id) (*Database, error)
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
 	default:
-		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+		return nil, fmt.Errorf("unknown %s response: %v",
+			resp.HTTPResponse.Status, string(resp.Body))
 	}
 }
 
@@ -198,7 +207,8 @@ func (c Client) GetDatabaseEntries(ctx context.Context, id Id, filter *Filter, s
 		case http.StatusTooManyRequests:
 			return nil, resp.JSON429
 		default:
-			return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+			return nil, fmt.Errorf("unknown %s response: %v",
+				resp.HTTPResponse.Status, string(resp.Body))
 		}
 
 		entries = append(entries, resp.JSON200.Results...)
@@ -260,7 +270,8 @@ func (c Client) CreateNotionDatabase(ctx context.Context, db Database) (*Databas
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
 	default:
-		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+		return nil, fmt.Errorf("unknown %s response: %v",
+			resp.HTTPResponse.Status, string(resp.Body))
 	}
 }
 
@@ -287,7 +298,8 @@ func (c Client) UpdateNotionDatabase(ctx context.Context, db Database) (*Databas
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
 	default:
-		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+		return nil, fmt.Errorf("unknown %s response: %v",
+			resp.HTTPResponse.Status, string(resp.Body))
 	}
 }
 
@@ -314,7 +326,8 @@ func (c Client) ListAllUsers(ctx context.Context) (Users, error) {
 		case http.StatusTooManyRequests:
 			return nil, resp.JSON429
 		default:
-			return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+			return nil, fmt.Errorf("unknown %s response: %v",
+				resp.HTTPResponse.Status, string(resp.Body))
 		}
 
 		users = append(users, resp.JSON200.Results...)
@@ -354,6 +367,19 @@ func (c Client) GetAllBlocks(ctx context.Context, id Id) (Blocks, error) {
 func (c Client) GetNextBlocks(ctx context.Context, id Id, cursor *StartCursor) (
 	Blocks, *StartCursor, error,
 ) {
+	blocks, next, err := c.getNextBlocks(ctx, id, cursor)
+	// retry once
+	if errors.Is(err, ErrBadGateway) {
+		fmt.Printf("Got error %v, retrying...\n", err)
+		blocks, next, err = c.getNextBlocks(ctx, id, cursor)
+	}
+
+	return blocks, next, err
+}
+
+func (c Client) getNextBlocks(ctx context.Context, id Id, cursor *StartCursor) (
+	Blocks, *StartCursor, error,
+) {
 	resp, err := c.GetBlocks(ctx, id, &GetBlocksParams{
 		PageSize:    &maxPageSize,
 		StartCursor: cursor,
@@ -374,8 +400,12 @@ func (c Client) GetNextBlocks(ctx context.Context, id Id, cursor *StartCursor) (
 		return nil, nil, resp.JSON400
 	case http.StatusNotFound:
 		return nil, nil, resp.JSON404
+	case http.StatusBadGateway:
+		return nil, nil, fmt.Errorf("%w with content type %q", ErrBadGateway,
+			resp.HTTPResponse.Header.Get("Content-Type"))
 	default:
-		return nil, nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+		return nil, nil, fmt.Errorf("unknown %s response: %v",
+			resp.HTTPResponse.Status, string(resp.Body))
 	}
 }
 
@@ -466,7 +496,8 @@ func (c Client) GetNotionPagesByTitle(
 	case http.StatusNotFound:
 		return nil, resp.JSON404
 	default:
-		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+		return nil, fmt.Errorf("unknown %s response: %v",
+			resp.HTTPResponse.Status, string(resp.Body))
 	}
 }
 
@@ -503,7 +534,8 @@ func (c Client) GetNotionDatabasesByTitle(
 	case http.StatusNotFound:
 		return nil, resp.JSON404
 	default:
-		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+		return nil, fmt.Errorf("unknown %s response: %v",
+			resp.HTTPResponse.Status, string(resp.Body))
 	}
 }
 
@@ -542,6 +574,7 @@ func (c Client) AppendBlocksToPage(ctx context.Context, pageID Id, blocks ...Blo
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
 	default:
-		return nil, fmt.Errorf("unknown error response: %v", string(resp.Body))
+		return nil, fmt.Errorf("unknown %s response: %v",
+			resp.HTTPResponse.Status, string(resp.Body))
 	}
 }
