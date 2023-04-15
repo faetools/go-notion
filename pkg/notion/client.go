@@ -184,40 +184,60 @@ func (c Client) GetAllDatabaseEntries(ctx context.Context, id Id) (Pages, error)
 // GetDatabaseEntries return filtered and sorted database entries or an error.
 func (c Client) GetDatabaseEntries(ctx context.Context, id Id, filter *Filter, sorts *Sorts) (Pages, error) {
 	entries := Pages{}
+	query := DatabaseQuery{
+		Filter:   filter,
+		PageSize: maxPageSizeInt,
+		Sorts:    sorts,
+	}
 
-	var cursor *UUID
-	for {
-		resp, err := c.QueryDatabase(ctx, id,
-			QueryDatabaseJSONRequestBody{
-				Filter:      filter,
-				PageSize:    maxPageSizeInt,
-				Sorts:       sorts,
-				StartCursor: cursor,
-			})
+	for i := 0; ; i++ {
+		results, next, err := c.QueryNotionDatabase(ctx, id, query)
+
+		// retry once if we get a Bad Gateway error
+		if errors.Is(err, ErrBadGateway) {
+			fmt.Printf("Got error %v on page %d, retrying...\n", i, err)
+			results, next, err = c.QueryNotionDatabase(ctx, id, query)
+		}
+
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("on page %d: %w", i, err)
 		}
 
-		switch resp.StatusCode() {
-		case http.StatusOK: // ok
-		case http.StatusBadRequest:
-			return nil, resp.JSON400
-		case http.StatusNotFound:
-			return nil, resp.JSON404
-		case http.StatusTooManyRequests:
-			return nil, resp.JSON429
-		default:
-			return nil, fmt.Errorf("unknown %s response: %v",
-				resp.HTTPResponse.Status, string(resp.Body))
-		}
+		entries = append(entries, results...)
 
-		entries = append(entries, resp.JSON200.Results...)
-
-		if !resp.JSON200.HasMore {
+		if next == nil {
 			return entries, nil
 		}
 
-		cursor = (*UUID)(resp.JSON200.NextCursor)
+		query.StartCursor = (*UUID)(next)
+	}
+}
+
+func (c Client) QueryNotionDatabase(ctx context.Context, id Id, query DatabaseQuery) (Pages, *NextCursor, error) {
+	resp, err := c.QueryDatabase(ctx, id, QueryDatabaseJSONRequestBody(query))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	switch resp.StatusCode() {
+	case http.StatusOK: // ok
+		if resp.JSON200.HasMore {
+			return resp.JSON200.Results, resp.JSON200.NextCursor, nil
+		}
+
+		return resp.JSON200.Results, nil, nil
+	case http.StatusBadRequest:
+		return nil, nil, resp.JSON400
+	case http.StatusNotFound:
+		return nil, nil, resp.JSON404
+	case http.StatusTooManyRequests:
+		return nil, nil, resp.JSON429
+	case http.StatusBadGateway:
+		return nil, nil, fmt.Errorf("%w with content type %q", ErrBadGateway,
+			resp.HTTPResponse.Header.Get("Content-Type"))
+	default:
+		return nil, nil, fmt.Errorf("unknown %s response: %v",
+			resp.HTTPResponse.Status, string(resp.Body))
 	}
 }
 
@@ -349,10 +369,10 @@ func (c Client) GetAllBlocks(ctx context.Context, id Id) (Blocks, error) {
 		err    error
 	)
 
-	for {
+	for i := 0; ; i++ {
 		blocks, next, err = c.GetNextBlocks(ctx, id, next)
 		if err != nil {
-			return nil, fmt.Errorf("getting blocks for %s: %w", id, err)
+			return nil, fmt.Errorf("page %d of getting blocks for %s: %w", i, id, err)
 		}
 
 		all = append(all, blocks...)
@@ -368,7 +388,8 @@ func (c Client) GetNextBlocks(ctx context.Context, id Id, cursor *StartCursor) (
 	Blocks, *StartCursor, error,
 ) {
 	blocks, next, err := c.getNextBlocks(ctx, id, cursor)
-	// retry once
+
+	// retry once if we get a Bad Gateway error
 	if errors.Is(err, ErrBadGateway) {
 		fmt.Printf("Got error %v, retrying...\n", err)
 		blocks, next, err = c.getNextBlocks(ctx, id, cursor)
