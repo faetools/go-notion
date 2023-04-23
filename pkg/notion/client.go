@@ -156,6 +156,21 @@ func (c Client) GetNotionBlock(ctx context.Context, id Id) (*Block, error) {
 
 // GetNotionDatabase returns the notion database or an error.
 func (c Client) GetNotionDatabase(ctx context.Context, id Id) (*Database, error) {
+	db, err := c.getNotionDatabase(ctx, id)
+	if err != nil {
+		// retry once if we get a Bad Gateway error
+		if errors.Is(err, ErrBadGateway) {
+			fmt.Printf("Got error %v updating notion database, retrying...\n", err)
+			db, err = c.getNotionDatabase(ctx, id)
+		}
+
+		return db, err
+	}
+
+	return db, nil
+}
+
+func (c Client) getNotionDatabase(ctx context.Context, id Id) (*Database, error) {
 	resp, err := c.GetDatabase(ctx, id)
 	if err != nil {
 		return nil, err
@@ -306,6 +321,21 @@ func (c Client) UpdateNotionDatabase(ctx context.Context, db Database) (*Databas
 
 	ensureDatabaseIsValid(&db)
 
+	updated, err := c.updateNotionDatabase(ctx, db)
+	if err != nil {
+		// retry once if we get a Bad Gateway error
+		if errors.Is(err, ErrBadGateway) {
+			fmt.Printf("Got error %v updating notion database, retrying...\n", err)
+			updated, err = c.updateNotionDatabase(ctx, db)
+		}
+
+		return updated, err
+	}
+
+	return updated, nil
+}
+
+func (c Client) updateNotionDatabase(ctx context.Context, db Database) (*Database, error) {
 	resp, err := c.UpdateDatabase(ctx, Id(db.Id), UpdateDatabaseJSONRequestBody(db))
 	if err != nil {
 		return nil, err
