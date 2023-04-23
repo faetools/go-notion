@@ -170,6 +170,9 @@ func (c Client) GetNotionDatabase(ctx context.Context, id Id) (*Database, error)
 		return nil, resp.JSON404
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
+	case http.StatusBadGateway:
+		return nil, fmt.Errorf("%w with content type %q", ErrBadGateway,
+			resp.HTTPResponse.Header.Get("Content-Type"))
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -317,6 +320,9 @@ func (c Client) UpdateNotionDatabase(ctx context.Context, db Database) (*Databas
 		return nil, resp.JSON404
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
+	case http.StatusBadGateway:
+		return nil, fmt.Errorf("%w with content type %q", ErrBadGateway,
+			resp.HTTPResponse.Header.Get("Content-Type"))
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
