@@ -78,6 +78,21 @@ func (c Client) CreateNotionPage(ctx context.Context, p Page) (*Page, error) {
 
 // GetNotionPage return the notion page or an error.
 func (c Client) GetNotionPage(ctx context.Context, id Id) (*Page, error) {
+	p, err := c.getNotionPage(ctx, id)
+	if err != nil {
+		// retry once if we get a Bad Gateway error
+		if errors.Is(err, ErrBadGateway) {
+			fmt.Printf("Got error %v getting notion page, retrying...\n", err)
+			p, err = c.getNotionPage(ctx, id)
+		}
+
+		return nil, err
+	}
+
+	return p, nil
+}
+
+func (c Client) getNotionPage(ctx context.Context, id Id) (*Page, error) {
 	resp, err := c.GetPage(ctx, id)
 	if err != nil {
 		return nil, err
