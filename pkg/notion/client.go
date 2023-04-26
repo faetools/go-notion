@@ -130,6 +130,11 @@ func (c Client) UpdateNotionPage(ctx context.Context, p Page) (*Page, error) {
 			PropertyTypeLastEditedBy:
 			// we can't update these
 			delete(props, key)
+		case PropertyTypeSelect:
+			// we can't update this to be empty
+			if prop.Select.Name == "" {
+				delete(props, key)
+			}
 		}
 	}
 
