@@ -29,6 +29,8 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         '429':
           $ref: '#/components/responses/ErrorResponse'
+        '502':
+          $ref: '#/components/responses/HTMLErrorResponse'
       tags:
         - Users
   /v1/users:
@@ -48,6 +50,8 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         '429':
           $ref: '#/components/responses/ErrorResponse'
+        '502':
+          $ref: '#/components/responses/HTMLErrorResponse'
       tags:
         - Users
   /v1/users/me:
@@ -63,6 +67,8 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         '429':
           $ref: '#/components/responses/ErrorResponse'
+        '502':
+          $ref: '#/components/responses/HTMLErrorResponse'
   /v1/databases/{id}:
     parameters:
       - $ref: '#/components/parameters/id'
@@ -79,6 +85,8 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         '429':
           $ref: '#/components/responses/ErrorResponse'
+        '502':
+          $ref: '#/components/responses/HTMLErrorResponse'
       tags:
         - Databases
     patch:
@@ -92,6 +100,8 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         '429':
           $ref: '#/components/responses/ErrorResponse'
+        '502':
+          $ref: '#/components/responses/HTMLErrorResponse'
       description: Updates an existing database as specified by the parameters.
       requestBody:
         $ref: '#/components/requestBodies/DatabaseRequestBody'
@@ -110,6 +120,8 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         '429':
           $ref: '#/components/responses/ErrorResponse'
+        '502':
+          $ref: '#/components/responses/HTMLErrorResponse'
       requestBody:
         required: true
         content:
@@ -138,6 +150,8 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         '429':
           $ref: '#/components/responses/ErrorResponse'
+        '502':
+          $ref: '#/components/responses/HTMLErrorResponse'
       requestBody:
         $ref: '#/components/requestBodies/DatabaseRequestBody'
       tags:
@@ -155,6 +169,8 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         '429':
           $ref: '#/components/responses/ErrorResponse'
+        '502':
+          $ref: '#/components/responses/HTMLErrorResponse'
       requestBody:
         required: true
         content:
@@ -257,6 +273,8 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         '429':
           $ref: '#/components/responses/ErrorResponse'
+        '502':
+          $ref: '#/components/responses/HTMLErrorResponse'
       tags:
         - Pages
     patch:
@@ -272,6 +290,8 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         '429':
           $ref: '#/components/responses/ErrorResponse'
+        '502':
+          $ref: '#/components/responses/HTMLErrorResponse'
       requestBody:
         description: 'Updates a page by setting the values of any properties specified in the JSON body of the request. Properties not updated via parameters will remain unchanged. '
         required: true
@@ -298,6 +318,8 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         '429':
           $ref: '#/components/responses/ErrorResponse'
+        '502':
+          $ref: '#/components/responses/HTMLErrorResponse'
   /v1/blocks/{id}:
     parameters:
       - $ref: '#/components/parameters/id'
@@ -313,6 +335,8 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         '429':
           $ref: '#/components/responses/ErrorResponse'
+        '502':
+          $ref: '#/components/responses/HTMLErrorResponse'
     patch:
       summary: Update a block
       description: This endpoint allows you to update block content. [See Full Documentation](https://developers.notion.com/reference/update-a-block)
@@ -326,6 +350,8 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         '429':
           $ref: '#/components/responses/ErrorResponse'
+        '502':
+          $ref: '#/components/responses/HTMLErrorResponse'
       requestBody:
         description: This endpoint allows you to update block content. [See Full Documentation](https://developers.notion.com/reference/update-a-block)
         required: true
@@ -345,6 +371,8 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         '429':
           $ref: '#/components/responses/ErrorResponse'
+        '502':
+          $ref: '#/components/responses/HTMLErrorResponse'
       description: Retrieves a [Block object](https://developers.notion.com/reference/block) using the ID specified.
   /v1/blocks/{id}/children:
     parameters:
@@ -364,6 +392,8 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         '429':
           $ref: '#/components/responses/ErrorResponse'
+        '502':
+          $ref: '#/components/responses/HTMLErrorResponse'
       tags:
         - Blocks
       description: Returns a paginated array of child [block objects](https://developers.notion.com/reference/block) contained in the block using the ID specified. In order to receive a complete representation of a block, you may need to recursively retrieve the block children of child blocks.
@@ -379,6 +409,8 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         '429':
           $ref: '#/components/responses/ErrorResponse'
+        '502':
+          $ref: '#/components/responses/HTMLErrorResponse'
       requestBody:
         required: true
         content:
@@ -432,6 +464,8 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
         '429':
           $ref: '#/components/responses/ErrorResponse'
+        '502':
+          $ref: '#/components/responses/HTMLErrorResponse'
       requestBody:
         required: true
         content:
@@ -2570,6 +2604,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+    HTMLErrorResponse:
+      description: Something went wrong.
+      content:
+        text/html:
+          schema:
+            type: string
+            format: html
     PageResponse:
       description: Returns the page that was requested or created.
       content:

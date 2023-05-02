@@ -68,8 +68,7 @@ func (c Client) CreateNotionPage(ctx context.Context, p Page) (*Page, error) {
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
 	case http.StatusBadGateway:
-		return nil, fmt.Errorf("%w with content type %q", ErrBadGateway,
-			resp.HTTPResponse.Header.Get("Content-Type"))
+		return nil, ErrBadGateway
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -86,7 +85,7 @@ func (c Client) GetNotionPage(ctx context.Context, id Id) (*Page, error) {
 			p, err = c.getNotionPage(ctx, id)
 		}
 
-		return nil, err
+		return p, err
 	}
 
 	return p, nil
@@ -108,8 +107,7 @@ func (c Client) getNotionPage(ctx context.Context, id Id) (*Page, error) {
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
 	case http.StatusBadGateway:
-		return nil, fmt.Errorf("%w with content type %q", ErrBadGateway,
-			resp.HTTPResponse.Header.Get("Content-Type"))
+		return nil, ErrBadGateway
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -153,8 +151,7 @@ func (c Client) UpdateNotionPage(ctx context.Context, p Page) (*Page, error) {
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
 	case http.StatusBadGateway:
-		return nil, fmt.Errorf("%w with content type %q", ErrBadGateway,
-			resp.HTTPResponse.Header.Get("Content-Type"))
+		return nil, ErrBadGateway
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -178,8 +175,7 @@ func (c Client) GetNotionBlock(ctx context.Context, id Id) (*Block, error) {
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
 	case http.StatusBadGateway:
-		return nil, fmt.Errorf("%w with content type %q", ErrBadGateway,
-			resp.HTTPResponse.Header.Get("Content-Type"))
+		return nil, ErrBadGateway
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -218,8 +214,7 @@ func (c Client) getNotionDatabase(ctx context.Context, id Id) (*Database, error)
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
 	case http.StatusBadGateway:
-		return nil, fmt.Errorf("%w with content type %q", ErrBadGateway,
-			resp.HTTPResponse.Header.Get("Content-Type"))
+		return nil, ErrBadGateway
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -283,8 +278,7 @@ func (c Client) QueryNotionDatabase(ctx context.Context, id Id, query DatabaseQu
 	case http.StatusTooManyRequests:
 		return nil, nil, resp.JSON429
 	case http.StatusBadGateway:
-		return nil, nil, fmt.Errorf("%w with content type %q", ErrBadGateway,
-			resp.HTTPResponse.Header.Get("Content-Type"))
+		return nil, nil, ErrBadGateway
 	default:
 		return nil, nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -340,8 +334,7 @@ func (c Client) CreateNotionDatabase(ctx context.Context, db Database) (*Databas
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
 	case http.StatusBadGateway:
-		return nil, fmt.Errorf("%w with content type %q", ErrBadGateway,
-			resp.HTTPResponse.Header.Get("Content-Type"))
+		return nil, ErrBadGateway
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -386,8 +379,7 @@ func (c Client) updateNotionDatabase(ctx context.Context, db Database) (*Databas
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
 	case http.StatusBadGateway:
-		return nil, fmt.Errorf("%w with content type %q", ErrBadGateway,
-			resp.HTTPResponse.Header.Get("Content-Type"))
+		return nil, ErrBadGateway
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -496,8 +488,7 @@ func (c Client) getNextBlocks(ctx context.Context, id Id, cursor *StartCursor) (
 	case http.StatusNotFound:
 		return nil, nil, resp.JSON404
 	case http.StatusBadGateway:
-		return nil, nil, fmt.Errorf("%w with content type %q", ErrBadGateway,
-			resp.HTTPResponse.Header.Get("Content-Type"))
+		return nil, nil, ErrBadGateway
 	default:
 		return nil, nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -591,8 +582,7 @@ func (c Client) GetNotionPagesByTitle(
 	case http.StatusNotFound:
 		return nil, resp.JSON404
 	case http.StatusBadGateway:
-		return nil, fmt.Errorf("%w with content type %q", ErrBadGateway,
-			resp.HTTPResponse.Header.Get("Content-Type"))
+		return nil, ErrBadGateway
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -632,8 +622,7 @@ func (c Client) GetNotionDatabasesByTitle(
 	case http.StatusNotFound:
 		return nil, resp.JSON404
 	case http.StatusBadGateway:
-		return nil, fmt.Errorf("%w with content type %q", ErrBadGateway,
-			resp.HTTPResponse.Header.Get("Content-Type"))
+		return nil, ErrBadGateway
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -675,8 +664,7 @@ func (c Client) AppendBlocksToPage(ctx context.Context, pageID Id, blocks ...Blo
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
 	case http.StatusBadGateway:
-		return nil, fmt.Errorf("%w with content type %q", ErrBadGateway,
-			resp.HTTPResponse.Header.Get("Content-Type"))
+		return nil, ErrBadGateway
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
