@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/faetools/client"
 	"github.com/google/uuid"
@@ -19,8 +20,8 @@ var (
 	maxPageSizeInt          = 100
 	maxPageSize    PageSize = PageSize(maxPageSizeInt)
 
-	// ErrBadRequest is returned when we get a 502 response.
-	ErrBadGateway = errors.New("Bad Gateway")
+	// ErrBadRequest is returned when we get a 502 Bad Gateway or 504 Gateway Timeout response.
+	ErrGatewayIssue = errors.New("gateway issue")
 )
 
 // NewDefaultClient returns a new client with the default options.
@@ -67,8 +68,8 @@ func (c Client) CreateNotionPage(ctx context.Context, p Page) (*Page, error) {
 		return nil, resp.JSON404
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
-	case http.StatusBadGateway:
-		return nil, ErrBadGateway
+	case http.StatusBadGateway, http.StatusGatewayTimeout:
+		return nil, fmt.Errorf("%w (%s)", ErrGatewayIssue, resp.HTTPResponse.Status)
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -80,8 +81,9 @@ func (c Client) GetNotionPage(ctx context.Context, id Id) (*Page, error) {
 	p, err := c.getNotionPage(ctx, id)
 	if err != nil {
 		// retry once if we get a Bad Gateway error
-		if errors.Is(err, ErrBadGateway) {
+		if errors.Is(err, ErrGatewayIssue) {
 			fmt.Printf("Got error %v getting notion page, retrying...\n", err)
+			time.Sleep(time.Second)
 			p, err = c.getNotionPage(ctx, id)
 		}
 
@@ -106,8 +108,8 @@ func (c Client) getNotionPage(ctx context.Context, id Id) (*Page, error) {
 		return nil, resp.JSON404
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
-	case http.StatusBadGateway:
-		return nil, ErrBadGateway
+	case http.StatusBadGateway, http.StatusGatewayTimeout:
+		return nil, fmt.Errorf("%w (%s)", ErrGatewayIssue, resp.HTTPResponse.Status)
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -150,8 +152,8 @@ func (c Client) UpdateNotionPage(ctx context.Context, p Page) (*Page, error) {
 		return nil, resp.JSON404
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
-	case http.StatusBadGateway:
-		return nil, ErrBadGateway
+	case http.StatusBadGateway, http.StatusGatewayTimeout:
+		return nil, fmt.Errorf("%w (%s)", ErrGatewayIssue, resp.HTTPResponse.Status)
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -174,8 +176,8 @@ func (c Client) GetNotionBlock(ctx context.Context, id Id) (*Block, error) {
 		return nil, resp.JSON404
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
-	case http.StatusBadGateway:
-		return nil, ErrBadGateway
+	case http.StatusBadGateway, http.StatusGatewayTimeout:
+		return nil, fmt.Errorf("%w (%s)", ErrGatewayIssue, resp.HTTPResponse.Status)
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -187,8 +189,9 @@ func (c Client) GetNotionDatabase(ctx context.Context, id Id) (*Database, error)
 	db, err := c.getNotionDatabase(ctx, id)
 	if err != nil {
 		// retry once if we get a Bad Gateway error
-		if errors.Is(err, ErrBadGateway) {
+		if errors.Is(err, ErrGatewayIssue) {
 			fmt.Printf("Got error %v updating notion database, retrying...\n", err)
+			time.Sleep(time.Second)
 			db, err = c.getNotionDatabase(ctx, id)
 		}
 
@@ -213,8 +216,8 @@ func (c Client) getNotionDatabase(ctx context.Context, id Id) (*Database, error)
 		return nil, resp.JSON404
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
-	case http.StatusBadGateway:
-		return nil, ErrBadGateway
+	case http.StatusBadGateway, http.StatusGatewayTimeout:
+		return nil, fmt.Errorf("%w (%s)", ErrGatewayIssue, resp.HTTPResponse.Status)
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -239,8 +242,9 @@ func (c Client) GetDatabaseEntries(ctx context.Context, id Id, filter *Filter, s
 		results, next, err := c.QueryNotionDatabase(ctx, id, query)
 
 		// retry once if we get a Bad Gateway error
-		if errors.Is(err, ErrBadGateway) {
+		if errors.Is(err, ErrGatewayIssue) {
 			fmt.Printf("Got error %v on page %d, retrying...\n", i, err)
+			time.Sleep(time.Second)
 			results, next, err = c.QueryNotionDatabase(ctx, id, query)
 		}
 
@@ -277,8 +281,8 @@ func (c Client) QueryNotionDatabase(ctx context.Context, id Id, query DatabaseQu
 		return nil, nil, resp.JSON404
 	case http.StatusTooManyRequests:
 		return nil, nil, resp.JSON429
-	case http.StatusBadGateway:
-		return nil, nil, ErrBadGateway
+	case http.StatusBadGateway, http.StatusGatewayTimeout:
+		return nil, nil, fmt.Errorf("%w (%s)", ErrGatewayIssue, resp.HTTPResponse.Status)
 	default:
 		return nil, nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -333,8 +337,8 @@ func (c Client) CreateNotionDatabase(ctx context.Context, db Database) (*Databas
 		return nil, resp.JSON404
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
-	case http.StatusBadGateway:
-		return nil, ErrBadGateway
+	case http.StatusBadGateway, http.StatusGatewayTimeout:
+		return nil, fmt.Errorf("%w (%s)", ErrGatewayIssue, resp.HTTPResponse.Status)
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -352,8 +356,9 @@ func (c Client) UpdateNotionDatabase(ctx context.Context, db Database) (*Databas
 	updated, err := c.updateNotionDatabase(ctx, db)
 	if err != nil {
 		// retry once if we get a Bad Gateway error
-		if errors.Is(err, ErrBadGateway) {
+		if errors.Is(err, ErrGatewayIssue) {
 			fmt.Printf("Got error %v updating notion database, retrying...\n", err)
+			time.Sleep(time.Second)
 			updated, err = c.updateNotionDatabase(ctx, db)
 		}
 
@@ -378,8 +383,8 @@ func (c Client) updateNotionDatabase(ctx context.Context, db Database) (*Databas
 		return nil, resp.JSON404
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
-	case http.StatusBadGateway:
-		return nil, ErrBadGateway
+	case http.StatusBadGateway, http.StatusGatewayTimeout:
+		return nil, fmt.Errorf("%w (%s)", ErrGatewayIssue, resp.HTTPResponse.Status)
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -408,9 +413,8 @@ func (c Client) ListAllUsers(ctx context.Context) (Users, error) {
 			return nil, resp.JSON404
 		case http.StatusTooManyRequests:
 			return nil, resp.JSON429
-		case http.StatusBadGateway:
-			return nil, fmt.Errorf("%w with content type %q", ErrBadGateway,
-				resp.HTTPResponse.Header.Get("Content-Type"))
+		case http.StatusBadGateway, http.StatusGatewayTimeout:
+			return nil, fmt.Errorf("%w (%s)", ErrGatewayIssue, resp.HTTPResponse.Status)
 		default:
 			return nil, fmt.Errorf("unknown %s response: %v",
 				resp.HTTPResponse.Status, string(resp.Body))
@@ -456,8 +460,9 @@ func (c Client) GetNextBlocks(ctx context.Context, id Id, cursor *StartCursor) (
 	blocks, next, err := c.getNextBlocks(ctx, id, cursor)
 
 	// retry once if we get a Bad Gateway error
-	if errors.Is(err, ErrBadGateway) {
+	if errors.Is(err, ErrGatewayIssue) {
 		fmt.Printf("Got error %v, retrying...\n", err)
+		time.Sleep(time.Second)
 		blocks, next, err = c.getNextBlocks(ctx, id, cursor)
 	}
 
@@ -487,8 +492,8 @@ func (c Client) getNextBlocks(ctx context.Context, id Id, cursor *StartCursor) (
 		return nil, nil, resp.JSON400
 	case http.StatusNotFound:
 		return nil, nil, resp.JSON404
-	case http.StatusBadGateway:
-		return nil, nil, ErrBadGateway
+	case http.StatusBadGateway, http.StatusGatewayTimeout:
+		return nil, nil, fmt.Errorf("%w (%s)", ErrGatewayIssue, resp.HTTPResponse.Status)
 	default:
 		return nil, nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -581,8 +586,8 @@ func (c Client) GetNotionPagesByTitle(
 		return nil, resp.JSON400
 	case http.StatusNotFound:
 		return nil, resp.JSON404
-	case http.StatusBadGateway:
-		return nil, ErrBadGateway
+	case http.StatusBadGateway, http.StatusGatewayTimeout:
+		return nil, fmt.Errorf("%w (%s)", ErrGatewayIssue, resp.HTTPResponse.Status)
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -621,8 +626,8 @@ func (c Client) GetNotionDatabasesByTitle(
 		return nil, resp.JSON400
 	case http.StatusNotFound:
 		return nil, resp.JSON404
-	case http.StatusBadGateway:
-		return nil, ErrBadGateway
+	case http.StatusBadGateway, http.StatusGatewayTimeout:
+		return nil, fmt.Errorf("%w (%s)", ErrGatewayIssue, resp.HTTPResponse.Status)
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
@@ -663,8 +668,8 @@ func (c Client) AppendBlocksToPage(ctx context.Context, pageID Id, blocks ...Blo
 		return nil, resp.JSON404
 	case http.StatusTooManyRequests:
 		return nil, resp.JSON429
-	case http.StatusBadGateway:
-		return nil, ErrBadGateway
+	case http.StatusBadGateway, http.StatusGatewayTimeout:
+		return nil, fmt.Errorf("%w (%s)", ErrGatewayIssue, resp.HTTPResponse.Status)
 	default:
 		return nil, fmt.Errorf("unknown %s response: %v",
 			resp.HTTPResponse.Status, string(resp.Body))
