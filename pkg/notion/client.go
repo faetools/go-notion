@@ -131,6 +131,10 @@ func (c Client) UpdateNotionPage(ctx context.Context, p Page) (*Page, error) {
 			// we can't update these
 			delete(props, key)
 		case PropertyTypeSelect:
+			if prop.Select == nil {
+				return nil, fmt.Errorf("invalid page properties: select property %q is nil", key)
+			}
+
 			// we can't update this to be empty
 			if prop.Select.Name == "" {
 				delete(props, key)
