@@ -44,6 +44,7 @@ func (e *Error) Error() string {
 
 // CreateNotionPage creates a notion page or returns an error.
 func (c Client) CreateNotionPage(ctx context.Context, p Page) (*Page, error) {
+	// needs to be set
 	p.Object = "page"
 
 	if p.Id == "" {
@@ -120,6 +121,9 @@ func (c Client) getNotionPage(ctx context.Context, id Id) (*Page, error) {
 func (c Client) UpdateNotionPage(ctx context.Context, p Page) (*Page, error) {
 	// can't be present when updating
 	p.CreatedTime = nil
+
+	// needs to be set
+	p.Object = "page"
 
 	props := p.Properties
 	for key, prop := range props {
