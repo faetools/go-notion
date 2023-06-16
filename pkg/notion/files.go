@@ -1,7 +1,7 @@
 package notion
 
 func (fs Files) GetURLs() []string {
-	if len(fs) == 0 {
+	if fs == nil {
 		return nil
 	}
 
