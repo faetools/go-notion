@@ -7,6 +7,10 @@ func (p Page) Title() string {
 	return p.Properties.title()
 }
 
+func (p Page) String() string {
+	return fmt.Sprintf("%s (%s)", p.TitleWithEmoji(), p.Id)
+}
+
 // Title returns the title of the page.
 func (props PropertyValueMap) title() string {
 	for _, prop := range props {
