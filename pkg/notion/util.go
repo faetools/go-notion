@@ -79,7 +79,7 @@ func (vals SelectValues) GetByName(name string) (SelectValue, bool) {
 }
 
 // GetIDs returns the UUIDs of all references.
-func (refs References) GetIDs() []UUID {
+func (refs References) GetIDs() UUIDs {
 	return mapSlice(refs, func(ref Reference) UUID { return ref.Id })
 }
 
