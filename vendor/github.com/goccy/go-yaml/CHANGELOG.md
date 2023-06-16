@@ -1,3 +1,64 @@
+# 1.10.1 - 2023-03-28
+
+### Features
+
+- Quote YAML 1.1 bools at encoding time for compatibility with other legacy parsers
+- Add support of 32-bit architecture
+
+### Fix bugs
+
+- Don't trim all space characters in block style sequence
+- Support strings starting with `@`
+
+# 1.10.0 - 2023-03-01
+
+### Fix bugs
+
+Reversible conversion of comments was not working in various cases, which has been corrected.
+**Breaking Change** exists in the comment map interface. However, if you are dealing with CommentMap directly, there is no problem.
+
+
+# 1.9.8 - 2022-12-19
+
+### Fix feature
+
+- Append new line at the end of file ( #329 )
+
+### Fix bugs
+
+- Fix custom marshaler ( #333, #334 )
+- Fix behavior when struct fields conflicted( #335 )
+- Fix position calculation for literal, folded and raw folded strings ( #330 )
+
+# 1.9.7 - 2022-12-03
+
+### Fix bugs
+
+- Fix handling of quoted map key ( #328 )
+- Fix resusing process of scanning context ( #322 )
+
+## v1.9.6 - 2022-10-26
+
+### New Features
+
+- Introduce MapKeyNode interface to limit node types for map key ( #312 )
+
+### Fix bugs
+
+- Quote strings with special characters in flow mode ( #270 )
+- typeError implements PrettyPrinter interface ( #280 )
+- Fix incorrect const type ( #284 )
+- Fix large literals type inference on 32 bits ( #293 )
+- Fix UTF-8 characters ( #294 )
+- Fix decoding of unknown aliases ( #317 )
+- Fix stream encoder for insert a separator between each encoded document ( #318 )
+
+### Update
+
+- Update golang.org/x/sys ( #289 )
+- Update Go version in CI ( #295 )
+- Add test cases for missing keys to struct literals ( #300 )
+
 ## v1.9.5 - 2022-01-12
 
 ### New Features

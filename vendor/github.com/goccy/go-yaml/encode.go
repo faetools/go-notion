@@ -37,8 +37,10 @@ type Encoder struct {
 	useJSONMarshaler           bool
 	anchorCallback             func(*ast.AnchorNode, interface{}) error
 	anchorPtrToNameMap         map[uintptr]string
+	customMarshalerMap         map[reflect.Type]func(interface{}) ([]byte, error)
 	useLiteralStyleIfMultiline bool
-	commentMap                 map[*Path]*Comment
+	commentMap                 map[*Path][]*Comment
+	written                    bool
 
 	line        int
 	column      int
@@ -55,6 +57,7 @@ func NewEncoder(w io.Writer, opts ...EncodeOption) *Encoder {
 		opts:               opts,
 		indent:             DefaultIndentSpaces,
 		anchorPtrToNameMap: map[uintptr]string{},
+		customMarshalerMap: map[reflect.Type]func(interface{}) ([]byte, error){},
 		line:               1,
 		column:             1,
 		offset:             0,
@@ -86,6 +89,12 @@ func (e *Encoder) EncodeContext(ctx context.Context, v interface{}) error {
 	if err := e.setCommentByCommentMap(node); err != nil {
 		return errors.Wrapf(err, "failed to set comment by comment map")
 	}
+	if !e.written {
+		e.written = true
+	} else {
+		// write document separator
+		e.writer.Write([]byte("---\n"))
+	}
 	var p printer.Printer
 	e.writer.Write(p.PrintNode(node))
 	return nil
@@ -114,41 +123,123 @@ func (e *Encoder) setCommentByCommentMap(node ast.Node) error {
 	if e.commentMap == nil {
 		return nil
 	}
-	for path, comment := range e.commentMap {
+	for path, comments := range e.commentMap {
 		n, err := path.FilterNode(node)
 		if err != nil {
 			return errors.Wrapf(err, "failed to filter node")
 		}
-		comments := []*token.Token{}
-		for _, text := range comment.Texts {
-			comments = append(comments, token.New(text, text, nil))
+		if n == nil {
+			continue
 		}
-		commentGroup := ast.CommentGroup(comments)
-		switch comment.Position {
-		case CommentLinePosition:
-			if err := n.SetComment(commentGroup); err != nil {
-				return errors.Wrapf(err, "failed to set comment")
+		for _, comment := range comments {
+			commentTokens := []*token.Token{}
+			for _, text := range comment.Texts {
+				commentTokens = append(commentTokens, token.New(text, text, nil))
 			}
-		case CommentHeadPosition:
-			parent := ast.Parent(node, n)
-			if parent == nil {
-				return ErrUnsupportedHeadPositionType(node)
-			}
-			switch node := parent.(type) {
-			case *ast.MappingValueNode:
-				if err := node.SetComment(commentGroup); err != nil {
-					return errors.Wrapf(err, "failed to set comment")
+			commentGroup := ast.CommentGroup(commentTokens)
+			switch comment.Position {
+			case CommentHeadPosition:
+				if err := e.setHeadComment(node, n, commentGroup); err != nil {
+					return errors.Wrapf(err, "failed to set head comment")
 				}
-			case *ast.MappingNode:
-				if err := node.SetComment(commentGroup); err != nil {
-					return errors.Wrapf(err, "failed to set comment")
+			case CommentLinePosition:
+				if err := e.setLineComment(node, n, commentGroup); err != nil {
+					return errors.Wrapf(err, "failed to set line comment")
+				}
+			case CommentFootPosition:
+				if err := e.setFootComment(node, n, commentGroup); err != nil {
+					return errors.Wrapf(err, "failed to set foot comment")
 				}
 			default:
-				return ErrUnsupportedHeadPositionType(node)
+				return ErrUnknownCommentPositionType
 			}
-		default:
-			return ErrUnknownCommentPositionType
 		}
+	}
+	return nil
+}
+
+func (e *Encoder) setHeadComment(node ast.Node, filtered ast.Node, comment *ast.CommentGroupNode) error {
+	parent := ast.Parent(node, filtered)
+	if parent == nil {
+		return ErrUnsupportedHeadPositionType(node)
+	}
+	switch p := parent.(type) {
+	case *ast.MappingValueNode:
+		if err := p.SetComment(comment); err != nil {
+			return errors.Wrapf(err, "failed to set comment")
+		}
+	case *ast.MappingNode:
+		if err := p.SetComment(comment); err != nil {
+			return errors.Wrapf(err, "failed to set comment")
+		}
+	case *ast.SequenceNode:
+		if len(p.ValueHeadComments) == 0 {
+			p.ValueHeadComments = make([]*ast.CommentGroupNode, len(p.Values))
+		}
+		var foundIdx int
+		for idx, v := range p.Values {
+			if v == filtered {
+				foundIdx = idx
+				break
+			}
+		}
+		p.ValueHeadComments[foundIdx] = comment
+	default:
+		return ErrUnsupportedHeadPositionType(node)
+	}
+	return nil
+}
+
+func (e *Encoder) setLineComment(node ast.Node, filtered ast.Node, comment *ast.CommentGroupNode) error {
+	switch filtered.(type) {
+	case *ast.MappingValueNode, *ast.SequenceNode:
+		// Line comment cannot be set for mapping value node.
+		// It should probably be set for the parent map node
+		if err := e.setLineCommentToParentMapNode(node, filtered, comment); err != nil {
+			return errors.Wrapf(err, "failed to set line comment to parent node")
+		}
+	default:
+		if err := filtered.SetComment(comment); err != nil {
+			return errors.Wrapf(err, "failed to set comment")
+		}
+	}
+	return nil
+}
+
+func (e *Encoder) setLineCommentToParentMapNode(node ast.Node, filtered ast.Node, comment *ast.CommentGroupNode) error {
+	parent := ast.Parent(node, filtered)
+	if parent == nil {
+		return ErrUnsupportedLinePositionType(node)
+	}
+	switch p := parent.(type) {
+	case *ast.MappingValueNode:
+		if err := p.Key.SetComment(comment); err != nil {
+			return errors.Wrapf(err, "failed to set comment")
+		}
+	case *ast.MappingNode:
+		if err := p.SetComment(comment); err != nil {
+			return errors.Wrapf(err, "failed to set comment")
+		}
+	default:
+		return ErrUnsupportedLinePositionType(parent)
+	}
+	return nil
+}
+
+func (e *Encoder) setFootComment(node ast.Node, filtered ast.Node, comment *ast.CommentGroupNode) error {
+	parent := ast.Parent(node, filtered)
+	if parent == nil {
+		return ErrUnsupportedFootPositionType(node)
+	}
+	switch n := parent.(type) {
+	case *ast.MappingValueNode:
+		n.FootComment = comment
+	case *ast.MappingNode:
+		n.FootComment = comment
+	case *ast.SequenceNode:
+		n.FootComment = comment
+	default:
+		return ErrUnsupportedFootPositionType(n)
 	}
 	return nil
 }
@@ -184,9 +275,38 @@ type jsonMarshaler interface {
 	MarshalJSON() ([]byte, error)
 }
 
+func (e *Encoder) existsTypeInCustomMarshalerMap(t reflect.Type) bool {
+	if _, exists := e.customMarshalerMap[t]; exists {
+		return true
+	}
+
+	globalCustomMarshalerMu.Lock()
+	defer globalCustomMarshalerMu.Unlock()
+	if _, exists := globalCustomMarshalerMap[t]; exists {
+		return true
+	}
+	return false
+}
+
+func (e *Encoder) marshalerFromCustomMarshalerMap(t reflect.Type) (func(interface{}) ([]byte, error), bool) {
+	if marshaler, exists := e.customMarshalerMap[t]; exists {
+		return marshaler, exists
+	}
+
+	globalCustomMarshalerMu.Lock()
+	defer globalCustomMarshalerMu.Unlock()
+	if marshaler, exists := globalCustomMarshalerMap[t]; exists {
+		return marshaler, exists
+	}
+	return nil, false
+}
+
 func (e *Encoder) canEncodeByMarshaler(v reflect.Value) bool {
 	if !v.CanInterface() {
 		return false
+	}
+	if e.existsTypeInCustomMarshalerMap(v.Type()) {
+		return true
 	}
 	iface := v.Interface()
 	switch iface.(type) {
@@ -212,6 +332,18 @@ func (e *Encoder) canEncodeByMarshaler(v reflect.Value) bool {
 
 func (e *Encoder) encodeByMarshaler(ctx context.Context, v reflect.Value, column int) (ast.Node, error) {
 	iface := v.Interface()
+
+	if marshaler, exists := e.marshalerFromCustomMarshalerMap(v.Type()); exists {
+		doc, err := marshaler(iface)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to MarshalYAML")
+		}
+		node, err := e.encodeDocument(doc)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to encode document")
+		}
+		return node, nil
+	}
 
 	if marshaler, ok := iface.(BytesMarshalerContext); ok {
 		doc, err := marshaler.MarshalYAML(ctx)
@@ -351,7 +483,6 @@ func (e *Encoder) encodeValue(ctx context.Context, v reflect.Value, column int) 
 	default:
 		return nil, xerrors.Errorf("unknown value type %s", v.Type().String())
 	}
-	return nil, nil
 }
 
 func (e *Encoder) pos(column int) *token.Position {
@@ -364,17 +495,17 @@ func (e *Encoder) pos(column int) *token.Position {
 	}
 }
 
-func (e *Encoder) encodeNil() ast.Node {
+func (e *Encoder) encodeNil() *ast.NullNode {
 	value := "null"
 	return ast.Null(token.New(value, value, e.pos(e.column)))
 }
 
-func (e *Encoder) encodeInt(v int64) ast.Node {
+func (e *Encoder) encodeInt(v int64) *ast.IntegerNode {
 	value := fmt.Sprint(v)
 	return ast.Integer(token.New(value, value, e.pos(e.column)))
 }
 
-func (e *Encoder) encodeUint(v uint64) ast.Node {
+func (e *Encoder) encodeUint(v uint64) *ast.IntegerNode {
 	value := fmt.Sprint(v)
 	return ast.Integer(token.New(value, value, e.pos(e.column)))
 }
@@ -405,13 +536,16 @@ func (e *Encoder) isNeedQuoted(v string) bool {
 	if e.useLiteralStyleIfMultiline && strings.ContainsAny(v, "\n\r") {
 		return false
 	}
+	if e.isFlowStyle && strings.ContainsAny(v, `]},'"`) {
+		return true
+	}
 	if token.IsNeedQuoted(v) {
 		return true
 	}
 	return false
 }
 
-func (e *Encoder) encodeString(v string, column int) ast.Node {
+func (e *Encoder) encodeString(v string, column int) *ast.StringNode {
 	if e.isNeedQuoted(v) {
 		if e.singleQuote {
 			v = quoteWith(v, '\'')
@@ -422,12 +556,12 @@ func (e *Encoder) encodeString(v string, column int) ast.Node {
 	return ast.String(token.New(v, v, e.pos(column)))
 }
 
-func (e *Encoder) encodeBool(v bool) ast.Node {
+func (e *Encoder) encodeBool(v bool) *ast.BoolNode {
 	value := fmt.Sprint(v)
 	return ast.Bool(token.New(value, value, e.pos(e.column)))
 }
 
-func (e *Encoder) encodeSlice(ctx context.Context, value reflect.Value) (ast.Node, error) {
+func (e *Encoder) encodeSlice(ctx context.Context, value reflect.Value) (*ast.SequenceNode, error) {
 	if e.indentSequence {
 		e.column += e.indent
 	}
@@ -446,7 +580,7 @@ func (e *Encoder) encodeSlice(ctx context.Context, value reflect.Value) (ast.Nod
 	return sequence, nil
 }
 
-func (e *Encoder) encodeArray(ctx context.Context, value reflect.Value) (ast.Node, error) {
+func (e *Encoder) encodeArray(ctx context.Context, value reflect.Value) (*ast.SequenceNode, error) {
 	if e.indentSequence {
 		e.column += e.indent
 	}
@@ -472,8 +606,8 @@ func (e *Encoder) encodeMapItem(ctx context.Context, item MapItem, column int) (
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to encode MapItem")
 	}
-	if m, ok := value.(*ast.MappingNode); ok {
-		m.AddColumn(e.indent)
+	if e.isMapNode(value) {
+		value.AddColumn(e.indent)
 	}
 	return ast.MappingValue(
 		token.New("", "", e.pos(column)),
@@ -482,7 +616,7 @@ func (e *Encoder) encodeMapItem(ctx context.Context, item MapItem, column int) (
 	), nil
 }
 
-func (e *Encoder) encodeMapSlice(ctx context.Context, value MapSlice, column int) (ast.Node, error) {
+func (e *Encoder) encodeMapSlice(ctx context.Context, value MapSlice, column int) (*ast.MappingNode, error) {
 	node := ast.Mapping(token.New("", "", e.pos(column)), e.isFlowStyle)
 	for _, item := range value {
 		value, err := e.encodeMapItem(ctx, item, column)
@@ -492,6 +626,11 @@ func (e *Encoder) encodeMapSlice(ctx context.Context, value MapSlice, column int
 		node.Values = append(node.Values, value)
 	}
 	return node, nil
+}
+
+func (e *Encoder) isMapNode(node ast.Node) bool {
+	_, ok := node.(ast.MapNode)
+	return ok
 }
 
 func (e *Encoder) encodeMap(ctx context.Context, value reflect.Value, column int) ast.Node {
@@ -510,7 +649,7 @@ func (e *Encoder) encodeMap(ctx context.Context, value reflect.Value, column int
 		if err != nil {
 			return nil
 		}
-		if value.Type() == ast.MappingType || value.Type() == ast.MappingValueType {
+		if e.isMapNode(value) {
 			value.AddColumn(e.indent)
 		}
 		node.Values = append(node.Values, ast.MappingValue(
@@ -569,7 +708,7 @@ func (e *Encoder) isZeroValue(v reflect.Value) bool {
 	return false
 }
 
-func (e *Encoder) encodeTime(v time.Time, column int) ast.Node {
+func (e *Encoder) encodeTime(v time.Time, column int) *ast.StringNode {
 	value := v.Format(time.RFC3339Nano)
 	if e.isJSONStyle {
 		value = strconv.Quote(value)
@@ -577,7 +716,7 @@ func (e *Encoder) encodeTime(v time.Time, column int) ast.Node {
 	return ast.String(token.New(value, value, e.pos(column)))
 }
 
-func (e *Encoder) encodeDuration(v time.Duration, column int) ast.Node {
+func (e *Encoder) encodeDuration(v time.Duration, column int) *ast.StringNode {
 	value := v.String()
 	if e.isJSONStyle {
 		value = strconv.Quote(value)
@@ -585,7 +724,7 @@ func (e *Encoder) encodeDuration(v time.Duration, column int) ast.Node {
 	return ast.String(token.New(value, value, e.pos(column)))
 }
 
-func (e *Encoder) encodeAnchor(anchorName string, value ast.Node, fieldValue reflect.Value, column int) (ast.Node, error) {
+func (e *Encoder) encodeAnchor(anchorName string, value ast.Node, fieldValue reflect.Value, column int) (*ast.AnchorNode, error) {
 	anchorNode := ast.Anchor(token.New("&", "&", e.pos(column)))
 	anchorNode.Name = ast.String(token.New(anchorName, anchorName, e.pos(column)))
 	anchorNode.Value = value
@@ -623,21 +762,20 @@ func (e *Encoder) encodeStruct(ctx context.Context, value reflect.Value, column 
 			// omit encoding
 			continue
 		}
-		value, err := e.encodeValue(ctx, fieldValue, column)
+		ve := e
+		if !e.isFlowStyle && structField.IsFlow {
+			ve = &Encoder{}
+			*ve = *e
+			ve.isFlowStyle = true
+		}
+		value, err := ve.encodeValue(ctx, fieldValue, column)
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to encode value")
 		}
-		if m, ok := value.(*ast.MappingNode); ok {
-			if !e.isFlowStyle && structField.IsFlow {
-				m.SetIsFlowStyle(true)
-			}
+		if e.isMapNode(value) {
 			value.AddColumn(e.indent)
-		} else if s, ok := value.(*ast.SequenceNode); ok {
-			if !e.isFlowStyle && structField.IsFlow {
-				s.SetIsFlowStyle(true)
-			}
 		}
-		key := e.encodeString(structField.RenderName, column)
+		var key ast.MapKeyNode = e.encodeString(structField.RenderName, column)
 		switch {
 		case structField.AnchorName != "":
 			anchorNode, err := e.encodeAnchor(structField.AnchorName, value, fieldValue, column)

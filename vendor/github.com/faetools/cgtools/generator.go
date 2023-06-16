@@ -61,7 +61,11 @@ func (g Generator) writeBytes(path string, content []byte, o *options) error {
 			terminal.Printf(aurora.Green, "  • %v is unchanged\n", path)
 		}
 
-		return nil
+		if o.modTime.IsZero() {
+			return nil
+		}
+
+		return g.fs.Chtimes(path, o.modTime, o.modTime)
 	}
 
 	newFile := errors.Is(readErr, os.ErrNotExist)
