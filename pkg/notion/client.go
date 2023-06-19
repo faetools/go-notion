@@ -301,14 +301,18 @@ func ensureDatabaseIsValid(db *Database) {
 		db.Parent.Type = "page_id"
 	}
 
+	if db.Description == nil {
+		db.Description = RichTexts{}
+	}
+}
+
+func ensureNewDatabaseIsValid(db *Database) {
+	ensureDatabaseIsValid(db)
+
 	// initialize properties
 	if db.Properties == nil {
 		db.Properties = PropertyMetaMap{"Title": TitleProperty}
 		return
-	}
-
-	if db.Description == nil {
-		db.Description = RichTexts{}
 	}
 
 	// make sure a title property is present
@@ -323,7 +327,7 @@ func ensureDatabaseIsValid(db *Database) {
 
 // CreateNotionDatabase creates a notion database or returns an error.
 func (c Client) CreateNotionDatabase(ctx context.Context, db Database) (*Database, error) {
-	ensureDatabaseIsValid(&db)
+	ensureNewDatabaseIsValid(&db)
 
 	// create a UUID for the new database
 	db.Id = UUID(uuid.NewString())
