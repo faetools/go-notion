@@ -333,6 +333,12 @@ const (
 	SyncedFromTypeBlockId SyncedFromType = "block_id"
 )
 
+// Defines values for TimestampFilterTimestamp.
+const (
+	TimestampFilterTimestampCreatedTime    TimestampFilterTimestamp = "created_time"
+	TimestampFilterTimestampLastEditedTime TimestampFilterTimestamp = "last_edited_time"
+)
+
 // Defines values for UserType.
 const (
 	UserTypeBot    UserType = "bot"
@@ -624,6 +630,48 @@ type Date struct {
 	TimeZone *string `json:"time_zone"`
 }
 
+// A date filter condition can be used to limit `date` property value types and the timestamp property types `created_time` and `last_edited_time`.
+type DateFilter struct {
+	// Returns database entries where the `date` property value is after the provided date.
+	After *time.Time `json:"after,omitempty"`
+
+	// Returns database entries where the `date` property value is before the provided date.
+	Before *time.Time `json:"before,omitempty"`
+
+	// Returns database entries where the `date` property value is the provided date.
+	Equals *time.Time `json:"equals,omitempty"`
+
+	// Returns database entries where the `date` property value contains no data.
+	IsEmpty *bool `json:"is_empty,omitempty"`
+
+	// Returns database entries where the `date` property value is not empty.
+	IsNotEmpty *bool `json:"is_not_empty,omitempty"`
+
+	// A filter that limits the results to database entries where the `date` property value is within the next month.
+	NextMonth *map[string]interface{} `json:"next_month,omitempty"`
+
+	// A filter that limits the results to database entries where the `date` property value is within the next week.
+	NextWeek *map[string]interface{} `json:"next_week,omitempty"`
+
+	// A filter that limits the results to database entries where the `date` property value is within the next year.
+	NextYear *map[string]interface{} `json:"next_year,omitempty"`
+
+	// Returns database entries where the `date` property value is on or before the provided date.
+	OnOrAfter *time.Time `json:"on_or_after,omitempty"`
+
+	// A filter that limits the results to database entries where the `date` property value is within the past month.
+	PastMonth *map[string]interface{} `json:"past_month,omitempty"`
+
+	// A filter that limits the results to database entries where the `date` property value is within the past week.
+	PastWeek *map[string]interface{} `json:"past_week,omitempty"`
+
+	// A filter that limits the results to database entries where the `date` property value is within the past year.
+	PastYear *map[string]interface{} `json:"past_year,omitempty"`
+
+	// A filter that limits the results to database entries where the `date` property value is this week.
+	ThisWeek *map[string]interface{} `json:"this_week,omitempty"`
+}
+
 // Dual property relation objects contain this configuration within the `dual_property` property. The relation is formed as two synced properties. If you make a change to one property, it updates the other property at the same time.
 type DualProperty struct {
 	// The id of the related property. This is usually a short string of random letters and symbols.
@@ -699,18 +747,43 @@ type FileWithCaptionType string
 // Files defines model for Files.
 type Files []File
 
+// FilesFilter defines model for FilesFilter.
+type FilesFilter struct {
+	// Returns all database entries with an empty `files` property value.
+	IsEmpty *bool `json:"is_empty,omitempty"`
+
+	// Returns all entries with a populated `files` property value.
+	IsNotEmpty *bool `json:"is_not_empty,omitempty"`
+}
+
 // Filter defines model for Filter.
 type Filter struct {
 	And      *Filters        `json:"and,omitempty"`
 	Checkbox *CheckboxFilter `json:"checkbox,omitempty"`
 
 	// A string the property must contain.
-	Contains *string  `json:"contains,omitempty"`
-	Or       *Filters `json:"or,omitempty"`
+	Contains *string `json:"contains,omitempty"`
+
+	// A date filter condition can be used to limit `date` property value types and the timestamp property types `created_time` and `last_edited_time`.
+	Date  *DateFilter  `json:"date,omitempty"`
+	Files *FilesFilter `json:"files,omitempty"`
+
+	// The primary field of the formula filter condition object matches the type of the formula’s result. For example, to filter a formula property that computes a checkbox, use a formula filter condition object with a checkbox field containing a checkbox filter condition as its value.
+	Formula     *FormulaFilter     `json:"formula,omitempty"`
+	MultiSelect *MultiSelectFilter `json:"multi_select,omitempty"`
+	Number      *NumberFilter      `json:"number,omitempty"`
+	Or          *Filters           `json:"or,omitempty"`
+
+	// You can apply a people filter condition to people, created_by, and last_edited_by database property types.
+	People *PeopleFilter `json:"people,omitempty"`
 
 	// Filter by this property.
-	Property *string     `json:"property,omitempty"`
-	RichText *TextFilter `json:"rich_text,omitempty"`
+	Property  *string          `json:"property,omitempty"`
+	Relation  *RelationFilter  `json:"relation,omitempty"`
+	RichText  *RichTextFilter  `json:"rich_text,omitempty"`
+	Select    *SelectFilter    `json:"select,omitempty"`
+	Status    *StatusFilter    `json:"status,omitempty"`
+	Timestamp *TimestampFilter `json:"timestamp,omitempty"`
 }
 
 // Filters defines model for Filters.
@@ -741,6 +814,16 @@ type FormulaType string
 type FormulaConfig struct {
 	// Formula to evaluate for this property. You can read more about the syntax for formulas in the help center: https://notion.so/notion/Formulas-28f3f5c3ae644c59b4d862046ea6a541
 	Expression string `json:"expression"`
+}
+
+// The primary field of the formula filter condition object matches the type of the formula’s result. For example, to filter a formula property that computes a checkbox, use a formula filter condition object with a checkbox field containing a checkbox filter condition as its value.
+type FormulaFilter struct {
+	Checkbox *CheckboxFilter `json:"checkbox,omitempty"`
+
+	// A date filter condition can be used to limit `date` property value types and the timestamp property types `created_time` and `last_edited_time`.
+	Date   *DateFilter     `json:"date,omitempty"`
+	Number *NumberFilter   `json:"number,omitempty"`
+	String *RichTextFilter `json:"string,omitempty"`
 }
 
 // Heading block objects contain this information within their respective property.
@@ -825,6 +908,21 @@ type MinimalPropertyMetas struct {
 	Title *PropertyMeta `json:"title,omitempty"`
 }
 
+// MultiSelectFilter defines model for MultiSelectFilter.
+type MultiSelectFilter struct {
+	// Returns database entries where the multi-select value contains the provided string.
+	Contains *string `json:"contains,omitempty"`
+
+	// Returns database entries where the multi-select value does not contain the provided string.
+	DoesNotContain *string `json:"does_not_contain,omitempty"`
+
+	// Returns database entries where the multi-select value does not contain any data.
+	IsEmpty *bool `json:"is_empty,omitempty"`
+
+	// Returns database entries where the multi-select value does contains data.
+	IsNotEmpty *bool `json:"is_not_empty,omitempty"`
+}
+
 // A unique identifier for a page, block, database, or user.
 type NextCursor string
 
@@ -845,6 +943,33 @@ type NumberConfig struct {
 
 // How the number is displayed in Notion.
 type NumberConfigFormat string
+
+// NumberFilter defines model for NumberFilter.
+type NumberFilter struct {
+	// Returns database entries where the number property value differs from the provided number.
+	DoesNotEqual *float32 `json:"does_not_equal,omitempty"`
+
+	// Returns database entries where the number property value is the same as the provided number.
+	Equals *float32 `json:"equals,omitempty"`
+
+	// Returns database entries where the number property value exceeds the provided number.
+	GreaterThan *float32 `json:"greater_than,omitempty"`
+
+	// Returns database entries where the number property value is equal to or exceeds the provided number.
+	GreaterThanOrEqualTo *float32 `json:"greater_than_or_equal_to,omitempty"`
+
+	// Returns database entries where the number property value does not contain any data.
+	IsEmpty *bool `json:"is_empty,omitempty"`
+
+	// Returns database entries where the number property value does not contain any data.
+	IsNotEmpty *bool `json:"is_not_empty,omitempty"`
+
+	// Returns database entries where the page property value is less than the provided number.
+	LessThan *float32 `json:"less_than,omitempty"`
+
+	// Returns database entries where the page property value is equal to or is less than the provided number.
+	LessThanOrEqualTo *float32 `json:"less_than_or_equal_to,omitempty"`
+}
 
 // The Page object contains the [property values](https://developers.notion.com/reference/property-value-object) of a single Notion page.
 //
@@ -937,6 +1062,21 @@ type Parent struct {
 
 // The type of the parent.
 type ParentType string
+
+// You can apply a people filter condition to people, created_by, and last_edited_by database property types.
+type PeopleFilter struct {
+	// A unique identifier for a page, block, database, user, or option.
+	Contains *UUID `json:"contains,omitempty"`
+
+	// A unique identifier for a page, block, database, user, or option.
+	DoesNotContain *UUID `json:"does_not_contain,omitempty"`
+
+	// Returns database entries where the people property value does not contain any data.
+	IsEmpty *bool `json:"is_empty,omitempty"`
+
+	// Returns database entries where the people property value is not empty.
+	IsNotEmpty *bool `json:"is_not_empty,omitempty"`
+}
 
 // User objects that represent people have the `type` property set to `person`. These objects also have these properties.
 type Person struct {
@@ -1104,6 +1244,21 @@ type RelationConfiguration struct {
 // The type of the relation.
 type RelationConfigurationType string
 
+// RelationFilter defines model for RelationFilter.
+type RelationFilter struct {
+	// A unique identifier for a page, block, database, user, or option.
+	Contains *UUID `json:"contains,omitempty"`
+
+	// A unique identifier for a page, block, database, user, or option.
+	DoesNotContain *UUID `json:"does_not_contain,omitempty"`
+
+	// Returns database entries where the relation property value does not contain any data.
+	IsEmpty *bool `json:"is_empty,omitempty"`
+
+	// Returns database entries where the property value is not empty.
+	IsNotEmpty *bool `json:"is_not_empty,omitempty"`
+}
+
 // Rich text objects contain data for displaying formatted text, mentions, and equations. A rich text object also contains annotations for style information. Arrays of rich text objects are used [within property objects](https://developers.notion.com/reference/database-property) and [property value objects](https://developers.notion.com/reference/page-property-value) to create what a user sees as a single text value in Notion.
 type RichText struct {
 	// Style information which applies to the whole rich text object.
@@ -1128,6 +1283,33 @@ type RichText struct {
 
 // Type of this rich text object.
 type RichTextType string
+
+// RichTextFilter defines model for RichTextFilter.
+type RichTextFilter struct {
+	// Returns database entries with a text property value that includes the provided string.
+	Contains *string `json:"contains,omitempty"`
+
+	// Returns database entries with a text property value that does not include the provided string.
+	DoesNotContain *string `json:"does_not_contain,omitempty"`
+
+	// Returns database entries with a text property value that does not match the provided string.
+	DoesNotEqual *string `json:"does_not_equal,omitempty"`
+
+	// Returns database entries with a text property value that ends with the provided string.
+	EndsWith *string `json:"ends_with,omitempty"`
+
+	// Returns database entries with a text property value that matches the provided string.
+	Equals *string `json:"equals,omitempty"`
+
+	// Returns database entries with a text property value that is empty.
+	IsEmpty *bool `json:"is_empty,omitempty"`
+
+	// Returns database entries with a text property value that contains data.
+	IsNotEmpty *bool `json:"is_not_empty,omitempty"`
+
+	// Returns database entries with a text property value that starts with the provided string.
+	StartsWith *string `json:"starts_with,omitempty"`
+}
 
 // RichTexts defines model for RichTexts.
 type RichTexts []RichText
@@ -1235,6 +1417,21 @@ type SearchResult struct {
 // SearchResultObject defines model for SearchResult.Object.
 type SearchResultObject string
 
+// SelectFilter defines model for SelectFilter.
+type SelectFilter struct {
+	// Returns database entries where the select property value does not match the provided string.
+	DoesNotEqual *string `json:"does_not_equal,omitempty"`
+
+	// Returns database entries where the select property value matches the provided string.
+	Equals *string `json:"equals,omitempty"`
+
+	// Returns database entries where the select property value is empty.
+	IsEmpty *bool `json:"is_empty,omitempty"`
+
+	// Returns database entries where the select property value is not empty.
+	IsNotEmpty *bool `json:"is_not_empty,omitempty"`
+}
+
 // Multi-select or select option values.
 type SelectValue struct {
 	// The color of the block.
@@ -1281,6 +1478,21 @@ type StatusConfig struct {
 
 	// An array of status option objects. As part of a status configuration, it's a sorted list of options available for the property.
 	Options StatusOptions `json:"options"`
+}
+
+// StatusFilter defines model for StatusFilter.
+type StatusFilter struct {
+	// Returns database entries where the status property value does not match the provided string.
+	DoesNotEqual *string `json:"does_not_equal,omitempty"`
+
+	// Returns database entries where the status property value matches the provided string.
+	Equals *string `json:"equals,omitempty"`
+
+	// Returns database entries where the status property value is empty.
+	IsEmpty *bool `json:"is_empty,omitempty"`
+
+	// Returns database entries where the status property value is not empty.
+	IsNotEmpty *bool `json:"is_not_empty,omitempty"`
 }
 
 // StatusGroup defines model for StatusGroup.
@@ -1373,10 +1585,20 @@ type Text struct {
 	Link *Link `json:"link"`
 }
 
-// TextFilter defines model for TextFilter.
-type TextFilter struct {
-	Contains string `json:"contains"`
+// TimestampFilter defines model for TimestampFilter.
+type TimestampFilter struct {
+	// A date filter condition can be used to limit `date` property value types and the timestamp property types `created_time` and `last_edited_time`.
+	CreatedTime *DateFilter `json:"created_time,omitempty"`
+
+	// A date filter condition can be used to limit `date` property value types and the timestamp property types `created_time` and `last_edited_time`.
+	LastEditedTime *DateFilter `json:"last_edited_time,omitempty"`
+
+	// A constant string representing the type of timestamp to use as a filter.
+	Timestamp TimestampFilterTimestamp `json:"timestamp"`
 }
+
+// A constant string representing the type of timestamp to use as a filter.
+type TimestampFilterTimestamp string
 
 // Title defines model for Title.
 type Title struct {

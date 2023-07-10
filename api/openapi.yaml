@@ -1,8 +1,8 @@
 openapi: 3.0.0
 servers:
-  - url: https://api.notion.com
+  - url: 'https://api.notion.com'
 info:
-  version: "2022-06-28"
+  version: '2022-06-28'
   title: Notion API
   description: |-
     Hello and welcome!
@@ -13,7 +13,7 @@ info:
 
     Need more help? Join our [developer community on Slack](https://join.slack.com/t/notiondevs/shared_invite/zt-lkrnk74h-YmPRroySRFGiqgjI193AqA/)
 paths:
-  /v1/users/{id}:
+  '/v1/users/{id}':
     parameters:
       - $ref: '#/components/parameters/id'
     get:
@@ -75,7 +75,7 @@ paths:
           $ref: '#/components/responses/HTMLErrorResponse'
         '504':
           $ref: '#/components/responses/HTMLErrorResponse'
-  /v1/databases/{id}:
+  '/v1/databases/{id}':
     parameters:
       - $ref: '#/components/parameters/id'
     get:
@@ -115,7 +115,7 @@ paths:
       description: Updates an existing database as specified by the parameters.
       requestBody:
         $ref: '#/components/requestBodies/DatabaseRequestBody'
-  /v1/databases/{id}/query:
+  '/v1/databases/{id}/query':
     parameters:
       - $ref: '#/components/parameters/id'
     post:
@@ -273,7 +273,7 @@ paths:
               }
       tags:
         - Pages
-  /v1/pages/{id}:
+  '/v1/pages/{id}':
     parameters:
       - $ref: '#/components/parameters/id'
     get:
@@ -342,7 +342,7 @@ paths:
           $ref: '#/components/responses/HTMLErrorResponse'
         '504':
           $ref: '#/components/responses/HTMLErrorResponse'
-  /v1/blocks/{id}:
+  '/v1/blocks/{id}':
     parameters:
       - $ref: '#/components/parameters/id'
     delete:
@@ -363,7 +363,7 @@ paths:
           $ref: '#/components/responses/HTMLErrorResponse'
     patch:
       summary: Update a block
-      description: This endpoint allows you to update block content. [See Full Documentation](https://developers.notion.com/reference/update-a-block)
+      description: 'This endpoint allows you to update block content. [See Full Documentation](https://developers.notion.com/reference/update-a-block)'
       operationId: Updateablock
       responses:
         '200':
@@ -379,7 +379,7 @@ paths:
         '504':
           $ref: '#/components/responses/HTMLErrorResponse'
       requestBody:
-        description: This endpoint allows you to update block content. [See Full Documentation](https://developers.notion.com/reference/update-a-block)
+        description: 'This endpoint allows you to update block content. [See Full Documentation](https://developers.notion.com/reference/update-a-block)'
         required: true
         content:
           text/plain:
@@ -401,8 +401,8 @@ paths:
           $ref: '#/components/responses/HTMLErrorResponse'
         '504':
           $ref: '#/components/responses/HTMLErrorResponse'
-      description: Retrieves a [Block object](https://developers.notion.com/reference/block) using the ID specified.
-  /v1/blocks/{id}/children:
+      description: 'Retrieves a [Block object](https://developers.notion.com/reference/block) using the ID specified.'
+  '/v1/blocks/{id}/children':
     parameters:
       - $ref: '#/components/parameters/id'
     get:
@@ -426,7 +426,7 @@ paths:
           $ref: '#/components/responses/HTMLErrorResponse'
       tags:
         - Blocks
-      description: Returns a paginated array of child [block objects](https://developers.notion.com/reference/block) contained in the block using the ID specified. In order to receive a complete representation of a block, you may need to recursively retrieve the block children of child blocks.
+      description: 'Returns a paginated array of child [block objects](https://developers.notion.com/reference/block) contained in the block using the ID specified. In order to receive a complete representation of a block, you may need to recursively retrieve the block children of child blocks.'
     patch:
       summary: Append block children
       operationId: AppendBlocks
@@ -449,33 +449,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/BlocksChildren'
-            example: |-
-              {
-              	"children": [
-              		{
-              			"object": "block",
-              			"type": "heading_2",
-              			"heading_2": {
-              				"text": [{ "type": "text", "text": { "content": "Lacinato kale" } }]
-              			}
-              		},
-              		{
-              			"object": "block",
-              			"type": "paragraph",
-              			"paragraph": {
-              				"rich_text": [
-              					{
-              						"type": "text",
-              						"text": {
-              							"content": "Lacinato kale is a variety of kale with a long tradition in Italian cuisine, especially that of Tuscany. It is also known as Tuscan kale, Italian kale, dinosaur kale, kale, flat back kale, palm tree kale, or black Tuscan palm.",
-              							"link": { "url": "https://en.wikipedia.org/wiki/Lacinato_kale" }
-              						}
-              					}
-              				]
-              			}
-              		}
-              	]
-              }
       tags:
         - Blocks
   /v1/search:
@@ -506,7 +479,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Search'
-      description: Searches all *original* pages, databases, and child pages/databases that are shared with the integration. It will not return linked databases, since these duplicate their source databases.
+      description: 'Searches all *original* pages, databases, and child pages/databases that are shared with the integration. It will not return linked databases, since these duplicate their source databases.'
 components:
   parameters:
     page_size:
@@ -524,13 +497,13 @@ components:
       style: simple
       schema:
         $ref: '#/components/schemas/UUID'
-      description: Identifier for a block, page, or user.
+      description: 'Identifier for a block, page, or user.'
     start_cursor:
       name: start_cursor
       in: query
       schema:
         type: string
-      description: If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results.
+      description: 'If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results.'
   schemas:
     Block:
       description: |-
@@ -542,8 +515,8 @@ components:
         example:
           object: block
           id: b8cc5dc7-9204-45f0-b996-e48514357b0f
-          created_time: "2022-03-17T22:56:00.000Z"
-          last_edited_time: "2022-03-18T22:08:00.000Z"
+          created_time: '2022-03-17T22:56:00.000Z'
+          last_edited_time: '2022-03-18T22:08:00.000Z'
           created_by:
             object: user
             id: af171d5d-c36f-45bc-a0a3-6086c0dafa45
@@ -668,7 +641,7 @@ components:
           $ref: '#/components/schemas/TableOfContents'
         column:
           type: object
-          description: Columns are parent blocks for any supported block children, excluding columns. They do not contain any information within the column property. They can only be appended to column_lists.
+          description: 'Columns are parent blocks for any supported block children, excluding columns. They do not contain any information within the column property. They can only be appended to column_lists.'
         column_list:
           type: object
           description: Column Lists are parent blocks for column children. They do not contain any information within the column_list property and can only contain children of type column.
@@ -711,8 +684,8 @@ components:
         example:
           object: page
           id: c4d39556-6364-46a1-8a61-ebbb668f7445
-          created_time: "2021-04-27T20:38:00.000Z"
-          last_edited_time: "2022-03-02T05:22:00.000Z"
+          created_time: '2021-04-27T20:38:00.000Z'
+          last_edited_time: '2022-03-02T05:22:00.000Z'
           created_by:
             object: user
             id: 6794760a-1f15-45cd-9c65-0dfe42f5135a
@@ -745,7 +718,7 @@ components:
                     color: default
                   plain_text: Reading List
                   href: null
-          url: https://www.notion.so/Reading-List-c4d39556636446a18a61ebbb668f7445
+          url: 'https://www.notion.so/Reading-List-c4d39556636446a18a61ebbb668f7445'
       properties:
         object:
           type: string
@@ -761,7 +734,7 @@ components:
         last_edited_time:
           type: string
           description: Date and time when this page was updated. Formatted as an ISO 8601 date time string.
-          example: "2020-03-17T19:10:04.968Z"
+          example: '2020-03-17T19:10:04.968Z'
           format: date-time
         created_by:
           $ref: '#/components/schemas/User'
@@ -782,7 +755,7 @@ components:
         url:
           type: string
           description: The URL of the Notion page.
-          example: https://www.notion.so/Avocado-d093f1d200464ce78b36e58a3f0d8043
+          example: 'https://www.notion.so/Avocado-d093f1d200464ce78b36e58a3f0d8043'
           format: uri
       required:
         - object
@@ -817,7 +790,7 @@ components:
         - type
         - page
     User:
-      description: The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.
+      description: 'The User object represents a user in a Notion workspace. Users include full workspace members, and bots. Guests are not included.'
       type: object
       x-examples:
         partial user:
@@ -840,13 +813,13 @@ components:
             - bot
         name:
           type: string
-          description: User's name, as displayed in Notion.
+          description: 'User''s name, as displayed in Notion.'
           example: Avocado Lovelace
         avatar_url:
           type: string
           description: Chosen avatar image.
           format: uri
-          example: https://secure.notion-static.com/e6a352a8-8381-44d0-a1dc-9ed80e62b53d.jpg
+          example: 'https://secure.notion-static.com/e6a352a8-8381-44d0-a1dc-9ed80e62b53d.jpg'
         person:
           $ref: '#/components/schemas/Person'
         bot:
@@ -924,8 +897,8 @@ components:
           results:
             - object: block
               id: f9bb6c26-8f12-487c-bd7a-1f4ea489e84d
-              created_time: "2022-03-18T21:19:00.000Z"
-              last_edited_time: "2022-03-18T21:19:00.000Z"
+              created_time: '2022-03-18T21:19:00.000Z'
+              last_edited_time: '2022-03-18T21:19:00.000Z'
               created_by:
                 object: user
                 id: af171d5d-c36f-45bc-a0a3-6086c0dafa45
@@ -953,8 +926,8 @@ components:
                 color: default
             - object: block
               id: 9965ecfa-a3ab-4a7a-b93d-80a6dd6caae8
-              created_time: "2022-03-18T21:19:00.000Z"
-              last_edited_time: "2022-03-18T21:19:00.000Z"
+              created_time: '2022-03-18T21:19:00.000Z'
+              last_edited_time: '2022-03-18T21:19:00.000Z'
               created_by:
                 object: user
                 id: af171d5d-c36f-45bc-a0a3-6086c0dafa45
@@ -1017,7 +990,7 @@ components:
         - title
     RichText:
       type: object
-      description: Rich text objects contain data for displaying formatted text, mentions, and equations. A rich text object also contains annotations for style information. Arrays of rich text objects are used [within property objects](https://developers.notion.com/reference/database-property) and [property value objects](https://developers.notion.com/reference/page-property-value) to create what a user sees as a single text value in Notion.
+      description: 'Rich text objects contain data for displaying formatted text, mentions, and equations. A rich text object also contains annotations for style information. Arrays of rich text objects are used [within property objects](https://developers.notion.com/reference/database-property) and [property value objects](https://developers.notion.com/reference/page-property-value) to create what a user sees as a single text value in Notion.'
       properties:
         type:
           type: string
@@ -1029,13 +1002,13 @@ components:
             - equation
         plain_text:
           type: string
-          description: "The plain text without annotations.\t"
+          description: The plain text without annotations.
           example: Avocado Lovelace
         href:
           type: string
-          description: The URL of any link or internal Notion mention in this text, if any.
+          description: 'The URL of any link or internal Notion mention in this text, if any.'
           x-omitempty: false
-          example: https://www.notion.so/Avocado-d093f1d200464ce78b36e58a3f0d8043
+          example: 'https://www.notion.so/Avocado-d093f1d200464ce78b36e58a3f0d8043'
         annotations:
           $ref: '#/components/schemas/Annotations'
         text:
@@ -1095,7 +1068,7 @@ components:
         - color
     Paragraph:
       type: object
-      description: Paragraph, quote, toggle and list item block objects contain this information within their respective property.
+      description: 'Paragraph, quote, toggle and list item block objects contain this information within their respective property.'
       properties:
         rich_text:
           $ref: '#/components/schemas/RichTexts'
@@ -1190,7 +1163,7 @@ components:
         last_edited_time:
           type: string
           description: Date and time when this database was updated. Formatted as an ISO 8601 date time string.
-          example: "2020-03-17T19:10:04.968Z"
+          example: '2020-03-17T19:10:04.968Z'
           format: date-time
         title:
           $ref: '#/components/schemas/RichTexts'
@@ -1205,7 +1178,7 @@ components:
         url:
           type: string
           description: The URL of the Notion page.
-          example: https://www.notion.so/Avocado-d093f1d200464ce78b36e58a3f0d8043
+          example: 'https://www.notion.so/Avocado-d093f1d200464ce78b36e58a3f0d8043'
           format: uri
         archived:
           type: boolean
@@ -1225,16 +1198,16 @@ components:
       type: string
       format: uuid
       x-go-type: string
-      description: A unique identifier for a page, block, database, user, or option.
+      description: 'A unique identifier for a page, block, database, user, or option.'
     NextCursor:
       type: string
       format: uuid
       x-omitempty: false
       x-go-type: string
-      description: A unique identifier for a page, block, database, or user.
+      description: 'A unique identifier for a page, block, database, or user.'
     Parent:
       type: object
-      description: The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
+      description: 'The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.'
       properties:
         type:
           type: string
@@ -1457,6 +1430,14 @@ components:
         - status
         - code
         - message
+    BlocksChildren:
+      title: BlocksChildren
+      type: object
+      properties:
+        children:
+          $ref: '#/components/schemas/Blocks'
+      required:
+        - children
     Filter:
       type: object
       x-examples:
@@ -1470,6 +1451,7 @@ components:
                   contains: A
                 - property: Tags
                   contains: B
+      description: ''
       properties:
         property:
           type: string
@@ -1477,27 +1459,263 @@ components:
         contains:
           type: string
           description: A string the property must contain.
-        checkbox:
-          $ref: '#/components/schemas/CheckboxFilter'
         and:
           $ref: '#/components/schemas/Filters'
         or:
           $ref: '#/components/schemas/Filters'
+        checkbox:
+          $ref: '#/components/schemas/CheckboxFilter'
+        date:
+          $ref: '#/components/schemas/DateFilter'
+        files:
+          $ref: '#/components/schemas/FilesFilter'
+        formula:
+          $ref: '#/components/schemas/FormulaFilter'
+        multi_select:
+          $ref: '#/components/schemas/MultiSelectFilter'
+        number:
+          $ref: '#/components/schemas/NumberFilter'
+        people:
+          $ref: '#/components/schemas/PeopleFilter'
+        relation:
+          $ref: '#/components/schemas/RelationFilter'
         rich_text:
-          $ref: '#/components/schemas/TextFilter'
-    BlocksChildren:
-      title: BlocksChildren
-      type: object
-      properties:
-        children:
-          $ref: '#/components/schemas/Blocks'
-      required:
-        - children
+          $ref: '#/components/schemas/RichTextFilter'
+        select:
+          $ref: '#/components/schemas/SelectFilter'
+        status:
+          $ref: '#/components/schemas/StatusFilter'
+        timestamp:
+          $ref: '#/components/schemas/TimestampFilter'
     Filters:
       title: Filters
       type: array
       items:
         $ref: '#/components/schemas/Filter'
+    CheckboxFilter:
+      type: object
+      x-examples:
+        example:
+          equals: true
+      properties:
+        equals:
+          type: boolean
+          description: What the checkbox must be set to.
+      required:
+        - equals
+    DateFilter:
+      type: object
+      properties:
+        after:
+          type: string
+          description: Returns database entries where the `date` property value is after the provided date.
+          format: date-time
+        before:
+          type: string
+          format: date-time
+          description: Returns database entries where the `date` property value is before the provided date.
+        equals:
+          type: string
+          description: Returns database entries where the `date` property value is the provided date.
+          format: date-time
+        is_empty:
+          type: boolean
+          description: Returns database entries where the `date` property value contains no data.
+        is_not_empty:
+          type: boolean
+          description: Returns database entries where the `date` property value is not empty.
+        next_month:
+          type: object
+          description: A filter that limits the results to database entries where the `date` property value is within the next month.
+        next_week:
+          type: object
+          description: A filter that limits the results to database entries where the `date` property value is within the next week.
+        next_year:
+          type: object
+          description: A filter that limits the results to database entries where the `date` property value is within the next year.
+        on_or_after:
+          type: string
+          format: date-time
+          description: Returns database entries where the `date` property value is on or before the provided date.
+        past_month:
+          type: object
+          description: A filter that limits the results to database entries where the `date` property value is within the past month.
+        past_week:
+          type: object
+          description: A filter that limits the results to database entries where the `date` property value is within the past week.
+        past_year:
+          type: object
+          description: A filter that limits the results to database entries where the `date` property value is within the past year.
+        this_week:
+          type: object
+          description: A filter that limits the results to database entries where the `date` property value is this week.
+      description: A date filter condition can be used to limit `date` property value types and the timestamp property types `created_time` and `last_edited_time`.
+    FilesFilter:
+      type: object
+      properties:
+        is_empty:
+          type: boolean
+          description: Returns all database entries with an empty `files` property value.
+        is_not_empty:
+          type: boolean
+          description: Returns all entries with a populated `files` property value.
+    FormulaFilter:
+      type: object
+      description: 'The primary field of the formula filter condition object matches the type of the formula’s result. For example, to filter a formula property that computes a checkbox, use a formula filter condition object with a checkbox field containing a checkbox filter condition as its value.'
+      properties:
+        checkbox:
+          $ref: '#/components/schemas/CheckboxFilter'
+        date:
+          $ref: '#/components/schemas/DateFilter'
+        number:
+          $ref: '#/components/schemas/NumberFilter'
+        string:
+          $ref: '#/components/schemas/RichTextFilter'
+    MultiSelectFilter:
+      type: object
+      properties:
+        contains:
+          type: string
+          description: Returns database entries where the multi-select value contains the provided string.
+        does_not_contain:
+          type: string
+          description: Returns database entries where the multi-select value does not contain the provided string.
+        is_empty:
+          type: boolean
+          description: Returns database entries where the multi-select value does not contain any data.
+        is_not_empty:
+          type: boolean
+          description: Returns database entries where the multi-select value does contains data.
+    NumberFilter:
+      type: object
+      properties:
+        does_not_equal:
+          type: number
+          description: Returns database entries where the number property value differs from the provided number.
+        equals:
+          type: number
+          description: Returns database entries where the number property value is the same as the provided number.
+        greater_than:
+          type: number
+          description: Returns database entries where the number property value exceeds the provided number.
+        greater_than_or_equal_to:
+          type: number
+          description: Returns database entries where the number property value is equal to or exceeds the provided number.
+        is_empty:
+          type: boolean
+          description: Returns database entries where the number property value does not contain any data.
+        is_not_empty:
+          type: boolean
+          description: Returns database entries where the number property value does not contain any data.
+        less_than:
+          type: number
+          description: Returns database entries where the page property value is less than the provided number.
+        less_than_or_equal_to:
+          type: number
+          description: Returns database entries where the page property value is equal to or is less than the provided number.
+    PeopleFilter:
+      type: object
+      description: 'You can apply a people filter condition to people, created_by, and last_edited_by database property types.'
+      properties:
+        contains:
+          $ref: '#/components/schemas/UUID'
+        does_not_contain:
+          $ref: '#/components/schemas/UUID'
+        is_empty:
+          type: boolean
+          description: Returns database entries where the people property value does not contain any data.
+        is_not_empty:
+          type: boolean
+          description: "Returns database entries where the people property value is not empty.\t"
+    RelationFilter:
+      type: object
+      properties:
+        contains:
+          $ref: '#/components/schemas/UUID'
+        does_not_contain:
+          $ref: '#/components/schemas/UUID'
+        is_empty:
+          type: boolean
+          description: Returns database entries where the relation property value does not contain any data.
+        is_not_empty:
+          type: boolean
+          description: Returns database entries where the property value is not empty.
+    RichTextFilter:
+      type: object
+      x-examples:
+        example:
+          contains: Bridge
+      properties:
+        contains:
+          type: string
+          minLength: 1
+          description: Returns database entries with a text property value that includes the provided string.
+        does_not_contain:
+          type: string
+          description: Returns database entries with a text property value that does not include the provided string.
+        does_not_equal:
+          type: string
+          description: Returns database entries with a text property value that does not match the provided string.
+        ends_with:
+          type: string
+          description: Returns database entries with a text property value that ends with the provided string.
+        equals:
+          type: string
+          description: Returns database entries with a text property value that matches the provided string.
+        is_empty:
+          type: boolean
+          description: Returns database entries with a text property value that is empty.
+        is_not_empty:
+          type: boolean
+          description: Returns database entries with a text property value that contains data.
+        starts_with:
+          type: string
+          description: Returns database entries with a text property value that starts with the provided string.
+    SelectFilter:
+      type: object
+      properties:
+        equals:
+          type: string
+          description: Returns database entries where the select property value matches the provided string.
+        does_not_equal:
+          type: string
+          description: Returns database entries where the select property value does not match the provided string.
+        is_empty:
+          type: boolean
+          description: Returns database entries where the select property value is empty.
+        is_not_empty:
+          type: boolean
+          description: Returns database entries where the select property value is not empty.
+    StatusFilter:
+      type: object
+      properties:
+        equals:
+          type: string
+          description: "Returns database entries where the status property value matches the provided string.\t"
+        does_not_equal:
+          type: string
+          description: Returns database entries where the status property value does not match the provided string.
+        is_empty:
+          type: boolean
+          description: Returns database entries where the status property value is empty.
+        is_not_empty:
+          type: boolean
+          description: Returns database entries where the status property value is not empty.
+    TimestampFilter:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          description: "A constant string representing the type of timestamp to use as a filter.\t"
+          enum:
+            - created_time
+            - last_edited_time
+        created_time:
+          $ref: '#/components/schemas/DateFilter'
+        last_edited_time:
+          $ref: '#/components/schemas/DateFilter'
+      required:
+        - timestamp
     Sort:
       title: Sort
       type: object
@@ -1536,30 +1754,6 @@ components:
           maximum: 100
       required:
         - page_size
-    CheckboxFilter:
-      description: ''
-      type: object
-      x-examples:
-        example:
-          equals: true
-      properties:
-        equals:
-          type: boolean
-          description: What the checkbox must be set to.
-      required:
-        - equals
-    TextFilter:
-      description: ''
-      type: object
-      properties:
-        contains:
-          type: string
-          minLength: 1
-      required:
-        - contains
-      x-examples:
-        example:
-          contains: Bridge
     PropertyValue:
       description: 'A property value defines the identifier, type, and value of a page property in a page object. It''s used when retrieving and updating pages ex: Create and Update pages.'
       type: object
@@ -1608,7 +1802,7 @@ components:
           type: string
           description: URL property value objects contain a non-empty string within the url property. The string describes a web address.
           format: uri
-          example: http://worrydream.com/EarlyHistoryOfSmalltalk/
+          example: 'http://worrydream.com/EarlyHistoryOfSmalltalk/'
         formula:
           $ref: '#/components/schemas/Formula'
         rollup:
@@ -1643,9 +1837,9 @@ components:
       properties:
         start:
           type: string
-          description: An ISO 8601 format date, with optional time.
+          description: 'An ISO 8601 format date, with optional time.'
           format: date-time
-          example: "2020-12-08T12:00:00Z"
+          example: '2020-12-08T12:00:00Z'
         end:
           type: string
           x-omitempty: false
@@ -1653,7 +1847,7 @@ components:
             An ISO 8601 formatted date, with optional time. Represents the end of a date range.
 
             If `null`, this property's date value is not a range.
-          example: "2020-12-08T12:00:00Z"
+          example: '2020-12-08T12:00:00Z'
           format: date-time
         time_zone:
           type: string
@@ -1712,7 +1906,7 @@ components:
         - type
     DualProperty:
       type: object
-      description: Dual property relation objects contain this configuration within the `dual_property` property. The relation is formed as two synced properties. If you make a change to one property, it updates the other property at the same time.
+      description: 'Dual property relation objects contain this configuration within the `dual_property` property. The relation is formed as two synced properties. If you make a change to one property, it updates the other property at the same time.'
       properties:
         synced_property_name:
           type: string
@@ -1720,7 +1914,7 @@ components:
           example: Ingredients
         synced_property_id:
           type: string
-          example: fy:{
+          example: 'fy:{'
           description: The id of the related property. This is usually a short string of random letters and symbols.
       required:
         - synced_property_name
@@ -1735,7 +1929,7 @@ components:
       properties:
         id:
           type: string
-          description: ID of the option. Contrary to the documentation, this is usally not a UUID.
+          description: 'ID of the option. Contrary to the documentation, this is usally not a UUID.'
           example: q~Z
         name:
           type: string
@@ -1791,7 +1985,7 @@ components:
         url:
           type: string
           description: The originally pasted url used to create the mention
-          example: https://github.com/example/example-repo/pull/1234
+          example: 'https://github.com/example/example-repo/pull/1234'
           format: uri
       required:
         - url
@@ -1879,13 +2073,13 @@ components:
         url:
           type: string
           description: Authenticated S3 URL to the file. The file URL will be valid for 1 hour but updated links can be requested if required.
-          example: https://s3.us-west-2.amazonaws.com/secure.notion-static.com/9bc6c6e0-32b8-4d55-8c12-3ae931f43a01/brocolli.jpeg?...
+          example: 'https://s3.us-west-2.amazonaws.com/secure.notion-static.com/9bc6c6e0-32b8-4d55-8c12-3ae931f43a01/brocolli.jpeg?...'
           format: uri
         expiry_time:
           type: string
           format: date-time
           description: Date and time when the URL will expire.
-          example: "2020-03-17T19:10:04.968Z"
+          example: '2020-03-17T19:10:04.968Z'
       required:
         - url
         - expiry_time
@@ -1896,7 +2090,7 @@ components:
         url:
           type: string
           description: Link to the externally hosted content.
-          example: https://website.domain/files/doc.txt
+          example: 'https://website.domain/files/doc.txt'
           format: uri
       required:
         - url
@@ -2002,7 +2196,7 @@ components:
           example: Meals
         relation_property_id:
           type: string
-          example: fy:{
+          example: 'fy:{'
           description: The `id` of the relation property this property is responsible for rolling up.
         rollup_property_name:
           type: string
@@ -2010,7 +2204,7 @@ components:
           description: The name of the property of the pages in the related database that is used as an input to `function`.
         rollup_property_id:
           type: string
-          example: fy:{
+          example: 'fy:{'
           description: The `id` of the property of the pages in the related database that is used as an input to function.
         function:
           type: string
@@ -2071,7 +2265,7 @@ components:
         - function
     RollupArray:
       type: array
-      description: Array rollup property values contain an array of number, date, or string objects within the results property.
+      description: 'Array rollup property values contain an array of number, date, or string objects within the results property.'
       items:
         $ref: '#/components/schemas/RollupArrayItem'
     RollupArrayItem:
@@ -2156,7 +2350,7 @@ components:
       type: object
       x-examples:
         example:
-          url: https://website.domain
+          url: 'https://website.domain'
       properties:
         url:
           type: string
@@ -2210,10 +2404,10 @@ components:
           description: Number of columns in the table. Note that this cannot be changed via the public API once a table is created.
         has_column_header:
           type: boolean
-          description: Whether or not the table has a column header. If true, the first row in the table will appear visually distinct from the other rows.
+          description: 'Whether or not the table has a column header. If true, the first row in the table will appear visually distinct from the other rows.'
         has_row_header:
           type: boolean
-          description: Whether or not the table has a header row. If true, the first column in the table will appear visually distinct from the other columns.
+          description: 'Whether or not the table has a header row. If true, the first column in the table will appear visually distinct from the other columns.'
       required:
         - table_width
         - has_column_header
@@ -2291,7 +2485,7 @@ components:
             - clojure
             - coffeescript
             - c++
-            - 'c#'
+            - c#
             - css
             - dart
             - diff
@@ -2301,7 +2495,7 @@ components:
             - erlang
             - flow
             - fortran
-            - 'f#'
+            - f#
             - gherkin
             - glsl
             - go
@@ -2354,7 +2548,7 @@ components:
             - webassembly
             - xml
             - yaml
-            - 'java/c/c++/c#'
+            - java/c/c++/c#
       required:
         - rich_text
         - language
@@ -2411,8 +2605,8 @@ components:
           results:
             - object: page
               id: 96245c8f-1784-44a4-82ad-1941127c3ec3
-              created_time: "2022-07-14T05:31:00.000Z"
-              last_edited_time: "2022-08-19T13:26:00.000Z"
+              created_time: '2022-07-14T05:31:00.000Z'
+              last_edited_time: '2022-08-19T13:26:00.000Z'
               created_by:
                 object: user
                 id: af171d5d-c36f-45bc-a0a3-6086c0dafa45
@@ -2422,7 +2616,7 @@ components:
               cover:
                 type: external
                 external:
-                  url: https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg
+                  url: 'https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg'
               icon:
                 type: emoji
                 emoji: "\U0001F304"
@@ -2448,11 +2642,11 @@ components:
                         color: default
                       plain_text: Example Page
                       href: null
-              url: https://www.notion.so/Example-Page-96245c8f178444a482ad1941127c3ec3
+              url: 'https://www.notion.so/Example-Page-96245c8f178444a482ad1941127c3ec3'
             - object: page
               id: 5de9f82f-f228-4386-937f-b3490c62f6e5
-              created_time: "2022-08-03T19:23:00.000Z"
-              last_edited_time: "2022-08-03T19:23:00.000Z"
+              created_time: '2022-08-03T19:23:00.000Z'
+              last_edited_time: '2022-08-03T19:23:00.000Z'
               created_by:
                 object: user
                 id: af171d5d-c36f-45bc-a0a3-6086c0dafa45
@@ -2483,7 +2677,7 @@ components:
                         color: default
                       plain_text: Example Page with unsupported element
                       href: null
-              url: https://www.notion.so/Example-Page-with-unsupported-element-5de9f82ff2284386937fb3490c62f6e5
+              url: 'https://www.notion.so/Example-Page-with-unsupported-element-5de9f82ff2284386937fb3490c62f6e5'
           next_cursor: null
           has_more: false
           type: page_or_database
@@ -2522,7 +2716,7 @@ components:
               id: 3872a41e-0e9a-4684-8a93-83e310e627da
               name: To-do
               option_ids:
-                - t|{j
+                - 't|{j'
                 - cc97d59f-488d-4290-adb3-f174ec5da0f3
             - color: blue
               id: 9246f0ba-1efa-44fa-8ecb-b66e2a16e3d3
@@ -2538,7 +2732,7 @@ components:
                 - 8ccf4d06-8d53-471a-b51a-fe5a664c6160
           options:
             - color: gray
-              id: t|{j
+              id: 't|{j'
               name: no idea
             - color: blue
               id: ketX
@@ -2568,13 +2762,13 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/StatusOption'
-      description: An array of status option objects. As part of a status configuration, it's a sorted list of options available for the property.
+      description: 'An array of status option objects. As part of a status configuration, it''s a sorted list of options available for the property.'
     StatusOption:
       type: object
       x-examples:
         example:
           color: gray
-          id: t|{j
+          id: 't|{j'
           name: no idea
       properties:
         name:
@@ -2586,7 +2780,7 @@ components:
           example: Fruit
         id:
           type: string
-          description: Identifier of the option, which does not change if the name is changed. These are sometimes, but not always, UUIDs.
+          description: 'Identifier of the option, which does not change if the name is changed. These are sometimes, but not always, UUIDs.'
           example: ff8e9269-9579-47f7-8f6e-83a84716863c
         color:
           $ref: '#/components/schemas/Color'
@@ -2606,7 +2800,7 @@ components:
           id: 3872a41e-0e9a-4684-8a93-83e310e627da
           name: To-do
           option_ids:
-            - t|{j
+            - 't|{j'
             - cc97d59f-488d-4290-adb3-f174ec5da0f3
       properties:
         name:
@@ -2618,7 +2812,7 @@ components:
           example: Fruit
         id:
           type: string
-          description: Identifier of the option, which does not change if the name is changed. These are sometimes, but not always, UUIDs.
+          description: 'Identifier of the option, which does not change if the name is changed. These are sometimes, but not always, UUIDs.'
         color:
           $ref: '#/components/schemas/Color'
         option_ids:
