@@ -248,7 +248,7 @@ func (c Client) GetDatabaseEntries(ctx context.Context, id Id, filter *Filter, s
 
 		// retry once if we get a Bad Gateway error
 		if errors.Is(err, ErrGatewayIssue) {
-			fmt.Printf("Got error %v on page %d, retrying...\n", i, err)
+			fmt.Printf("Got error %v on page %d, retrying...\n", err, i)
 			time.Sleep(time.Second)
 			results, next, err = c.QueryNotionDatabase(ctx, id, query)
 		}
