@@ -11,6 +11,20 @@ const (
 	lenLayoutDate = len(layoutDate)
 )
 
+func NewDate(t time.Time) Date {
+	loc := t.Location().String()
+
+	return Date{
+		Start:    t,
+		TimeZone: &loc,
+	}
+}
+
+func NewDateP(t time.Time) *Date {
+	d := NewDate(t)
+	return &d
+}
+
 // tmpDate is used to unmarshall into this so we can properly adjust the times to be in the right time zone.
 type tmpDate struct {
 	End      *string `json:"end"`
