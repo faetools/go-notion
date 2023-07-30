@@ -178,3 +178,15 @@ func TestDate_UnusualTime(t *testing.T) {
 
 	assert.True(t, d.Start.Equal(newD.Start), "time is off by %s", newD.Start.Sub(d.Start))
 }
+
+func TestDate_NotLocal(t *testing.T) {
+	t.Parallel()
+
+	ts := time.Now()
+
+	d := notion.NewDate(ts)
+	assert.Equal(t, ts.UTC(), d.Start)
+
+	tz := "UTC"
+	assert.Equal(t, &tz, d.TimeZone)
+}
