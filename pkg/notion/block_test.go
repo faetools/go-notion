@@ -1,13 +1,35 @@
 package notion_test
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/url"
+	"os"
+	"testing"
 	"unicode/utf8"
 
 	. "github.com/faetools/go-notion/pkg/notion"
+	"github.com/stretchr/testify/assert"
 )
+
+func TestFoo(t *testing.T) {
+	t.Parallel()
+	t.Skip() // TODO: once a new version is released, test if we can get a mentioned block
+
+	ctx := context.Background()
+
+	// https://www.notion.so/fae-tools/B-cher-zum-Deutschlernen-e3af0440bd0b4be3833bae72db427d90?pvs=4#abc1910b59ec49b386e4988d89e33f48
+
+	c, err := NewDefaultClient(os.Getenv("NOTION_TOKEN"))
+	assert.NoError(t, err)
+
+	rsp, err := c.GetBlock(ctx, "abc1910b59ec49b386e4988d89e33f48")
+	assert.NoError(t, err)
+
+	// NOTE: Skipping right over the mentioned block!
+	assert.Equal(t, `{"object":"block","id":"abc1910b-59ec-49b3-86e4-988d89e33f48","parent":{"type":"page_id","page_id":"e3af0440-bd0b-4be3-833b-ae72db427d90"},"created_time":"2023-10-24T19:42:00.000Z","last_edited_time":"2023-10-24T20:38:00.000Z","created_by":{"object":"user","id":"af171d5d-c36f-45bc-a0a3-6086c0dafa45"},"last_edited_by":{"object":"user","id":"af171d5d-c36f-45bc-a0a3-6086c0dafa45"},"has_children":false,"archived":false,"type":"paragraph","paragraph":{"rich_text":[{"type":"text","text":{"content":"Springe zum Abschnitt: ","link":null},"annotations":{"bold":true,"italic":false,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":"Springe zum Abschnitt: ","href":null},{"type":"text","text":{"content":" TODO","link":null},"annotations":{"bold":true,"italic":true,"strikethrough":false,"underline":false,"code":false,"color":"default"},"plain_text":" TODO","href":null}],"color":"default"},"request_id":"0b532314-b1c6-46c6-bdb1-6a4e759c26db"}`, string(rsp.Body))
+}
 
 var (
 	allCodeLanguages = []CodeLanguage{
