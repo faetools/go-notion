@@ -14,9 +14,9 @@ const (
 func NewDate(t time.Time) Date {
 	loc := t.Location().String()
 
-	// if the time is in the local time zone, we want to use UTC instead
-	// this is because the API does not accept "Local" as a time zone
-	if time.Local == t.Location() {
+	// if the time is in the local time zone or doesn't have a name, we want to use UTC instead
+	// this is because the API does not accept "Local" or empty string as a time zone
+	if loc == "" || time.Local == t.Location() {
 		loc = "UTC"
 		t = t.UTC()
 	}
